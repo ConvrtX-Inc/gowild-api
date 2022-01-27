@@ -28,8 +28,8 @@ export class Forgot extends EntityHelper {
   user: User;
 
   @CreateDateColumn()
-  createdAt: Date;
+  created_date: Date;
 
   @DeleteDateColumn()
-  deletedAt: Date;
+  deleted_date: Date;
 }

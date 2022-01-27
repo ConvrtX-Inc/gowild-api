@@ -4,33 +4,28 @@ import { User } from './user.entity';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Roles } from '../roles/roles.decorator';
-import { RoleEnum } from '../roles/roles.enum';
-import { RolesGuard } from '../roles/roles.guard';
 import validationOptions from 'src/utils/validation-options';
 
 @ApiBearerAuth()
-@Roles(RoleEnum.admin)
-@UseGuards(AuthGuard('jwt'), RolesGuard)
+@UseGuards(AuthGuard('jwt'))
 @ApiTags('Users')
 @Crud({
   validation: validationOptions,
   model: {
     type: User,
   },
+  routes: {
+    exclude: ['replaceOneBase', 'createManyBase'],
+  },
   query: {
     maxLimit: 50,
     alwaysPaginate: false,
-    join: {
-      role: {
-        eager: false,
-      },
-      status: {
-        eager: false,
-      },
-      photo: {
-        eager: false,
-      },
+  },
+  params: {
+    id: {
+      type: 'uuid',
+      primary: true,
+      field: 'id',
     },
   },
 })

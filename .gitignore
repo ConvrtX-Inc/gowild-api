@@ -116,6 +116,9 @@ dist
 
 # IDEs and editors
 /.idea
+/.vscode
+/.github
+/.husky
 .project
 .classpath
 .c9/
@@ -133,3 +136,5 @@ dist
 .data
 /files
 /ormconfig.json
+yarn.lock
+package-lock.json

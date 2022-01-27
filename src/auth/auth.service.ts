@@ -3,15 +3,12 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/user.entity';
 import * as bcrypt from 'bcryptjs';
 import { AuthEmailLoginDto } from './dtos/auth-email-login.dto';
-import { AuthUpdateDto } from './dtos/auth-update.dto';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { RoleEnum } from 'src/roles/roles.enum';
-import { StatusEnum } from 'src/statuses/statuses.enum';
 import * as crypto from 'crypto';
 import { plainToClass } from 'class-transformer';
 import { Status } from 'src/statuses/status.entity';
 import { Role } from 'src/roles/role.entity';
-import { AuthProvidersEnum } from './auth-providers.enum';
 import { SocialInterface } from 'src/social/interfaces/social.interface';
 import { AuthRegisterLoginDto } from './dtos/auth-register-login.dto';
 import { UsersService } from 'src/users/users.service';
@@ -29,43 +26,12 @@ export class AuthService {
 
   async validateLogin(
     loginDto: AuthEmailLoginDto,
-    onlyAdmin: boolean,
   ): Promise<{ token: string; user: User }> {
     const user = await this.usersService.findOneEntity({
       where: {
         email: loginDto.email,
       },
     });
-
-    if (
-      !user ||
-      (user &&
-        !(onlyAdmin ? [RoleEnum.admin] : [RoleEnum.user]).includes(
-          user.role.id,
-        ))
-    ) {
-      throw new HttpException(
-        {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            email: 'notFound',
-          },
-        },
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
-
-    if (user.provider !== AuthProvidersEnum.email) {
-      throw new HttpException(
-        {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            email: `needLoginViaProvider:${user.provider}`,
-          },
-        },
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
 
     const isValidPassword = await bcrypt.compare(
       loginDto.password,
@@ -75,7 +41,6 @@ export class AuthService {
     if (isValidPassword) {
       const token = await this.jwtService.sign({
         id: user.id,
-        role: user.role,
       });
 
       return { token, user: user };
@@ -105,12 +70,12 @@ export class AuthService {
       },
     });
 
-    user = await this.usersService.findOneEntity({
-      where: {
-        socialId: socialData.id,
-        provider: authProvider,
-      },
-    });
+    // user = await this.usersService.findOneEntity({
+    //   where: {
+    //     social_id: socialData.id,
+    //     provider: authProvider,
+    //   },
+    // });
 
     if (user) {
       if (socialEmail && !userByEmail) {
@@ -120,22 +85,11 @@ export class AuthService {
     } else if (userByEmail) {
       user = userByEmail;
     } else {
-      const role = plainToClass(Role, {
-        id: RoleEnum.user,
-      });
-      const status = plainToClass(Status, {
-        id: StatusEnum.active,
-      });
 
-      user = await this.usersService.saveEntity({
-        email: socialEmail,
-        firstName: socialData.firstName,
-        lastName: socialData.lastName,
-        socialId: socialData.id,
-        provider: authProvider,
-        role,
-        status,
-      });
+      // user = await this.usersService.saveEntity({
+      //   email: socialEmail,
+      //   provider: authProvider,
+      // });
 
       user = await this.usersService.findOneEntity({
         where: {
@@ -146,7 +100,6 @@ export class AuthService {
 
     const jwtToken = await this.jwtService.sign({
       id: user.id,
-      role: user.role,
     });
 
     return {
@@ -164,45 +117,8 @@ export class AuthService {
     const user = await this.usersService.saveEntity({
       ...dto,
       email: dto.email,
-      role: {
-        id: RoleEnum.user,
-      },
-      status: {
-        id: StatusEnum.inactive,
-      },
       hash,
     });
-
-    await this.mailService.userSignUp({
-      to: user.email,
-      data: {
-        hash,
-      },
-    });
-  }
-
-  async confirmEmail(hash: string): Promise<void> {
-    const user = await this.usersService.findOneEntity({
-      where: {
-        hash,
-      },
-    });
-
-    if (!user) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: `notFound`,
-        },
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    user.hash = null;
-    user.status = plainToClass(Status, {
-      id: StatusEnum.active,
-    });
-    await user.save();
   }
 
   async forgotPassword(email: string): Promise<void> {
@@ -266,65 +182,4 @@ export class AuthService {
     await this.forgotService.softDelete(forgot.id);
   }
 
-  async me(user: User): Promise<User> {
-    return this.usersService.findOneEntity({
-      where: {
-        id: user.id,
-      },
-    });
-  }
-
-  async update(user: User, userDto: AuthUpdateDto): Promise<User> {
-    if (userDto.password) {
-      if (userDto.oldPassword) {
-        const currentUser = await this.usersService.findOneEntity({
-          where: {
-            id: user.id,
-          },
-        });
-
-        const isValidOldPassword = await bcrypt.compare(
-          userDto.oldPassword,
-          currentUser.password,
-        );
-
-        if (!isValidOldPassword) {
-          throw new HttpException(
-            {
-              status: HttpStatus.UNPROCESSABLE_ENTITY,
-              errors: {
-                oldPassword: 'incorrectOldPassword',
-              },
-            },
-            HttpStatus.UNPROCESSABLE_ENTITY,
-          );
-        }
-      } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.UNPROCESSABLE_ENTITY,
-            errors: {
-              oldPassword: 'missingOldPassword',
-            },
-          },
-          HttpStatus.UNPROCESSABLE_ENTITY,
-        );
-      }
-    }
-
-    await this.usersService.saveEntity({
-      id: user.id,
-      ...userDto,
-    });
-
-    return this.usersService.findOneEntity({
-      where: {
-        id: user.id,
-      },
-    });
-  }
-
-  async softDelete(user: User): Promise<void> {
-    await this.usersService.softDelete(user.id);
-  }
 }

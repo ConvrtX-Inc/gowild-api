@@ -27,6 +27,12 @@ import { MailConfigService } from './mail/mail-config.service';
 import { ForgotModule } from './forgot/forgot.module';
 import { MailModule } from './mail/mail.module';
 import { HomeModule } from './home/home.module';
+import { NotificationModule } from "./notification/notification.module";
+import { StatusModule } from "./statuses/status.module";
+import { CurrencyModule } from "./currency/currency.module";
+import { TwilioModule } from "nestjs-twilio";
+import { VerifyModule } from "./verify/verify.module";
+import { SmsModule } from "./sms/sms.module";
 
 @Module({
   imports: [
@@ -51,6 +57,10 @@ import { HomeModule } from './home/home.module';
     MailerModule.forRootAsync({
       useClass: MailConfigService,
     }),
+    TwilioModule.forRoot({
+      accountSid: process.env.TWILIO_ACCOUNT_SID,
+      authToken: process.env.TWILIO_AUTH_TOKEN,
+    }),
     I18nModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         fallbackLanguage: configService.get('app.fallbackLanguage'),
@@ -67,6 +77,7 @@ import { HomeModule } from './home/home.module';
       inject: [ConfigService],
       resolvers: [new HeaderResolver(['x-custom-lang'])],
     }),
+    SmsModule,
     UsersModule,
     FilesModule,
     AuthModule,
@@ -77,6 +88,10 @@ import { HomeModule } from './home/home.module';
     ForgotModule,
     MailModule,
     HomeModule,
+    NotificationModule,
+    StatusModule,
+    CurrencyModule,
+    VerifyModule,
   ],
 })
 export class AppModule {}

@@ -1,6 +1,6 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import {Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow } from 'class-validator';
+import {Allow, IsOptional} from 'class-validator';
 import { EntityHelper } from 'src/utils/entity-helper';
 
 @Entity()
@@ -12,5 +12,17 @@ export class Status extends EntityHelper {
   @Allow()
   @ApiProperty({ example: 'Active' })
   @Column()
-  name?: string;
+  status_name?: string;
+
+  @Allow()
+  @IsOptional()
+  @ApiProperty({ example: false })
+  @Column({ type: 'bool', nullable: true, default: 'FALSE' })
+  is_active?: boolean | null;
+
+  @CreateDateColumn()
+  created_date: Date;
+
+  @UpdateDateColumn()
+  updated_date: Date;
 }

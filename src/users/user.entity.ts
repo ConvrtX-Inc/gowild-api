@@ -5,35 +5,43 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
-  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
 } from 'typeorm';
-import { Exclude, Transform } from 'class-transformer';
+import {Exclude, Transform} from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '../roles/role.entity';
 import {
+  Allow,
   IsEmail,
   IsNotEmpty,
   IsOptional,
   MinLength,
   Validate,
 } from 'class-validator';
-import { Status } from '../statuses/status.entity';
 import { IsNotExist } from '../utils/validators/is-not-exists.validator';
-import { FileEntity } from '../files/file.entity';
-import { IsExist } from '../utils/validators/is-exists.validator';
 import * as bcrypt from 'bcryptjs';
 import { EntityHelper } from 'src/utils/entity-helper';
-import { AuthProvidersEnum } from 'src/auth/auth-providers.enum';
 import { CrudValidationGroups } from '@nestjsx/crud';
+import * as base64_arraybuffer from 'base64-arraybuffer-converter';
 
 @Entity()
 export class User extends EntityHelper {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @ApiProperty({ example: 'username' })
+  @Transform((value: string | null) => value?.toLowerCase().trim())
+  @IsOptional({ groups: [CrudValidationGroups.UPDATE] })
+  @IsNotEmpty({ groups: [CrudValidationGroups.CREATE] })
+  @Validate(IsNotExist, ['User'], {
+    message: 'username already exists',
+    groups: [CrudValidationGroups.CREATE],
+  })
+  @IsEmail()
+  @Column({ unique: true, nullable: true })
+  username: string | null;
 
   @ApiProperty({ example: 'test1@example.com' })
   @Transform((value: string | null) => value?.toLowerCase().trim())
@@ -71,58 +79,43 @@ export class User extends EntityHelper {
     }
   }
 
-  @Column({ default: AuthProvidersEnum.email })
-  provider: string;
-
-  @Index()
-  @Column({ nullable: true })
-  socialId: string | null;
-
-  @ApiProperty({ example: 'John' })
+  @ApiProperty({ example: '+639506703401' })
   @IsOptional({ groups: [CrudValidationGroups.UPDATE] })
   @IsNotEmpty({ groups: [CrudValidationGroups.CREATE] })
   @Index()
   @Column({ nullable: true })
-  firstName: string | null;
+  phone_no: string | null;
 
-  @ApiProperty({ example: 'Doe' })
-  @IsOptional({ groups: [CrudValidationGroups.UPDATE] })
-  @IsNotEmpty({ groups: [CrudValidationGroups.CREATE] })
-  @Index()
-  @Column({ nullable: true })
-  lastName: string | null;
 
-  @ApiProperty({ type: () => FileEntity })
+  @Allow()
   @IsOptional()
-  @Validate(IsExist, ['FileEntity', 'id'], {
-    message: 'imageNotExists',
+  @ApiProperty({ example: 'byte64image' })
+  @Transform((value: Buffer | null | string) => (value == null ? '' : value))
+  @Column({
+    name: 'profile_photo',
+    type: 'bytea',
+    nullable: true,
   })
-  @ManyToOne(() => FileEntity, {
-    eager: true,
-  })
-  photo?: FileEntity | null;
+  profile_photo?: Buffer | null | string;
 
-  @ApiProperty({ type: Role })
-  @IsOptional({ groups: [CrudValidationGroups.UPDATE] })
-  @Validate(IsExist, ['Role', 'id'], {
-    message: 'roleNotExists',
-    groups: [CrudValidationGroups.CREATE],
-  })
-  @ManyToOne(() => Role, {
-    eager: true,
-  })
-  role?: Role | null;
+  @BeforeUpdate()
+  @BeforeInsert()
+  public encodeImage() {
+    this.profile_photo = this.profile_photo
+      ? base64_arraybuffer.base64_2_ab(this.profile_photo)
+      : '';
+  }
 
-  @ApiProperty({ type: Status })
-  @IsOptional({ groups: [CrudValidationGroups.UPDATE] })
-  @Validate(IsExist, ['Status', 'id'], {
-    message: 'statusNotExists',
-    groups: [CrudValidationGroups.CREATE],
-  })
-  @ManyToOne(() => Status, {
-    eager: true,
-  })
-  status?: Status;
+  @AfterLoad()
+  public async decodeImage() {
+    try {
+      if (typeof this.profile_photo !== null && this.profile_photo != undefined) {
+        this.profile_photo = await base64_arraybuffer.ab_2_base64(
+          new Uint8Array(base64_arraybuffer.base64_2_ab(this.profile_photo)),
+        );
+      }
+    } catch (e) {}
+  }
 
   @Exclude({ toPlainOnly: true })
   @Column({ nullable: true })
@@ -130,11 +123,11 @@ export class User extends EntityHelper {
   hash: string | null;
 
   @CreateDateColumn()
-  createdAt: Date;
+  created_date: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updated_date: Date;
 
   @DeleteDateColumn()
-  deletedAt: Date;
+  deleted_date: Date;
 }
