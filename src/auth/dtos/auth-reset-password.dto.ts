@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import {IsEmail, IsNotEmpty} from 'class-validator';
+import {Transform} from "class-transformer";
 
 export class AuthResetPasswordDto {
   @ApiProperty()

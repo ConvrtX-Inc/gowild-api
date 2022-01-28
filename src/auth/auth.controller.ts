@@ -40,7 +40,7 @@ export class AuthController {
   @Post('forgot/password')
   @HttpCode(HttpStatus.OK)
   async forgotPassword(@Body() forgotPasswordDto: AuthForgotPasswordDto) {
-    return this.service.forgotPassword(forgotPasswordDto.email);
+    return this.service.forgotPassword(forgotPasswordDto);
   }
 
   @Post('reset/password')

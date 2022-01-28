@@ -4,16 +4,13 @@ import { User } from '../users/user.entity';
 import * as bcrypt from 'bcryptjs';
 import { AuthEmailLoginDto } from './dtos/auth-email-login.dto';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
-import { RoleEnum } from 'src/roles/roles.enum';
 import * as crypto from 'crypto';
-import { plainToClass } from 'class-transformer';
-import { Status } from 'src/statuses/status.entity';
-import { Role } from 'src/roles/role.entity';
 import { SocialInterface } from 'src/social/interfaces/social.interface';
 import { AuthRegisterLoginDto } from './dtos/auth-register-login.dto';
 import { UsersService } from 'src/users/users.service';
 import { ForgotService } from 'src/forgot/forgot.service';
 import { MailService } from 'src/mail/mail.service';
+import { SmsService } from "src/sms/sms.service";
 
 @Injectable()
 export class AuthService {
@@ -21,6 +18,7 @@ export class AuthService {
     private jwtService: JwtService,
     private usersService: UsersService,
     private forgotService: ForgotService,
+    private smsService: SmsService,
     private mailService: MailService,
   ) {}
 
@@ -108,7 +106,7 @@ export class AuthService {
     };
   }
 
-  async register(dto: AuthRegisterLoginDto): Promise<void> {
+  async register(dto: AuthRegisterLoginDto): Promise<User> {
     const hash = crypto
       .createHash('sha256')
       .update(randomStringGenerator())
@@ -117,53 +115,71 @@ export class AuthService {
     const user = await this.usersService.saveEntity({
       ...dto,
       email: dto.email,
+      phone_no: dto.phone_no,
       hash,
     });
+    return user;
   }
 
-  async forgotPassword(email: string): Promise<void> {
-    const user = await this.usersService.findOneEntity({
-      where: {
-        email,
-      },
-    });
+  async forgotPassword(dto): Promise<void> {
+    let user = null;
+    console.log(dto)
+    if (dto.email) {
+      user = await this.usersService.findOneEntity({
+        where: {
+          email: dto.email,
+        },
+      });
+    } else {
+      user = await this.usersService.findOneEntity({
+        where: {
+          phone_no: dto.phone,
+        },
+      });
+    }
 
     if (!user) {
       throw new HttpException(
         {
           status: HttpStatus.UNPROCESSABLE_ENTITY,
           errors: {
-            email: 'emailNotExists',
+            user: 'user do not exist',
           },
         },
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     } else {
-      const hash = crypto
-        .createHash('sha256')
-        .update(randomStringGenerator())
-        .digest('hex');
+      const hash = Math.floor(1000 + Math.random() * 9000).toString();
       await this.forgotService.saveEntity({
         hash,
         user,
       });
-
-      await this.mailService.forgotPassword({
-        to: email,
-        data: {
-          hash,
-        },
-      });
+      if (dto.email) {
+        await this.mailService.forgotPassword({
+          to: dto.email,
+          data: {
+            hash,
+          },
+        });
+      } else {
+        await this.smsService.send({
+          phone_number: user.phone_no.toString(),
+          message: 'You have requested reset password on Go Wild App. Please use this code to reset password:' + hash
+        });
+      }
     }
   }
 
-  async resetPassword(hash: string, password: string): Promise<void> {
+  async resetPassword(
+    hash: string,
+    password: string,
+  ): Promise<void> {
+    let user = null;
     const forgot = await this.forgotService.findOneEntity({
       where: {
         hash,
       },
     });
-
     if (!forgot) {
       throw new HttpException(
         {
@@ -175,11 +191,10 @@ export class AuthService {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
-
-    const user = forgot.user;
+    user = forgot.user;
+    await this.forgotService.softDelete(forgot.id);
     user.password = password;
     await user.save();
-    await this.forgotService.softDelete(forgot.id);
   }
 
 }

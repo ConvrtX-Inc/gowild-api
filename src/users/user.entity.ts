@@ -31,13 +31,13 @@ export class User extends EntityHelper {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Allow()
   @ApiProperty({ example: 'full_name' })
-  @IsOptional({ groups: [CrudValidationGroups.UPDATE] })
-  @IsNotEmpty({ groups: [CrudValidationGroups.CREATE] })
-  @Index()
+  @IsOptional()
   @Column({ nullable: true })
   full_name: string | null;
 
+  @Allow()
   @ApiProperty({ example: 'username' })
   @Transform((value: string | null) => value?.toLowerCase().trim())
   @IsOptional({ groups: [CrudValidationGroups.UPDATE] })
@@ -86,20 +86,20 @@ export class User extends EntityHelper {
     }
   }
 
+  @Allow()
   @ApiProperty({ example: '+639506703401' })
   @IsOptional({ groups: [CrudValidationGroups.UPDATE] })
   @IsNotEmpty({ groups: [CrudValidationGroups.CREATE] })
-  @Index()
   @Column({ nullable: true })
   phone_no: string | null;
 
+  @Allow()
   @ApiProperty({ example: 'address_line1' })
-  @Index()
   @Column({ nullable: true })
   address_line1: string | null;
 
+  @Allow()
   @ApiProperty({ example: 'address_line2' })
-  @Index()
   @Column({ nullable: true })
   address_line2: string | null;
 

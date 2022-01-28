@@ -4,7 +4,8 @@ import {SmsService} from './sms.service';
 
 @Module({
   controllers: [SmsController],
-  providers: [SmsService]
+  providers: [SmsService],
+  exports: [SmsService]
 })
 export class SmsModule {
 }
