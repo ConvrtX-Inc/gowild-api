@@ -19,7 +19,7 @@ export class AuthGoogleService {
     loginDto: AuthGoogleLoginDto,
   ): Promise<SocialInterface> {
     const ticket = await this.google.verifyIdToken({
-      idToken: loginDto.idToken,
+      idToken: loginDto.id_token,
       audience: [this.configService.get('google.clientId')],
     });
 

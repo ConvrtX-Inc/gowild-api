@@ -11,6 +11,7 @@ import { UsersService } from 'src/users/users.service';
 import { ForgotService } from 'src/forgot/forgot.service';
 import { MailService } from 'src/mail/mail.service';
 import { SmsService } from "src/sms/sms.service";
+import { SocialAccountService } from "src/social-account/social-account.service";
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,7 @@ export class AuthService {
     private forgotService: ForgotService,
     private smsService: SmsService,
     private mailService: MailService,
+    private socialAccountService: SocialAccountService,
   ) {}
 
   async validateLogin(
@@ -58,7 +60,7 @@ export class AuthService {
   async validateSocialLogin(
     authProvider: string,
     socialData: SocialInterface,
-  ): Promise<{ token: string; user: User }> {
+  ) {
     let user: User;
     const socialEmail = socialData.email?.toLowerCase();
 
@@ -68,34 +70,47 @@ export class AuthService {
       },
     });
 
-    // user = await this.usersService.findOneEntity({
-    //   where: {
-    //     social_id: socialData.id,
-    //     provider: authProvider,
-    //   },
-    // });
+    const socialAccount = await this.socialAccountService.findOne({
+      where: {
+        social_id: socialData.id,
+        provider: authProvider,
+        account_email:socialEmail,
+      },
+    });
 
+    if(socialAccount) {
+      user = await this.usersService.findOneEntity({
+        where: {
+          id: socialAccount.user_id,
+        },
+      });
+    }
     if (user) {
-      if (socialEmail && !userByEmail) {
+      if (!userByEmail) {
         user.email = socialEmail;
       }
       await this.usersService.saveEntity(user);
     } else if (userByEmail) {
       user = userByEmail;
     } else {
-
-      // user = await this.usersService.saveEntity({
-      //   email: socialEmail,
-      //   provider: authProvider,
-      // });
-
+      const full_name = socialData.firstName?.trim() +' '+ socialData.lastName?.trim();
+      user = await this.usersService.saveEntity({
+        email: socialEmail,
+        full_name: full_name,
+        username: socialEmail,
+      });
+      await this.socialAccountService.saveEntity({
+        user_id: user.id,
+        social_id: socialData.id,
+        provider: authProvider,
+        account_email:socialEmail,
+      });
       user = await this.usersService.findOneEntity({
         where: {
           id: user.id,
         },
       });
     }
-
     const jwtToken = await this.jwtService.sign({
       id: user.id,
     });

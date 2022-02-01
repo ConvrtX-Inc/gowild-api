@@ -15,10 +15,8 @@ import * as path from 'path';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthAppleModule } from './auth-apple/auth-apple.module';
 import { AuthFacebookModule } from './auth-facebook/auth-facebook.module';
 import { AuthGoogleModule } from './auth-google/auth-google.module';
-import { AuthTwitterModule } from './auth-twitter/auth-twitter.module';
 import { I18nModule } from 'nestjs-i18n/dist/i18n.module';
 import { I18nJsonParser } from 'nestjs-i18n/dist/parsers/i18n.json.parser';
 import { HeaderResolver } from 'nestjs-i18n';
@@ -33,6 +31,7 @@ import { CurrencyModule } from "./currency/currency.module";
 import { TwilioModule } from "nestjs-twilio";
 import { VerifyModule } from "./verify/verify.module";
 import { SmsModule } from "./sms/sms.module";
+import { SocialAccountModule } from "./social-account/social-account.module";
 
 @Module({
   imports: [
@@ -79,12 +78,11 @@ import { SmsModule } from "./sms/sms.module";
     }),
     SmsModule,
     UsersModule,
+    SocialAccountModule,
     FilesModule,
     AuthModule,
     AuthFacebookModule,
     AuthGoogleModule,
-    AuthTwitterModule,
-    AuthAppleModule,
     ForgotModule,
     MailModule,
     HomeModule,

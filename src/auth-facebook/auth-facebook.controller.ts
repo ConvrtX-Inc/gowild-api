@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'src/auth/auth.service';
 import { AuthFacebookService } from './auth-facebook.service';
 import { AuthFacebookLoginDto } from './dtos/auth-facebook-login.dto';
@@ -16,6 +16,7 @@ export class AuthFacebookController {
   ) {}
 
   @Post('login')
+  @ApiOperation({ summary: 'Login using facebook' })
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: AuthFacebookLoginDto) {
     const socialData = await this.authFacebookService.getProfileByToken(

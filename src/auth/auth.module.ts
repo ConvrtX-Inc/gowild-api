@@ -10,6 +10,7 @@ import { UsersModule } from 'src/users/users.module';
 import { ForgotModule } from 'src/forgot/forgot.module';
 import { MailModule } from 'src/mail/mail.module';
 import { SmsModule } from 'src/sms/sms.module';
+import { SocialAccountModule } from "src/social-account/social-account.module";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { SmsModule } from 'src/sms/sms.module';
     PassportModule,
     MailModule,
     SmsModule,
+    SocialAccountModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
