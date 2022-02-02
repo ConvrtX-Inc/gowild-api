@@ -20,7 +20,7 @@ export class AuthFacebookService {
   async getProfileByToken(
     loginDto: AuthFacebookLoginDto,
   ): Promise<SocialInterface> {
-    this.fb.setAccessToken(loginDto.accessToken);
+    this.fb.setAccessToken(loginDto.access_token);
 
     const data: FacebookInterface = await new Promise((resolve) => {
       this.fb.api(

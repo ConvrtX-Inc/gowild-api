@@ -4,5 +4,5 @@ import { IsNotEmpty } from 'class-validator';
 export class AuthFacebookLoginDto {
   @ApiProperty({ example: 'abc' })
   @IsNotEmpty()
-  accessToken: string;
+  access_token: string;
 }

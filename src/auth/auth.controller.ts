@@ -11,7 +11,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiTags } from '@nestjs/swagger';
+import {ApiOperation, ApiTags} from '@nestjs/swagger';
 import { AuthEmailLoginDto } from './dtos/auth-email-login.dto';
 import { AuthForgotPasswordDto } from './dtos/auth-forgot-password.dto';
 import { AuthResetPasswordDto } from './dtos/auth-reset-password.dto';
@@ -27,24 +27,28 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Login account' })
   public async login(@Body() loginDto: AuthEmailLoginDto) {
     return this.service.validateLogin(loginDto);
   }
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Register new account' })
   async register(@Body() createUserDto: AuthRegisterLoginDto) {
     return this.service.register(createUserDto);
   }
 
   @Post('forgot/password')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Request forgot password' })
   async forgotPassword(@Body() forgotPasswordDto: AuthForgotPasswordDto) {
     return this.service.forgotPassword(forgotPasswordDto);
   }
 
   @Post('reset/password')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Reset user password' })
   async resetPassword(@Body() resetPasswordDto: AuthResetPasswordDto) {
     return this.service.resetPassword(
       resetPasswordDto.hash,
