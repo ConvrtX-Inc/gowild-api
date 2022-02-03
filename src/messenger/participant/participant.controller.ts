@@ -29,7 +29,7 @@ import { ParticipantService } from './participant.service';
   },
 })
 @Controller({
-  path: 'room',
+  path: 'participants',
   version: '1',
 })
 export class ParticipantController implements CrudController<Participant> {
