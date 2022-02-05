@@ -32,6 +32,10 @@ import { TwilioModule } from "nestjs-twilio";
 import { VerifyModule } from "./verify/verify.module";
 import { SmsModule } from "./sms/sms.module";
 import { SocialAccountModule } from "./social-account/social-account.module";
+import { ParticipantModule } from "./messenger/participant/participant.module";
+import { MessageModule } from "./messenger/message/message.module";
+import { ChatModule } from "./messenger/chat/chat.module";
+import { RoomModule } from "./messenger/room/room.module";
 
 @Module({
   imports: [
@@ -90,6 +94,10 @@ import { SocialAccountModule } from "./social-account/social-account.module";
     StatusModule,
     CurrencyModule,
     VerifyModule,
+    ChatModule,
+    RoomModule,
+    ParticipantModule,
+    MessageModule,
   ],
 })
 export class AppModule {}
