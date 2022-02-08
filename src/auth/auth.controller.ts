@@ -11,10 +11,11 @@ import {
   Delete,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import {ApiOperation, ApiTags} from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import {ApiBearerAuth, ApiOperation, ApiTags} from '@nestjs/swagger';
 import { AuthEmailLoginDto } from './dtos/auth-email-login.dto';
 import { AuthForgotPasswordDto } from './dtos/auth-forgot-password.dto';
-import { AuthResetPasswordDto } from './dtos/auth-reset-password.dto';
+import {AuthResetPasswordAdminDto, AuthResetPasswordDto} from './dtos/auth-reset-password.dto';
 import { AuthRegisterLoginDto } from './dtos/auth-register-login.dto';
 
 @ApiTags('Auth')
@@ -56,4 +57,24 @@ export class AuthController {
     );
   }
 
+  @Get('generate-admin')
+  @ApiOperation({ summary: 'Generates default admin' })
+  @HttpCode(HttpStatus.OK)
+  public async generateAdmin() {
+    return this.service.generateAdmin();
+  }
+
+  @Post('reset-admin-password')
+  @ApiOperation({ summary: 'Reset password for default admin' })
+  public async resetAdminPassword(@Body() dto: AuthResetPasswordAdminDto) {
+    return this.service.resetAdminPassword(dto);
+  }
+
+  @ApiBearerAuth()
+  @Get('me')
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  public async me(@Request() request) {
+    return this.service.me(request.user);
+  }
 }
