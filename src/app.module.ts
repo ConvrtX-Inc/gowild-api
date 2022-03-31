@@ -36,6 +36,7 @@ import { ParticipantModule } from "./messenger/participant/participant.module";
 import { MessageModule } from "./messenger/message/message.module";
 import { ChatModule } from "./messenger/chat/chat.module";
 import { RoomModule } from "./messenger/room/room.module";
+import { FriendsModule } from './friends/friends.module';
 
 @Module({
   imports: [
@@ -98,6 +99,7 @@ import { RoomModule } from "./messenger/room/room.module";
     RoomModule,
     ParticipantModule,
     MessageModule,
+    FriendsModule,
   ],
 })
 export class AppModule {}
