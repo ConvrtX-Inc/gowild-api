@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards} from '@nestjs/common';
 import { RouteCluesService } from './route-clues.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { RouteClue } from './entities/route-clue.entity';
@@ -37,5 +37,10 @@ export class RouteCluesController implements CrudController<RouteClue> {
   get base(): CrudController<RouteClue>{
     return this;
   }
-  
+
+  @ApiOperation({ summary: 'Get all clues' })
+  @Get('all-clues/:route_id')
+  public async getAllClues(@Param('route_id') route_id: string){
+    return this.service.allClues(route_id);
+  }  
 }

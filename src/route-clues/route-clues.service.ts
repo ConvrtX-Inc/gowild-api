@@ -11,4 +11,11 @@ export class RouteCluesService extends TypeOrmCrudService<RouteClue> {
   ){
     super(routeClueRepository); 
   }
+
+  async allClues(route_id: string) {
+    const postAllClues = await this.routeClueRepository.find({
+      where: { route_id: route_id},
+    })
+    return postAllClues;
+  }
 }
