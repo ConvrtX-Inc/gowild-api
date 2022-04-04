@@ -37,6 +37,8 @@ import { MessageModule } from "./messenger/message/message.module";
 import { ChatModule } from "./messenger/chat/chat.module";
 import { RoomModule } from "./messenger/room/room.module";
 import { FriendsModule } from './friends/friends.module';
+import { RouteModule } from './route/route.module';
+import { RouteCluesModule } from './route-clues/route-clues.module';
 
 @Module({
   imports: [
@@ -100,6 +102,8 @@ import { FriendsModule } from './friends/friends.module';
     ParticipantModule,
     MessageModule,
     FriendsModule,
+    RouteModule,
+    RouteCluesModule,
   ],
 })
 export class AppModule {}
