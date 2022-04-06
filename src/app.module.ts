@@ -39,6 +39,10 @@ import { RoomModule } from "./messenger/room/room.module";
 import { FriendsModule } from './friends/friends.module';
 import { RouteModule } from './route/route.module';
 import { RouteCluesModule } from './route-clues/route-clues.module';
+import { PostFeedModule } from './post-feed/post-feed.module';
+import { LikeModule } from './like/like.module';
+import { ShareModule } from './share/share.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -104,6 +108,10 @@ import { RouteCluesModule } from './route-clues/route-clues.module';
     FriendsModule,
     RouteModule,
     RouteCluesModule,
+    PostFeedModule,
+    LikeModule,
+    ShareModule,
+    CommentModule,
   ],
 })
 export class AppModule {}
