@@ -43,6 +43,8 @@ import { PostFeedModule } from './post-feed/post-feed.module';
 import { LikeModule } from './like/like.module';
 import { ShareModule } from './share/share.module';
 import { CommentModule } from './comment/comment.module';
+import { TreasureChestModule } from './treasure-chest/treasure-chest.module';
+import { SponsorModule } from './sponsor/sponsor.module';
 
 @Module({
   imports: [
@@ -112,6 +114,8 @@ import { CommentModule } from './comment/comment.module';
     LikeModule,
     ShareModule,
     CommentModule,
+    TreasureChestModule,
+    SponsorModule,
   ],
 })
 export class AppModule {}
