@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { RouteService } from './route.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -37,5 +37,4 @@ export class RouteController implements CrudController<Route>{
   get base(): CrudController<Route>{
     return this;
   }
-
 }

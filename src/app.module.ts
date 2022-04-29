@@ -45,6 +45,7 @@ import { ShareModule } from './share/share.module';
 import { CommentModule } from './comment/comment.module';
 import { TreasureChestModule } from './treasure-chest/treasure-chest.module';
 import { SponsorModule } from './sponsor/sponsor.module';
+import { GuidelinesModule } from './guideline/guideline.module';
 
 @Module({
   imports: [
@@ -116,6 +117,7 @@ import { SponsorModule } from './sponsor/sponsor.module';
     CommentModule,
     TreasureChestModule,
     SponsorModule,
+    GuidelinesModule
   ],
 })
 export class AppModule {}
