@@ -12,7 +12,7 @@ import { Guideline } from './guideline.entity';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
-@ApiTags('Terms And Condition')
+@ApiTags('Guidelines')
 @Crud({
   model: {
     type: Guideline,
@@ -33,7 +33,7 @@ import { Guideline } from './guideline.entity';
   },
 })
 @Controller({
-  path: 'terms-and-conditions',
+  path: 'guidelines',
   version: '1'
 })
 export class GuidelinesController implements CrudController<Guideline> {
