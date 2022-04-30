@@ -103,6 +103,14 @@ export class Route extends EntityHelper {
         nullable: true  
     })
     stop_point_lat?: number;
+
+    @IsOptional()
+    @ApiProperty({ example: 'Firebase img url' })
+    @Column({
+      type: 'text',
+      nullable: true,
+    })
+    img_url: string | null;
     
     @CreateDateColumn()
     created_date: Date;
