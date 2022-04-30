@@ -46,6 +46,8 @@ import { CommentModule } from './comment/comment.module';
 import { TreasureChestModule } from './treasure-chest/treasure-chest.module';
 import { SponsorModule } from './sponsor/sponsor.module';
 import { GuidelinesModule } from './guideline/guideline.module';
+import { RouteHistoricalEventsModule } from './route-historical-events/route-historical-events.module';
+import { RouteHistoricalEventPhotoModule } from './route-historical-event-photo/route-historical-event-photo.module';
 
 @Module({
   imports: [
@@ -117,7 +119,9 @@ import { GuidelinesModule } from './guideline/guideline.module';
     CommentModule,
     TreasureChestModule,
     SponsorModule,
-    GuidelinesModule
+    GuidelinesModule,
+    RouteHistoricalEventsModule,
+    RouteHistoricalEventPhotoModule
   ],
 })
 export class AppModule {}
