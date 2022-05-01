@@ -1,0 +1,40 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { Crud, CrudController } from '@nestjsx/crud';
+import { RouteHistoricalEventPhotoService } from './route-historical-event-photo.service';
+import { RouteHistoricalEventPhoto } from './entities/route-historical-event-photo.entity';
+
+@ApiBearerAuth()
+@UseGuards(AuthGuard('jwt'))
+@ApiTags('Route Historical Event Photo')
+@Crud({
+  model: {
+    type: RouteHistoricalEventPhoto,
+  },
+  routes: {
+    exclude: ['replaceOneBase', 'createManyBase'],
+  },
+  query: {
+    maxLimit: 50,
+    alwaysPaginate: true,
+  },
+  params: {
+    id: {
+      type: 'uuid',
+      primary: true,
+      field: 'id',
+    },
+  },
+})
+@Controller({
+  path: 'route-historical-event-photo',
+  version: '1',
+})
+export class RouteHistoricalEventPhotoController implements CrudController<RouteHistoricalEventPhoto> {
+  constructor(readonly service: RouteHistoricalEventPhotoService) {}
+  
+  get base(): CrudController<RouteHistoricalEventPhoto>{
+    return this;
+  }
+}
