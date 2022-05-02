@@ -111,6 +111,11 @@ export class Route extends EntityHelper {
       nullable: true,
     })
     img_url: string | null;
+
+    @IsOptional()
+    @ApiProperty({ example: 'description' })
+    @Column({ type: 'text' })
+    description?: string;
     
     @CreateDateColumn()
     created_date: Date;
