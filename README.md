@@ -2,7 +2,7 @@
 
 ## Description
 
-Speedyssey API backend
+Go Wild API backend
 
 ## Quick start
 1. Make sure that you have <a href="https://nodejs.org/en/" rel="nofollow">Node.js</a>, <a href="https://classic.yarnpkg.com/lang/en/docs/install" rel="nofollow">yarn</a>, npm and <a href="https://www.postgresql.org/download/" rel="nofollow">PostgreSQL</a> installed.
