@@ -21,6 +21,14 @@ export class Sponsor extends EntityHelper{
     })
     treasure_chest_id?: string;
 
+    @IsOptional()
+    @ApiProperty({ example: 'Firebase img url' })
+    @Column({
+      type: 'text',
+      nullable: true,
+    })
+    img_url: string | null;
+
     @Allow()
     @IsOptional()
     @ApiProperty({ example: 'byte64image' })
@@ -30,7 +38,7 @@ export class Sponsor extends EntityHelper{
         type: 'bytea',
         nullable: true,
     })
-    img?: Buffer | null | string;
+    img?: Buffer | null | string;    
 
     @BeforeUpdate()
     @BeforeInsert()

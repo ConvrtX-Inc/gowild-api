@@ -63,6 +63,14 @@ export class TreasureChest extends EntityHelper{
     })
     no_of_participants?: number;
 
+    @IsOptional()
+    @ApiProperty({ example: 'Firebase img url' })
+    @Column({
+      type: 'text',
+      nullable: true,
+    })
+    img_url: string | null;
+
     @Allow()
     @IsOptional()
     @ApiProperty({ example: 'byte64image' })
