@@ -31,6 +31,14 @@ export class RouteHistoricalEvent extends EntityHelper{
     route_clue_id?: string;
 
     @IsOptional()
+    @ApiProperty({ example: '830759078-477' })
+    @Column({
+        length: 50,
+        nullable: true    
+    })
+    closure_uid?: string;
+
+    @IsOptional()
     @ApiProperty({ example: 32.4832})
     @Column({
         type: 'decimal',
