@@ -19,17 +19,7 @@ export class RouteHistoricalEvent extends EntityHelper{
         nullable: false
     })
     route_id?: string;
-
-    @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f4be' })
-    @Validate(IsExist, ['RouteClue', 'id'], {
-        message: 'Route Clue Id not Found',
-    })
-    @Column({
-        type: "uuid",
-        nullable: false
-    })
-    route_clue_id?: string;
-
+    
     @IsOptional()
     @ApiProperty({ example: '830759078-477' })
     @Column({
