@@ -133,6 +133,14 @@ export class User extends EntityHelper {
     } catch (e) {}
   }
 
+  @IsOptional()
+    @ApiProperty({ example: 'Firebase img url' })
+    @Column({
+      type: 'text',
+      nullable: true,
+    })
+    user_photo_url: string | null;
+
   @Exclude({ toPlainOnly: true })
   @Column({ nullable: true })
   @Index()
