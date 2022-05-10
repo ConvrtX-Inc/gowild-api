@@ -34,7 +34,7 @@ import { GuidelineLogsService } from './guideline-logs.service';
   path: 'guideline-logs',
   version: '1'
 })
-export class GuidelinesController implements CrudController<GuidelineLog> {
+export class GuidelineLogsController implements CrudController<GuidelineLog> {
   constructor(public service: GuidelineLogsService) { }
 
   get base(): CrudController<GuidelineLog> {
