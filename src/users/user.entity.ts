@@ -114,32 +114,14 @@ export class User extends EntityHelper {
   })
   profile_photo?: Buffer | null | string;
 
-  @BeforeUpdate()
-  @BeforeInsert()
-  public encodeImage() {
-    this.profile_photo = this.profile_photo
-      ? base64_arraybuffer.base64_2_ab(this.profile_photo)
-      : '';
-  }
-
-  @AfterLoad()
-  public async decodeImage() {
-    try {
-      if (typeof this.profile_photo !== null && this.profile_photo != undefined) {
-        this.profile_photo = await base64_arraybuffer.ab_2_base64(
-          new Uint8Array(base64_arraybuffer.base64_2_ab(this.profile_photo)),
-        );
-      }
-    } catch (e) {}
-  }
-
-  @IsOptional()
-    @ApiProperty({ example: 'Firebase img url' })
-    @Column({
-      type: 'text',
-      nullable: true,
-    })
-    user_photo_url: string | null;
+  @ApiProperty({ example: 'Firebase img url' })
+  @IsOptional({ groups: [CrudValidationGroups.UPDATE] })
+  @IsNotEmpty({ groups: [CrudValidationGroups.CREATE] })
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
+  img_url: string | null;
 
   @Exclude({ toPlainOnly: true })
   @Column({ nullable: true })
