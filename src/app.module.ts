@@ -50,6 +50,7 @@ import { RouteHistoricalEventsModule } from './route-historical-events/route-his
 import { RouteHistoricalEventPhotoModule } from './route-historical-event-photo/route-historical-event-photo.module';
 import { TicketModule } from './ticket/ticket.module';
 import { TicketMessagesModule } from './ticket-messages/ticket-messages.module';
+import { GuidelineLogsModule } from './guideline-logs/guideline-logs.module';
 
 @Module({
   imports: [
@@ -125,7 +126,8 @@ import { TicketMessagesModule } from './ticket-messages/ticket-messages.module';
     RouteHistoricalEventsModule,
     RouteHistoricalEventPhotoModule,
     TicketModule,
-    TicketMessagesModule
+    TicketMessagesModule,
+    GuidelineLogsModule
   ],
 })
 export class AppModule {}
