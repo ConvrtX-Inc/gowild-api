@@ -48,6 +48,8 @@ import { SponsorModule } from './sponsor/sponsor.module';
 import { GuidelinesModule } from './guideline/guideline.module';
 import { RouteHistoricalEventsModule } from './route-historical-events/route-historical-events.module';
 import { RouteHistoricalEventPhotoModule } from './route-historical-event-photo/route-historical-event-photo.module';
+import { TicketModule } from './ticket/ticket.module';
+import { TicketMessagesModule } from './ticket-messages/ticket-messages.module';
 import { GuidelineLogsModule } from './guideline-logs/guideline-logs.module';
 
 @Module({
@@ -123,6 +125,8 @@ import { GuidelineLogsModule } from './guideline-logs/guideline-logs.module';
     GuidelinesModule,
     RouteHistoricalEventsModule,
     RouteHistoricalEventPhotoModule,
+    TicketModule,
+    TicketMessagesModule,
     GuidelineLogsModule
   ],
 })
