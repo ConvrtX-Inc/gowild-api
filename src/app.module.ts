@@ -48,6 +48,8 @@ import { SponsorModule } from './sponsor/sponsor.module';
 import { GuidelinesModule } from './guideline/guideline.module';
 import { RouteHistoricalEventsModule } from './route-historical-events/route-historical-events.module';
 import { RouteHistoricalEventPhotoModule } from './route-historical-event-photo/route-historical-event-photo.module';
+import { TicketModule } from './ticket/ticket.module';
+import { TicketMessagesModule } from './ticket-messages/ticket-messages.module';
 
 @Module({
   imports: [
@@ -121,7 +123,9 @@ import { RouteHistoricalEventPhotoModule } from './route-historical-event-photo/
     SponsorModule,
     GuidelinesModule,
     RouteHistoricalEventsModule,
-    RouteHistoricalEventPhotoModule
+    RouteHistoricalEventPhotoModule,
+    TicketModule,
+    TicketMessagesModule
   ],
 })
 export class AppModule {}
