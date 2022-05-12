@@ -46,7 +46,6 @@ export class User extends EntityHelper {
     message: 'username already exists',
     groups: [CrudValidationGroups.CREATE],
   })
-  @IsEmail()
   @Column({ unique: true, nullable: true })
   username: string | null;
 
