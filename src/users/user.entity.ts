@@ -33,7 +33,8 @@ export class User extends EntityHelper {
 
   @Allow()
   @ApiProperty({ example: 'full_name' })
-  @IsOptional()
+  @IsOptional({ groups: [CrudValidationGroups.UPDATE] })
+  @IsNotEmpty({ groups: [CrudValidationGroups.CREATE] })
   @Column({ nullable: true })
   full_name: string | null;
 
