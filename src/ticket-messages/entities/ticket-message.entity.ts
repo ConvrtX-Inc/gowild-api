@@ -29,6 +29,11 @@ export class TicketMessage extends EntityHelper{
     })
     user_id?: string;
 
+    @IsOptional()
+    @ApiProperty({ example: 'Description' })
+    @Column({ type: 'text' })
+    message?: string;
+
     @CreateDateColumn()
     created_date: Date;
 
