@@ -4,14 +4,14 @@ import { IsExist } from 'src/utils/validators/is-exists.validator';
 import { Transform } from 'class-transformer';
 
 export class AuthEmailLoginDto {
-  @ApiProperty({ example: 'test1@example.com' })
+  @ApiProperty({ example: 'admin@convrtx.com' })
   @Transform((value: string) => value.toLowerCase().trim())
   @Validate(IsExist, ['User'], {
     message: 'emailNotExists',
   })
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'qwerty123' })
   @IsNotEmpty()
   password: string;
 }

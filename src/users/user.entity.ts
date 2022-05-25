@@ -9,8 +9,10 @@ import {
   UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
-import {Exclude, Transform} from 'class-transformer';
+import { Exclude, Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   Allow,
@@ -25,6 +27,7 @@ import * as bcrypt from 'bcryptjs';
 import { EntityHelper } from 'src/utils/entity-helper';
 import { CrudValidationGroups } from '@nestjsx/crud';
 import * as base64_arraybuffer from 'base64-arraybuffer-converter';
+import { Status } from 'src/statuses/status.entity';
 
 @Entity()
 export class User extends EntityHelper {
@@ -37,6 +40,38 @@ export class User extends EntityHelper {
   @IsNotEmpty({ groups: [CrudValidationGroups.CREATE] })
   @Column({ nullable: true })
   full_name: string | null;
+
+  @ApiProperty({ example: 'John' })
+  @IsOptional()
+  //@Index()
+  @Column({ nullable: true })
+  first_name: string | null;
+
+  @ApiProperty({ example: 'Doe' })
+  @IsOptional()
+  //@Index()
+  @Column({ nullable: true })
+  last_name: string | null;
+
+  @IsOptional()
+  @ApiProperty({ example: '1999-12-12 11:11:11' })
+  @Column({ type: 'timestamp', nullable: true })
+  birth_date?: Date;
+
+  @ApiProperty({ example: 'Male' })
+  @IsOptional()
+  @Column({ nullable: true })
+  gender: string | null;
+
+  @IsOptional()
+  @ApiProperty({ example: 'firebase_snapshot_id1_img' })
+  @Column({ nullable: true, type: 'text' })
+  firebase_snapshot_id1_img?: string;
+
+  @IsOptional()
+  @ApiProperty({ example: 'firebase_snapshot_id2_img' })
+  @Column({ nullable: true, type: 'text' })
+  firebase_snapshot_id2_img?: string;
 
   @Allow()
   @ApiProperty({ example: 'username' })
@@ -136,4 +171,13 @@ export class User extends EntityHelper {
 
   @DeleteDateColumn()
   deleted_date: Date;
+
+  @Allow()
+  @ApiProperty({ example: 2 })
+  @Column({ nullable: false, type: 'smallint' })
+  status_id: number;
+
+  @OneToOne(() => Status, (status: Status) => status.user)
+  @JoinColumn({ name: 'status_id' })
+  status: Status;
 }

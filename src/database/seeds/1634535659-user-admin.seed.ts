@@ -23,6 +23,7 @@ export default class CreateAdmin implements Seeder {
             username: 'admin',
             email: 'admin@convrtx.com',
             password: 'qwerty123',
+            status_id: 2
           }),
         ])
         .execute();

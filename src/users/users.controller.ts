@@ -20,6 +20,12 @@ import validationOptions from 'src/utils/validation-options';
   query: {
     maxLimit: 50,
     alwaysPaginate: false,
+    join: {
+      status: {
+        eager: false,
+        exclude: ['created_date', 'updated_date'],
+      },
+    },
   },
   params: {
     id: {
