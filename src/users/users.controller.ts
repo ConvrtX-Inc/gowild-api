@@ -1,10 +1,19 @@
-import { Controller, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { Crud, CrudController, Override } from '@nestjsx/crud';
 import { User } from './user.entity';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import validationOptions from 'src/utils/validation-options';
+import { StatusEnum } from 'src/auth/status.enum';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
@@ -49,5 +58,19 @@ export class UsersController implements CrudController<User> {
   @Override()
   async deleteOne(@Request() request) {
     return this.service.softDelete(request.params.id);
+  }
+
+  @ApiOperation({ summary: 'Approved an user.' })
+  @Post('approved-user/:id')
+  @HttpCode(HttpStatus.OK)
+  public async approveUser(@Param('id') id: string) {
+    return this.service.updateUserStatus(id, StatusEnum.Approved);
+  }
+
+  @ApiOperation({ summary: 'Reject an user.' })
+  @Post('reject-user/:id')
+  @HttpCode(HttpStatus.OK)
+  public async rejectUser(@Param('id') id: string) {
+    return this.service.updateUserStatus(id, StatusEnum.Rejected);
   }
 }

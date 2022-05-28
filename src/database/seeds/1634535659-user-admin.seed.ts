@@ -2,6 +2,7 @@ import { Factory, Seeder } from 'typeorm-seeding';
 import { Connection } from 'typeorm';
 import { User } from 'src/users/user.entity';
 import { plainToClass } from 'class-transformer';
+import { StatusEnum } from 'src/auth/status.enum';
 
 export default class CreateAdmin implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<void> {
@@ -23,7 +24,7 @@ export default class CreateAdmin implements Seeder {
             username: 'admin',
             email: 'admin@convrtx.com',
             password: 'qwerty123',
-            status_id: 2
+            status_id: StatusEnum.Active
           }),
         ])
         .execute();
