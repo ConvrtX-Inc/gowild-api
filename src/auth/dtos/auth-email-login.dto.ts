@@ -11,7 +11,7 @@ export class AuthEmailLoginDto {
   })
   email: string;
 
-  @ApiProperty({ example: 'qwerty123' })
+  @ApiProperty({ example: 'string' })
   @IsNotEmpty()
   password: string;
 }
