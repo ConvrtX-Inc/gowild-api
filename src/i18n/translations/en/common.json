@@ -1,4 +1,10 @@
 {
   "confirmEmail": "Confirm email",
-  "resetPassword": "Reset password"
+  "resetPassword": "Reset password",
+  "emailSubject": "Email Notification",
+  "hello": "Hello",
+  "approved": "Congratulations your registration with Go Wild is now approved.",
+  "rejected": "Sorry but your registration with Go Wild is rejected.",
+  "sincerely": "Sincerely",
+  "team": "Go Wild Team"
 }

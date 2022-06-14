@@ -2,6 +2,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { I18nService } from 'nestjs-i18n';
+import { StatusEnum } from 'src/auth/status.enum';
 import { MailData } from './interfaces/mail-data.interface';
 
 @Injectable()
@@ -11,6 +12,36 @@ export class MailService {
     private mailerService: MailerService,
     private configService: ConfigService,
   ) {}
+
+  async userUpdateStatus(mailData: MailData<{}>, status?: StatusEnum) {
+    let textMessage: string;
+    switch (status) {
+      case StatusEnum.Approved: {
+        textMessage = await this.i18n.t('common.approved');
+        break;
+      }
+      case StatusEnum.Rejected: {
+        textMessage = await this.i18n.t('common.rejected');
+        break;
+      }
+    }
+    await this.mailerService.sendMail({
+      to: mailData.to,
+      subject:
+        this.configService.get('app.name') +
+        ' ' +
+        (await this.i18n.t('common.emailSubject')),
+      text: '',
+      template: './user-update-status',
+      context: {
+        app_name: this.configService.get('app.name'),
+        header: (await this.i18n.t('common.hello')) + ' ' + mailData.name,
+        bodyMessage: textMessage,
+        footer1: await this.i18n.t('common.sincerely'),
+        footer2: await this.i18n.t('common.team'),
+      },
+    });
+  }
 
   async userSignUp(mailData: MailData<{ hash: string }>) {
     await this.mailerService.sendMail({
