@@ -28,10 +28,10 @@ export class Notification extends EntityHelper {
   @Column({ length: 100,nullable: true })
   notification_msg?: string;
 
-  @CreateDateColumn()
-  created_date: Date;
+  @CreateDateColumn({ name: 'create_date' })
+  createDate: Date;
 
-  @UpdateDateColumn()
-  updated_date: Date;
+  @UpdateDateColumn({ name: 'updated_date' })
+  updatedDate: Date;
 
 }

@@ -14,7 +14,7 @@ export class Friends extends EntityHelper {
     @Validate(IsExist, ['User', 'id'], {
       message: 'User not Found',
     })
-    @Column({ 
+    @Column({
       type: "uuid",
       nullable: false
     })
@@ -24,23 +24,23 @@ export class Friends extends EntityHelper {
     @Validate(IsExist, ['User', 'id'], {
       message: 'User not Found',
     })
-    @Column({ 
+    @Column({
       type: "uuid",
-      nullable: false 
+      nullable: false
     })
     friend_id?: string;
 
     @Allow()
     @ApiProperty({ example: false})
-    @Column({ 
+    @Column({
         type: 'boolean',
         nullable: false,
     })
     is_approved?: boolean;
 
-    @CreateDateColumn()
-    created_date: Date;
-  
-    @UpdateDateColumn()
-    updated_date: Date;
+    @CreateDateColumn({ name: 'create_date' })
+    createDate: Date;
+
+    @UpdateDateColumn({ name: 'updated_date' })
+    updatedDate: Date;
 }

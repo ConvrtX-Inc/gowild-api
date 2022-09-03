@@ -38,7 +38,7 @@ export class Sponsor extends EntityHelper{
         type: 'bytea',
         nullable: true,
     })
-    img?: Buffer | null | string;    
+    img?: Buffer | null | string;
 
     @BeforeUpdate()
     @BeforeInsert()
@@ -61,16 +61,16 @@ export class Sponsor extends EntityHelper{
 
     @IsOptional()
     @ApiProperty({ example: 'www.redbull.com'})
-    @Column ({ 
+    @Column ({
         type: 'text',
         nullable: false,
         default: 'link'
     })
     link: string | null;
 
-    @CreateDateColumn()
-    created_date: Date;
+    @CreateDateColumn({ name: 'create_date' })
+    createDate: Date;
 
-    @UpdateDateColumn()
-    updated_date: Date;
+    @UpdateDateColumn({ name: 'updated_date' })
+    updatedDate: Date;
 }

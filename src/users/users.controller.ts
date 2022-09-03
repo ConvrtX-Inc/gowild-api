@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Crud, CrudController, Override } from '@nestjsx/crud';
-import { User } from './user.entity';
+import { User } from './user';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -32,7 +32,7 @@ import { StatusEnum } from 'src/auth/status.enum';
     join: {
       status: {
         eager: false,
-        exclude: ['created_date', 'updated_date'],
+        exclude: ['createDate', 'updatedDate'],
       },
     },
   },

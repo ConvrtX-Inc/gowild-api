@@ -23,7 +23,7 @@ export class Ticket extends EntityHelper {
     @ApiProperty({ example: 'Uploading of Attachment' })
     @Column({
         length: 50,
-        nullable: true    
+        nullable: true
     })
     subject?: string;
 
@@ -39,18 +39,18 @@ export class Ticket extends EntityHelper {
       nullable: true,
     })
     img_url: string | null;
-    
+
     @IsOptional()
     @ApiProperty({ example: '0'})
-    @Column({   
+    @Column({
         type: 'integer',
         nullable: false
     })
-    status?: number  
+    status?: number
 
-    @CreateDateColumn()
-    created_date: Date;
-  
-    @UpdateDateColumn()
-    updated_date: Date;
+    @CreateDateColumn({ name: 'create_date' })
+    createDate: Date;
+
+    @UpdateDateColumn({ name: 'updated_date' })
+    updatedDate: Date;
 }

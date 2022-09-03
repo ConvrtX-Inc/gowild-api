@@ -19,7 +19,7 @@ export class PostFeed extends EntityHelper{
         nullable: false
     })
     user_id?: string;
-    
+
     @IsOptional()
     @ApiProperty({ example: 'Thrill Seekers Attractions in Houston'})
      @Column({
@@ -43,7 +43,7 @@ export class PostFeed extends EntityHelper{
       nullable: true,
     })
     img?: Buffer | null | string;
-    
+
     @IsOptional()
     @ApiProperty({ example: 'false'})
     @Column({
@@ -54,15 +54,15 @@ export class PostFeed extends EntityHelper{
 
     @IsOptional()
     @ApiProperty({ example: '23'})
-    @Column({   
+    @Column({
         type: 'integer',
         nullable: false
     })
-    views?: number    
+    views?: number
 
-    @CreateDateColumn()
-    created_date: Date;
-  
-    @UpdateDateColumn()
-    updated_date: Date;
+    @CreateDateColumn({ name: 'create_date' })
+    createDate: Date;
+
+    @UpdateDateColumn({ name: 'updated_date' })
+    updatedDate: Date;
 }

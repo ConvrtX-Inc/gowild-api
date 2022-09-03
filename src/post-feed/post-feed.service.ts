@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Friends } from 'src/friends/entities/friend.entity';
-import { User } from 'src/users/user.entity';
+import { User } from 'src/users/user';
 import { Repository } from 'typeorm';
 import { PostFeed } from './entities/post-feed.entity';
 import { Comment } from 'src/comment/entities/comment.entity';
@@ -17,12 +17,12 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
     @InjectRepository(Friends)
     private friendsRepository: Repository<Friends>,
   ) {
-    super(postFeedRepository);  
+    super(postFeedRepository);
   }
 
   async friendsPosts(user_id: string){
     let aggregatedFriendsPost: Array<PostFeed[]> = [];
-    const result = 
+    const result =
       await this.friendsRepository.find({ user_id: user_id, is_approved: true });
     for(const post of result){
       const postOfFriends = await this.postFeedRepository
@@ -35,7 +35,6 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
         'postListOfFriends',
         'user.id',
         'user.full_name',
-        'user.profile_photo',
         'comment',
         'like',
         'share'
@@ -66,7 +65,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
       }
       for(const postOfOthers of [...userIdSet]){
         const postOfOtherUsers = await this.postFeedRepository
-        .createQueryBuilder("postListOfOtherUsers")  
+        .createQueryBuilder("postListOfOtherUsers")
         .innerJoinAndMapMany('postListOfOtherUsers.user', User, 'user', 'user.id = postListOfOtherUsers.user_id')
         .leftJoinAndMapMany('postListOfOtherUsers.comment', Comment, 'comment', 'comment.postfeed_id = postListOfOtherUsers.id')
         .leftJoinAndMapMany('postListOfOtherUsers.like', Like, 'like', 'like.postfeed_id = postListOfOtherUsers.id')
@@ -75,7 +74,6 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
           'postListOfOtherUsers',
           'user.id',
           'user.full_name',
-          'user.profile_photo',
           'comment',
           'like',
           'share'

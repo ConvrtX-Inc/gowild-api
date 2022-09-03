@@ -27,9 +27,9 @@ export class RouteHistoricalEventPhoto extends EntityHelper {
     })
     event_photo_url: string | null;
 
-    @CreateDateColumn()
-    created_date: Date;
+    @CreateDateColumn({ name: 'create_date' })
+    createDate: Date;
 
-    @UpdateDateColumn()
-    updated_date: Date;
+    @UpdateDateColumn({ name: 'updated_date' })
+    updatedDate: Date;
 }

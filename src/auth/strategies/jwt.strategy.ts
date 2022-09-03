@@ -1,11 +1,12 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { User } from '../../users/user.entity';
 import { ConfigService } from '@nestjs/config';
+import { AuthConfig } from '../dtos/auth.config';
+import { AccessToken } from '../dtos/token';
 
-type JwtPayload = Pick<User, 'id'> & { iat: number; exp: number };
+type JwtPayload = AccessToken & { iat: number; exp: number };
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -15,15 +16,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: configService.get('auth.secret'),
+      secretOrKey: configService.get<AuthConfig>('auth').accessToken.secret,
     });
   }
 
   public validate(payload: JwtPayload) {
-    if (!payload.id) {
-      throw new UnauthorizedException();
-    }
-
     return payload;
   }
 }

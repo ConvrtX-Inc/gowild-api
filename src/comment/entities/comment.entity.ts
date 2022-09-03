@@ -23,7 +23,7 @@ export class Comment extends EntityHelper {
     @Validate(IsExist, ['PostFeed', 'id'], {
       message: 'Post Feed id not Found',
     })
-    @Column({ 
+    @Column({
       type: "uuid",
       nullable: false
     })
@@ -34,9 +34,9 @@ export class Comment extends EntityHelper {
     @Column({ nullable: true })
     message?: string;
 
-    @CreateDateColumn()
-    created_date: Date;
-  
-    @UpdateDateColumn()
-    updated_date: Date;
+    @CreateDateColumn({ name: 'create_date' })
+    createDate: Date;
+
+    @UpdateDateColumn({ name: 'updated_date' })
+    updatedDate: Date;
 }

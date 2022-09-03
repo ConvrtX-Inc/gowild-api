@@ -17,47 +17,47 @@ export default class CreateStatus implements Seeder {
         .values([
           {
             id: 1,
-            status_name: 'Cancelled',
+            statusName: 'Cancelled',
             is_active: true,
           },
           {
             id: 2,
-            status_name: 'Active',
+            statusName: 'Active',
             is_active: true,
           },
           {
             id: 3,
-            status_name: 'Disabled',
+            statusName: 'Disabled',
             is_active: true,
           },
           {
             id: 4,
-            status_name: 'Approved',
+            statusName: 'Approved',
             is_active: true,
           },
           {
             id: 5,
-            status_name: 'Refunded',
+            statusName: 'Refunded',
             is_active: true,
           },
           {
             id: 6,
-            status_name: 'Rejected',
+            statusName: 'Rejected',
             is_active: true,
           },
           {
             id: 7,
-            status_name: 'Completed',
+            statusName: 'Completed',
             is_active: true,
           },
           {
             id: 8,
-            status_name: 'Pending',
+            statusName: 'Pending',
             is_active: true,
           },
           {
             id: 9,
-            status_name: 'Inactive',
+            statusName: 'Inactive',
             is_active: true,
           },
         ])

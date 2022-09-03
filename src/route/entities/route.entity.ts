@@ -21,12 +21,12 @@ export class Route extends EntityHelper {
         nullable: false
     })
     user_id?: string;
-    
+
     @IsOptional()
     @ApiProperty({ example: 'First On the List' })
     @Column({
         length: 50,
-        nullable: true    
+        nullable: true
     })
     route_name?: string;
 
@@ -67,10 +67,10 @@ export class Route extends EntityHelper {
         precision: 8,
         scale: 4,
         default: 0,
-        nullable: true  
+        nullable: true
     })
     start_point_long?: number;
-    
+
     @IsOptional()
     @ApiProperty({ example: 12.4233})
     @Column({
@@ -89,10 +89,10 @@ export class Route extends EntityHelper {
         precision: 8,
         scale: 4,
         default: 0,
-        nullable: true 
+        nullable: true
     })
     stop_point_long?: number;
-    
+
     @IsOptional()
     @ApiProperty({ example: 12.4233})
     @Column({
@@ -100,7 +100,7 @@ export class Route extends EntityHelper {
         precision: 8,
         scale: 4,
         default: 0,
-        nullable: true  
+        nullable: true
     })
     stop_point_lat?: number;
 
@@ -116,10 +116,10 @@ export class Route extends EntityHelper {
     @ApiProperty({ example: 'description' })
     @Column({ type: 'text' })
     description?: string;
-    
-    @CreateDateColumn()
-    created_date: Date;
 
-    @UpdateDateColumn()
-    updated_date: Date;
+    @CreateDateColumn({ name: 'create_date' })
+    createDate: Date;
+
+    @UpdateDateColumn({ name: 'updated_date' })
+    updatedDate: Date;
 }

@@ -36,10 +36,10 @@ export class SystemSupport extends EntityHelper {
   @Column({ nullable: true })
   message?: string;
 
-  @CreateDateColumn()
-  created_date: Date;
+  @CreateDateColumn({ name: 'create_date' })
+  createDate: Date;
 
-  @UpdateDateColumn()
-  updated_date: Date;
+  @UpdateDateColumn({ name: 'updated_date' })
+  updatedDate: Date;
 
 }

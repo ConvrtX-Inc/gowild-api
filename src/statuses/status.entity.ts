@@ -1,26 +1,18 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsOptional } from 'class-validator';
 import { EntityHelper } from 'src/utils/entity-helper';
-import { User } from 'src/users/user.entity';
 
 @Entity()
 export class Status extends EntityHelper {
   @ApiProperty({ example: 1 })
-  @PrimaryColumn()
+  @PrimaryColumn({ type: 'smallint' })
   id: number;
 
   @Allow()
-  @ApiProperty({ example: 'Active' })
-  @Column()
-  status_name?: string;
+  @ApiProperty({ example: 'Active', name: 'status_name' })
+  @Column({ name: 'status_name' })
+  statusName?: string;
 
   @Allow()
   @IsOptional()
@@ -28,12 +20,10 @@ export class Status extends EntityHelper {
   @Column({ type: 'bool', nullable: true, default: 'FALSE' })
   is_active?: boolean | null;
 
-  @CreateDateColumn()
-  created_date: Date;
+  @CreateDateColumn({ name: 'create_date' })
+  createDate: Date;
 
-  @UpdateDateColumn()
-  updated_date: Date;
+  @UpdateDateColumn({ name: 'updated_date' })
+  updatedDate: Date;
 
-  @OneToMany(() => User, (user: User) => user.status)
-  user: User[];
 }

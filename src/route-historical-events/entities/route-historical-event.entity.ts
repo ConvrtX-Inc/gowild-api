@@ -19,12 +19,12 @@ export class RouteHistoricalEvent extends EntityHelper{
         nullable: false
     })
     route_id?: string;
-    
+
     @IsOptional()
     @ApiProperty({ example: '830759078-477' })
     @Column({
         length: 50,
-        nullable: true    
+        nullable: true
     })
     closure_uid?: string;
 
@@ -34,7 +34,7 @@ export class RouteHistoricalEvent extends EntityHelper{
         type: 'decimal',
         precision: 8,
         scale: 4,
-        nullable: true  
+        nullable: true
     })
     event_long?: number;
 
@@ -44,7 +44,7 @@ export class RouteHistoricalEvent extends EntityHelper{
         type: 'decimal',
         precision: 8,
         scale: 4,
-        nullable: true  
+        nullable: true
     })
     event_lat?: number;
 
@@ -52,7 +52,7 @@ export class RouteHistoricalEvent extends EntityHelper{
     @ApiProperty({ example: 'First On the List' })
     @Column({
         length: 50,
-        nullable: true    
+        nullable: true
     })
     event_title?: string;
 
@@ -60,7 +60,7 @@ export class RouteHistoricalEvent extends EntityHelper{
     @ApiProperty({ example: 'Subtitle' })
     @Column({
         length: 50,
-        nullable: true    
+        nullable: true
     })
     event_subtitle?: string;
 
@@ -69,9 +69,9 @@ export class RouteHistoricalEvent extends EntityHelper{
     @Column({ nullable: true })
     description?: string;
 
-    @CreateDateColumn()
-    created_date: Date;
+    @CreateDateColumn({ name: 'create_date' })
+    createDate: Date;
 
-    @UpdateDateColumn()
-    updated_date: Date;
+    @UpdateDateColumn({ name: 'updated_date' })
+    updatedDate: Date;
 }

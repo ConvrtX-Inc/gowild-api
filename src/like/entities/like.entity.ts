@@ -13,7 +13,7 @@ export class Like extends EntityHelper{
     @Validate(IsExist, ['User', 'id'], {
       message: 'User not Found',
     })
-    @Column({ 
+    @Column({
       type: "uuid",
       nullable: false
     })
@@ -23,15 +23,15 @@ export class Like extends EntityHelper{
     @Validate(IsExist, ['PostFeed', 'id'], {
       message: 'Post Feed id not Found',
     })
-    @Column({ 
+    @Column({
       type: "uuid",
       nullable: false
     })
     postfeed_id?: string;
 
-    @CreateDateColumn()
-    created_date: Date;
-  
-    @UpdateDateColumn()
-    updated_date: Date;
+    @CreateDateColumn({ name: 'create_date' })
+    createDate: Date;
+
+    @UpdateDateColumn({ name: 'updated_date' })
+    updatedDate: Date;
 }

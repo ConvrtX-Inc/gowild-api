@@ -33,11 +33,11 @@ export class GuidelineLog extends EntityHelper {
     @IsOptional()
     @ApiProperty({ example: '2022-01-01 11:11:11' })
     @Column({ type: 'timestamp' })
-    last_update_date?: Date;
+    last_updateDate?: Date;
 
-    @CreateDateColumn()
-    created_date: Date;
-  
-    @UpdateDateColumn()
-    updated_date: Date;
+    @CreateDateColumn({ name: 'create_date' })
+    createDate: Date;
+
+    @UpdateDateColumn({ name: 'updated_date' })
+    updatedDate: Date;
 }

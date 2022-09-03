@@ -1,8 +1,8 @@
-import { Controller, Request, UseGuards } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { SocialAccountService } from './social-account.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { Crud, CrudController, Override } from '@nestjsx/crud';
+import { Crud, CrudController } from '@nestjsx/crud';
 import { SocialAccount } from './social-account.entity';
 
 @ApiBearerAuth()
@@ -32,7 +32,8 @@ import { SocialAccount } from './social-account.entity';
   version: '1',
 })
 export class SocialAccountController implements CrudController<SocialAccount> {
-  constructor(public service: SocialAccountService) {}
+  constructor(public service: SocialAccountService) {
+  }
 
   get base(): CrudController<SocialAccount> {
     return this;

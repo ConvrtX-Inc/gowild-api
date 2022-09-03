@@ -26,7 +26,7 @@ export class RouteClue  extends EntityHelper{
         type: 'decimal',
         precision: 8,
         scale: 4,
-        nullable: true  
+        nullable: true
     })
     location_point_long?: number;
 
@@ -36,7 +36,7 @@ export class RouteClue  extends EntityHelper{
         type: 'decimal',
         precision: 8,
         scale: 4,
-        nullable: true  
+        nullable: true
     })
     location_point_lat?: number;
 
@@ -46,7 +46,7 @@ export class RouteClue  extends EntityHelper{
         type: 'decimal',
         precision: 8,
         scale: 4,
-        nullable: true  
+        nullable: true
     })
     clue_point_long?: number;
 
@@ -56,7 +56,7 @@ export class RouteClue  extends EntityHelper{
         type: 'decimal',
         precision: 8,
         scale: 4,
-        nullable: true  
+        nullable: true
     })
     clue_point_lat?: number;
 
@@ -64,7 +64,7 @@ export class RouteClue  extends EntityHelper{
     @ApiProperty({ example: 'First On the List' })
     @Column({
         length: 50,
-        nullable: true    
+        nullable: true
     })
     clue_title?: string;
 
@@ -94,9 +94,9 @@ export class RouteClue  extends EntityHelper{
     @Column({ nullable: true })
     ar_clue?: string;
 
-    @CreateDateColumn()
-    created_date: Date;
+    @CreateDateColumn({ name: 'create_date' })
+    createDate: Date;
 
-    @UpdateDateColumn()
-    updated_date: Date;
+    @UpdateDateColumn({ name: 'updated_date' })
+    updatedDate: Date;
 }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
 import { FilesModule } from './files/files.module';
 import { AuthModule } from './auth/auth.module';
@@ -25,17 +25,17 @@ import { MailConfigService } from './mail/mail-config.service';
 import { ForgotModule } from './forgot/forgot.module';
 import { MailModule } from './mail/mail.module';
 import { HomeModule } from './home/home.module';
-import { NotificationModule } from "./notification/notification.module";
-import { StatusModule } from "./statuses/status.module";
-import { CurrencyModule } from "./currency/currency.module";
-import { TwilioModule } from "nestjs-twilio";
-import { VerifyModule } from "./verify/verify.module";
-import { SmsModule } from "./sms/sms.module";
-import { SocialAccountModule } from "./social-account/social-account.module";
-import { ParticipantModule } from "./messenger/participant/participant.module";
-import { MessageModule } from "./messenger/message/message.module";
-import { ChatModule } from "./messenger/chat/chat.module";
-import { RoomModule } from "./messenger/room/room.module";
+import { NotificationModule } from './notification/notification.module';
+import { StatusModule } from './statuses/status.module';
+import { CurrencyModule } from './currency/currency.module';
+import { TwilioModule } from 'nestjs-twilio';
+import { VerifyModule } from './verify/verify.module';
+import { SmsModule } from './sms/sms.module';
+import { SocialAccountModule } from './social-account/social-account.module';
+import { ParticipantModule } from './messenger/participant/participant.module';
+import { MessageModule } from './messenger/message/message.module';
+import { ChatModule } from './messenger/chat/chat.module';
+import { RoomModule } from './messenger/room/room.module';
 import { FriendsModule } from './friends/friends.module';
 import { RouteModule } from './route/route.module';
 import { RouteCluesModule } from './route-clues/route-clues.module';
@@ -51,6 +51,8 @@ import { RouteHistoricalEventPhotoModule } from './route-historical-event-photo/
 import { TicketModule } from './ticket/ticket.module';
 import { TicketMessagesModule } from './ticket-messages/ticket-messages.module';
 import { GuidelineLogsModule } from './guideline-logs/guideline-logs.module';
+import { HealthModule } from './health/health.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -127,7 +129,14 @@ import { GuidelineLogsModule } from './guideline-logs/guideline-logs.module';
     RouteHistoricalEventPhotoModule,
     TicketModule,
     TicketMessagesModule,
-    GuidelineLogsModule
+    GuidelineLogsModule,
+    HealthModule,
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
+    },
   ],
 })
 export class AppModule {}

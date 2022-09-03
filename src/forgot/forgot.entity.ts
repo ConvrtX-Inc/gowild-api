@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   DeleteDateColumn,
 } from 'typeorm';
-import { User } from '../users/user.entity';
+import { User } from '../users/user';
 import { Allow } from 'class-validator';
 import { EntityHelper } from 'src/utils/entity-helper';
 
@@ -27,9 +27,9 @@ export class Forgot extends EntityHelper {
   })
   user: User;
 
-  @CreateDateColumn()
-  created_date: Date;
+  @CreateDateColumn({ name: 'create_date' })
+  createDate: Date;
 
   @DeleteDateColumn()
-  deleted_date: Date;
+  deletedDate: Date;
 }

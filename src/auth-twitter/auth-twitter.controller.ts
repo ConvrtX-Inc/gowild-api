@@ -1,8 +1,9 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { AuthService } from 'src/auth/auth.service';
 import { AuthTwitterService } from './auth-twitter.service';
 import { AuthTwitterLoginDto } from './dtos/auth-twitter-login.dto';
+import { UserAuthResponse } from "../auth/dtos/auth-response";
 
 @ApiTags('Auth')
 @Controller({
@@ -15,9 +16,10 @@ export class AuthTwitterController {
     public authTwitterService: AuthTwitterService,
   ) {}
 
+  @ApiResponse({ type: UserAuthResponse })
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() loginDto: AuthTwitterLoginDto) {
+  async login(@Body() loginDto: AuthTwitterLoginDto): Promise<UserAuthResponse> {
     const socialData = await this.authTwitterService.getProfileByToken(
       loginDto,
     );

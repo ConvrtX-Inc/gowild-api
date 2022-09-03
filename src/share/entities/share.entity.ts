@@ -23,7 +23,7 @@ export class Share extends EntityHelper {
     @Validate(IsExist, ['PostFeed', 'id'], {
       message: 'Post Feed id not Found',
     })
-    @Column({ 
+    @Column({
       type: "uuid",
       nullable: false
     })
@@ -31,16 +31,16 @@ export class Share extends EntityHelper {
 
     @IsOptional()
     @ApiProperty({ example: 'www.gowild.com'})
-    @Column({ 
+    @Column({
         type: 'text',
-        nullable: true, 
+        nullable: true,
         default: 'www.gowild.com'
     })
     url: string | null;
 
-    @CreateDateColumn()
-    created_date: Date;
-  
-    @UpdateDateColumn()
-    updated_date: Date;
+    @CreateDateColumn({ name: 'create_date' })
+    createDate: Date;
+
+    @UpdateDateColumn({ name: 'updated_date' })
+    updatedDate: Date;
 }

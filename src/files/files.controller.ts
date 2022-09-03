@@ -9,9 +9,10 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiParam, ApiTags } from "@nestjs/swagger";
 import { AuthGuard } from '@nestjs/passport';
 import { FilesService } from './files.service';
+import { FilesDto } from "./files.dto";
 
 @ApiTags('Files')
 @Controller({
@@ -37,12 +38,13 @@ export class FilesController {
     },
   })
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file) {
+  async uploadFile(@UploadedFile() file: FilesDto) {
     return this.filesService.uploadFile(file);
   }
 
+  @ApiParam({ name: 'path', type: 'string' })
   @Get(':path')
-  download(@Param('path') path, @Response() response) {
+  download(@Param('path') path: string, @Response() response) {
     return response.sendFile(path, { root: './files' });
   }
 }

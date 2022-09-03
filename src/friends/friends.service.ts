@@ -4,7 +4,7 @@ import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { identity } from 'rxjs';
 import { createQueryBuilder, Repository } from 'typeorm';
 import { Friends } from './entities/friend.entity';
-import { User } from 'src/users/user.entity';
+import { User } from 'src/users/user';
 
 @Injectable()
 export class FriendsService extends TypeOrmCrudService<Friends>{
@@ -13,18 +13,18 @@ export class FriendsService extends TypeOrmCrudService<Friends>{
   ) {
     super(friendsRepository);
   }
-  
-  async acceptedFriends(id: string) {    
+
+  async acceptedFriends(id: string) {
     const post = await this.friendsRepository.findOne({
       where: { id: id },
     });
     if (post) {
-      post.is_approved = true;      
+      post.is_approved = true;
       await post.save();
     }
   }
 
-  async suggestedFriends(user_id: string) { 
+  async suggestedFriends(user_id: string) {
     let aggregatedFriends: Array<Friends[]> = [];
     const suggestedFriendsRepo = await this.friendsRepository
       .createQueryBuilder("friendsList")
@@ -42,7 +42,6 @@ export class FriendsService extends TypeOrmCrudService<Friends>{
             'friendsOfFriendsList',
             'user.id',
             'user.full_name',
-            'user.profile_photo'
           ])
           .where("friendsOfFriendsList.user_id = :user_id", {user_id: friend.friend_id})
           .andWhere("friendsOfFriendsList.is_approved = :is_approved", {is_approved: true})

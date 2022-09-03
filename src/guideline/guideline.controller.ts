@@ -59,7 +59,7 @@ export class GuidelinesController implements CrudController<Guideline> {
     const result = this.base.updateOneBase(req, dto);
     const logData = new GuidelineLog();
     logData.guideline_type = dto.type;
-    logData.last_update_date = new Date();
+    logData.last_updateDate = new Date();
     logData.user_id = dto.last_updated_user;
     this.guidelineLogsService.saveOne(logData);
     return result;
