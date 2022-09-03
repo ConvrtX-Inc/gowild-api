@@ -1,9 +1,9 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'src/auth/auth.service';
 import { AuthTwitterService } from './auth-twitter.service';
 import { AuthTwitterLoginDto } from './dtos/auth-twitter-login.dto';
-import { UserAuthResponse } from "../auth/dtos/auth-response";
+import { UserAuthResponse } from '../auth/dtos/auth-response';
 
 @ApiTags('Auth')
 @Controller({
@@ -14,7 +14,8 @@ export class AuthTwitterController {
   constructor(
     public authService: AuthService,
     public authTwitterService: AuthTwitterService,
-  ) {}
+  ) {
+  }
 
   @ApiResponse({ type: UserAuthResponse })
   @Post('login')

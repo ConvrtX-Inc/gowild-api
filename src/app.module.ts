@@ -70,6 +70,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
         appleConfig,
       ],
       envFilePath: ['.env'],
+      expandVariables: true,
     }),
     TypeOrmModule.forRootAsync({
       useClass: TypeOrmConfigService,
@@ -139,4 +140,5 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+}

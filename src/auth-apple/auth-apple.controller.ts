@@ -14,7 +14,8 @@ export class AuthAppleController {
   constructor(
     public authService: AuthService,
     public authAppleService: AuthAppleService,
-  ) {}
+  ) {
+  }
 
   @ApiResponse({ type: UserAuthResponse })
   @Post('login')

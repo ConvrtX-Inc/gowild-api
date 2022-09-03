@@ -9,4 +9,5 @@ import { TreasureChest } from './entities/treasure-chest.entity';
   providers: [TreasureChestService],
   imports: [TypeOrmModule.forFeature([TreasureChest])],
 })
-export class TreasureChestModule {}
+export class TreasureChestModule {
+}

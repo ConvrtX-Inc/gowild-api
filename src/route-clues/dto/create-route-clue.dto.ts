@@ -1,1 +1,2 @@
-export class CreateRouteClueDto {}
+export class CreateRouteClueDto {
+}

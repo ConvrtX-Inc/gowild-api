@@ -8,4 +8,5 @@ import { ForgotService } from './forgot.service';
   providers: [ForgotService],
   exports: [ForgotService],
 })
-export class ForgotModule {}
+export class ForgotModule {
+}

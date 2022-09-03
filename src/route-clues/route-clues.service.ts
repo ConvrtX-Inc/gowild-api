@@ -7,15 +7,15 @@ import { RouteClue } from './entities/route-clue.entity';
 @Injectable()
 export class RouteCluesService extends TypeOrmCrudService<RouteClue> {
   constructor(@InjectRepository(RouteClue)
-  private routeClueRepository: Repository<RouteClue>,
-  ){
-    super(routeClueRepository); 
+              private routeClueRepository: Repository<RouteClue>,
+  ) {
+    super(routeClueRepository);
   }
 
   async allClues(route_id: string) {
     const postAllClues = await this.routeClueRepository.find({
-      where: { route_id: route_id},
-    })
+      where: { route_id: route_id },
+    });
     return postAllClues;
   }
 }

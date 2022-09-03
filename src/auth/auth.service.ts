@@ -1,5 +1,5 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { User } from '../users/user';
+import { User } from '../users/user.entity';
 import { AuthEmailLoginDto } from './dtos/auth-email-login.dto';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import * as crypto from 'crypto';
@@ -29,7 +29,9 @@ export class AuthService {
     private readonly mailService: MailService,
     private readonly socialAccountService: SocialAccountService,
     private readonly passwordService: PasswordService,
-  ) {}
+  ) {
+  }
+
 
   public async validateLogin(
     loginDto: AuthEmailLoginDto,
@@ -122,13 +124,6 @@ export class AuthService {
     response.user = user;
     response.token = token;
     return response;
-  }
-
-  private genHash(): string {
-    return crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
   }
 
   public async register(dto: AuthRegisterLoginDto): Promise<User> {
@@ -257,6 +252,7 @@ export class AuthService {
     return user;
   }
 
+  // TODO Should not refresh a already refreshed token
   public async refreshToken(
     request: AuthRefreshTokenDto,
   ): Promise<TokenResponse> {
@@ -264,5 +260,12 @@ export class AuthService {
     const userId = this.tokenService.userIdByRefreshToken(request.refreshToken);
     const user = await this.usersService.findOne(userId);
     return this.tokenService.generateToken(user);
+  }
+
+  private genHash(): string {
+    return crypto
+      .createHash('sha256')
+      .update(randomStringGenerator())
+      .digest('hex');
   }
 }

@@ -1,10 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, Validate } from 'class-validator';
 import { EntityHelper } from 'src/utils/entity-helper';
@@ -25,7 +19,7 @@ export class Notification extends EntityHelper {
 
   @IsOptional()
   @ApiProperty({ example: 'notification_msg' })
-  @Column({ length: 100,nullable: true })
+  @Column({ length: 100, nullable: true })
   notification_msg?: string;
 
   @CreateDateColumn({ name: 'create_date' })

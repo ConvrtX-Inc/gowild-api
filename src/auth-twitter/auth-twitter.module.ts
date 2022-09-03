@@ -10,4 +10,5 @@ import { AuthModule } from 'src/auth/auth.module';
   exports: [AuthTwitterService],
   controllers: [AuthTwitterController],
 })
-export class AuthTwitterModule {}
+export class AuthTwitterModule {
+}

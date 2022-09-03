@@ -1,7 +1,7 @@
 export enum MessageStatus {
-  msSent = 1, 
-  msSeen = 2, 
-  msDeleted = 3  
+  msSent = 1,
+  msSeen = 2,
+  msDeleted = 3
 }
 
 export class MessageDetail {
@@ -9,12 +9,12 @@ export class MessageDetail {
   private text: string;
   private status: number;
   private dateCreate: Date;
-   
+
   public constructor(userid: string, msg: string, status: number, dateCreate: Date) {
     this.userid = userid;
     this.text = msg;
     this.status = status;
-    this.dateCreate = dateCreate;    
+    this.dateCreate = dateCreate;
   }
 
   get UserID(): string {
@@ -32,6 +32,5 @@ export class MessageDetail {
   get dateCreated(): Date {
     return this.dateCreate;
   }
-   
+
 }
-  

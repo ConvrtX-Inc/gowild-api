@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
-import { Password } from '../password';
+import { Password } from '../password.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm/lib/typeorm-crud.service';
-import { User } from '../user';
+import { User } from '../user.entity';
 
 @Injectable()
 export class PasswordService extends TypeOrmCrudService<Password> {
@@ -13,6 +13,20 @@ export class PasswordService extends TypeOrmCrudService<Password> {
     private readonly repository: Repository<Password>,
   ) {
     super(repository);
+  }
+
+  public static async generatePassword(
+    user: User,
+    password: string,
+  ): Promise<Password> {
+    const salt = await bcrypt.genSalt();
+    const entity = new Password();
+    entity.hashedValue = await bcrypt.hash(password, salt);
+    entity.algoritm = 'bcrypt';
+    entity.user = user;
+    entity.status = 'true';
+    entity.metaData = JSON.stringify({ salt });
+    return entity;
   }
 
   async verifyPassword(user: User, password: string): Promise<boolean> {
@@ -33,20 +47,6 @@ export class PasswordService extends TypeOrmCrudService<Password> {
 
     const entity = await PasswordService.generatePassword(user, password);
     await this.repository.save(entity);
-  }
-
-  public static async generatePassword(
-    user: User,
-    password: string,
-  ): Promise<Password> {
-    const salt = await bcrypt.genSalt();
-    const entity = new Password();
-    entity.hashedValue = await bcrypt.hash(password, salt);
-    entity.algoritm = 'bcrypt';
-    entity.user = user;
-    entity.status = 'true';
-    entity.metaData = JSON.stringify({ salt });
-    return entity;
   }
 
   private async findPrevious(user: User): Promise<Password | null> {

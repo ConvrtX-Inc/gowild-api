@@ -9,4 +9,5 @@ import { Like } from './entities/like.entity';
   providers: [LikeService],
   imports: [TypeOrmModule.forFeature([Like])],
 })
-export class LikeModule {}
+export class LikeModule {
+}

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { SponsorService } from './sponsor.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -31,10 +31,11 @@ import { Sponsor } from './entities/sponsor.entity';
   path: 'sponsor',
   version: '1',
 })
-export class SponsorController implements CrudController<Sponsor>{
-  constructor(readonly service: SponsorService) {}
+export class SponsorController implements CrudController<Sponsor> {
+  constructor(readonly service: SponsorService) {
+  }
 
-  get base(): CrudController<Sponsor>{
+  get base(): CrudController<Sponsor> {
     return this;
   }
 }

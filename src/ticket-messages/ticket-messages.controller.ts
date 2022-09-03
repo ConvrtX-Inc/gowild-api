@@ -1,8 +1,7 @@
-import { Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { TicketMessagesService } from './ticket-messages.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { Controller, UseGuards } from '@nestjs/common';
 import { TicketMessage } from './entities/ticket-message.entity';
 import { Crud, CrudController } from '@nestjsx/crud';
 
@@ -32,10 +31,11 @@ import { Crud, CrudController } from '@nestjsx/crud';
   path: 'ticket-messages',
   version: '1',
 })
-export class TicketMessagesController implements CrudController<TicketMessage>{
-  constructor(readonly service: TicketMessagesService) {}
+export class TicketMessagesController implements CrudController<TicketMessage> {
+  constructor(readonly service: TicketMessagesService) {
+  }
 
-  get base(): CrudController<TicketMessage>{
+  get base(): CrudController<TicketMessage> {
     return this;
   }
 }

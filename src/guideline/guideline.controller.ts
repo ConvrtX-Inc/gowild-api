@@ -1,9 +1,4 @@
-import {
-  Controller,
-  UseGuards,
-  Get,
-  Param,
-} from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController, CrudRequest, Override, ParsedBody, ParsedRequest } from '@nestjsx/crud';
 import { AuthGuard } from '@nestjs/passport';
@@ -36,11 +31,12 @@ import { GuidelineLog } from 'src/guideline-logs/guideline-log.entity';
 })
 @Controller({
   path: 'guidelines',
-  version: '1'
+  version: '1',
 })
 export class GuidelinesController implements CrudController<Guideline> {
   constructor(public service: GuidelineService,
-    public guidelineLogsService: GuidelineLogsService) { }
+              public guidelineLogsService: GuidelineLogsService) {
+  }
 
   get base(): CrudController<Guideline> {
     return this;

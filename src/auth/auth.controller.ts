@@ -1,32 +1,15 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthEmailLoginDto } from './dtos/auth-email-login.dto';
 import { AuthForgotPasswordDto } from './dtos/auth-forgot-password.dto';
-import {
-  AuthResetPasswordAdminDto,
-  AuthResetPasswordDto,
-} from './dtos/auth-reset-password.dto';
+import { AuthResetPasswordAdminDto, AuthResetPasswordDto } from './dtos/auth-reset-password.dto';
 import { AuthRegisterLoginDto } from './dtos/auth-register-login.dto';
 import { UserAuthResponse } from './dtos/auth-response';
 import { TokenResponse } from './dtos/token';
 import { AuthRefreshTokenDto } from './dtos/auth-refresh-token.dto';
-import { User } from '../users/user';
+import { User } from '../users/user.entity';
 
 @ApiTags('Auth')
 @Controller({
@@ -34,7 +17,8 @@ import { User } from '../users/user';
   version: '1',
 })
 export class AuthController {
-  constructor(public service: AuthService) {}
+  constructor(public service: AuthService) {
+  }
 
   @ApiResponse({ type: UserAuthResponse })
   @Post('login')
@@ -106,11 +90,10 @@ export class AuthController {
   @ApiOperation({ summary: 'Refresh token using a previous RefreshToken' })
   @ApiResponse({ type: TokenResponse, description: 'Token object' })
   @Post('refresh-token')
-  @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
   public async refreshToken(
-    @Body() request: AuthRefreshTokenDto,
+    @Body() dto: AuthRefreshTokenDto,
   ): Promise<TokenResponse> {
-    return this.service.refreshToken(request);
+    return this.service.refreshToken(dto);
   }
 }

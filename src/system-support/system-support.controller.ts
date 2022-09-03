@@ -1,8 +1,8 @@
-import { Controller, Request, UseGuards } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { SystemSupportService } from './system-support.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { Crud, CrudController, Override } from '@nestjsx/crud';
+import { Crud, CrudController } from '@nestjsx/crud';
 import { SystemSupport } from './system-support.entity';
 
 @ApiBearerAuth()
@@ -32,7 +32,8 @@ import { SystemSupport } from './system-support.entity';
   version: '1',
 })
 export class SystemSupportController implements CrudController<SystemSupport> {
-  constructor(public service: SystemSupportService) {}
+  constructor(public service: SystemSupportService) {
+  }
 
   get base(): CrudController<SystemSupport> {
     return this;

@@ -10,4 +10,5 @@ import { AuthModule } from 'src/auth/auth.module';
   exports: [AuthAppleService],
   controllers: [AuthAppleController],
 })
-export class AuthAppleModule {}
+export class AuthAppleModule {
+}

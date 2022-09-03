@@ -4,7 +4,8 @@ import { SmsDto } from './dto/sms.dto';
 
 @Injectable()
 export class SmsService {
-  constructor(@InjectTwilio() private readonly client: TwilioClient) {}
+  constructor(@InjectTwilio() private readonly client: TwilioClient) {
+  }
 
   async send(request: SmsDto) {
     try {

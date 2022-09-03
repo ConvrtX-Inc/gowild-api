@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { FriendsService } from './friends.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -31,10 +31,11 @@ import { Friends } from './entities/friend.entity';
   path: 'friends',
   version: '1',
 })
-export class FriendsController implements CrudController<Friends>{
-  constructor(readonly service: FriendsService) {}
+export class FriendsController implements CrudController<Friends> {
+  constructor(readonly service: FriendsService) {
+  }
 
-  get base(): CrudController<Friends>{
+  get base(): CrudController<Friends> {
     return this;
   }
 

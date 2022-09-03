@@ -1,14 +1,6 @@
-import {
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Post,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { Crud, CrudController, Override } from '@nestjsx/crud';
-import { User } from './user';
+import { User } from './user.entity';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -49,7 +41,8 @@ import { StatusEnum } from 'src/auth/status.enum';
   version: '1',
 })
 export class UsersController implements CrudController<User> {
-  constructor(public service: UsersService) {}
+  constructor(public service: UsersService) {
+  }
 
   get base(): CrudController<User> {
     return this;

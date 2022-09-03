@@ -1,9 +1,9 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'src/auth/auth.service';
 import { AuthGoogleService } from './auth-google.service';
 import { AuthGoogleLoginDto } from './dtos/auth-google-login.dto';
-import { UserAuthResponse } from "../auth/dtos/auth-response";
+import { UserAuthResponse } from '../auth/dtos/auth-response';
 
 @ApiTags('Auth')
 @Controller({
@@ -14,7 +14,8 @@ export class AuthGoogleController {
   constructor(
     public authService: AuthService,
     public authGoogleService: AuthGoogleService,
-  ) {}
+  ) {
+  }
 
   @ApiResponse({ type: UserAuthResponse })
   @Post('login')

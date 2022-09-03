@@ -1,16 +1,10 @@
-import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
-import {
-  AccessToken,
-  RefreshToken,
-  SimpleUser,
-  TokenResponse,
-  TokenType,
-} from '../dtos/token';
-import { User } from '../../users/user';
-import { randomUUID } from 'crypto';
+import { AccessToken, RefreshToken, SimpleUser, TokenResponse, TokenType } from '../dtos/token';
+import { User } from '../../users/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { AuthConfig } from '../dtos/auth.config';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class TokenService {
@@ -25,14 +19,37 @@ export class TokenService {
 
   public async generateToken(user: User): Promise<TokenResponse> {
     const [accessTokenStr, refreshTokenStr] = await Promise.all([
-      this.generateRefreshToken(user),
       this.generateAccessToken(user),
+      this.generateRefreshToken(user),
     ]);
 
     const response = new TokenResponse();
     response.refreshToken = refreshTokenStr;
-    response.token = accessTokenStr;
+    response.accessToken = accessTokenStr;
     return response;
+  }
+
+  public userIdByRefreshToken(refreshToken: string): string {
+    const decoded = this.jwtService.decode(refreshToken) as RefreshToken & {
+      sub: string;
+    };
+    if (!decoded) {
+      throw new NotFoundException({
+        message: 'could not decode token',
+      });
+    }
+    return decoded.sub;
+  }
+
+  public async verifyRefreshToken(refreshToken: string): Promise<void> {
+    try {
+      await this.jwtService.verifyAsync(refreshToken, {
+        ...this.getConfig('refreshToken'),
+      });
+    } catch (e) {
+      Logger.error(e.message, e);
+      throw new UnauthorizedException(e);
+    }
   }
 
   private mapUserToSimpleUser(user: User): SimpleUser {
@@ -44,7 +61,6 @@ export class TokenService {
       phoneNo: user.phoneNo,
       username: user.username,
       birthDate: user.birthDate,
-      uid: user.id,
       fullName: user.fullName,
     };
   }
@@ -53,50 +69,30 @@ export class TokenService {
     return {
       secret: this.authConfig[type].secret,
       expiresIn: this.authConfig[type].expiration,
-      algorithm: 'HS256',
+      // algorithm: 'HS256',
     };
   }
 
   private async generateRefreshToken(user: User): Promise<string> {
-    const refreshToken = new RefreshToken();
-    refreshToken.rid = randomUUID();
-    refreshToken.email = user.email;
-    refreshToken.user = this.mapUserToSimpleUser(user);
-
+    const refreshToken: RefreshToken = {
+      email: user.email,
+      user: this.mapUserToSimpleUser(user),
+      rid: randomUUID(),
+    };
     return await this.jwtService.signAsync(refreshToken, {
       ...this.getConfig('refreshToken'),
-      subject: user.email,
+      subject: user.id,
     });
   }
 
   private async generateAccessToken(user: User): Promise<string> {
-    const accessToken = new AccessToken();
-    accessToken.email = user.email;
-    accessToken.user = this.mapUserToSimpleUser(user);
-
+    const accessToken: AccessToken = {
+      email: user.email,
+      user: this.mapUserToSimpleUser(user),
+    };
     return await this.jwtService.signAsync(accessToken, {
       ...this.getConfig('accessToken'),
-      subject: user.email,
+      subject: user.id,
     });
-  }
-
-  public userIdByRefreshToken(refreshToken: string): string {
-    const decoded = this.jwtService.decode(refreshToken) as RefreshToken;
-    if (!decoded) {
-      throw new NotFoundException({
-        message: 'could not decode token',
-      });
-    }
-    return decoded.user.uid;
-  }
-
-  public async verifyRefreshToken(refreshToken: string): Promise<void> {
-    try {
-      await this.jwtService.verifyAsync(refreshToken, {
-        ...this.getConfig('refreshToken'),
-      });
-    } catch (e) {
-      throw new UnauthorizedException(e);
-    }
   }
 }

@@ -3,11 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { RoomController } from './room.controller';
 import { RoomService } from './room.service';
-import { MessageService } from '../message/message.service';
-import { ParticipantService } from '../participant/participant.service';
 import { Room } from './room.entity';
-import { ParticipantModule } from '../participant/participant.module';  
-import { MessageModule } from '../message/message.module';  
+import { ParticipantModule } from '../participant/participant.module';
+import { MessageModule } from '../message/message.module';
 
 @Module({
   controllers: [RoomController],
@@ -15,4 +13,5 @@ import { MessageModule } from '../message/message.module';
   imports: [ParticipantModule, MessageModule, TypeOrmModule.forFeature([Room])],
   exports: [RoomService],
 })
-export class RoomModule {}
+export class RoomModule {
+}

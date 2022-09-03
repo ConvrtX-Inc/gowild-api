@@ -9,4 +9,5 @@ import { SystemSupportAttachment } from './system-support-attachment.entity';
   providers: [SystemSupportAttachmentService],
   imports: [TypeOrmModule.forFeature([SystemSupportAttachment])],
 })
-export class SystemSupportAttachmentModule {}
+export class SystemSupportAttachmentModule {
+}

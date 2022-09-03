@@ -1,7 +1,7 @@
 import { Controller, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { Crud, CrudController, Override } from '@nestjsx/crud';
+import { Crud, CrudController } from '@nestjsx/crud';
 
 import { Participant } from './participant.entity';
 import { ParticipantService } from './participant.service';
@@ -33,10 +33,11 @@ import { ParticipantService } from './participant.service';
   version: '1',
 })
 export class ParticipantController implements CrudController<Participant> {
-  constructor(public service: ParticipantService) {}
+  constructor(public service: ParticipantService) {
+  }
 
   get base(): CrudController<Participant> {
     return this;
   }
-  
+
 }

@@ -1,8 +1,8 @@
-import { Controller, Request, UseGuards } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { Crud, CrudController, Override } from '@nestjsx/crud';
+import { Crud, CrudController } from '@nestjsx/crud';
 import { Notification } from './notification.entity';
 
 @ApiBearerAuth()
@@ -32,7 +32,8 @@ import { Notification } from './notification.entity';
   version: '1',
 })
 export class NotificationController implements CrudController<Notification> {
-  constructor(public service: NotificationService) {}
+  constructor(public service: NotificationService) {
+  }
 
   get base(): CrudController<Notification> {
     return this;

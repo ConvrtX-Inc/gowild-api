@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FileEntity } from './file.entity';
 import { Repository } from 'typeorm';
-import { FilesDto } from "./files.dto";
+import { FilesDto } from './files.dto';
 
 @Injectable()
 export class FilesService {
@@ -11,7 +11,8 @@ export class FilesService {
     private readonly configService: ConfigService,
     @InjectRepository(FileEntity)
     private fileRepository: Repository<FileEntity>,
-  ) {}
+  ) {
+  }
 
   async uploadFile(file: FilesDto): Promise<FileEntity> {
     if (!file) {

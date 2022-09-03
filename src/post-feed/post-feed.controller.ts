@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController } from '@nestjsx/crud';
@@ -31,10 +31,11 @@ import { PostFeedService } from './post-feed.service';
   path: 'post-feed',
   version: '1',
 })
-export class PostFeedController implements CrudController<PostFeed>{
-  constructor(readonly service: PostFeedService) {}
+export class PostFeedController implements CrudController<PostFeed> {
+  constructor(readonly service: PostFeedService) {
+  }
 
-  get base(): CrudController<PostFeed>{
+  get base(): CrudController<PostFeed> {
     return this;
   }
 
@@ -46,7 +47,7 @@ export class PostFeedController implements CrudController<PostFeed>{
 
   @ApiOperation({ summary: 'Get posts from other users' })
   @Get('other-users-posts/:user_id')
-  public async getPostsFromOtherUsers(@Param('user_id') user_id: string){
+  public async getPostsFromOtherUsers(@Param('user_id') user_id: string) {
     return this.service.otherUsersPost(user_id);
   }
 }

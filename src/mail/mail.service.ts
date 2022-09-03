@@ -11,7 +11,8 @@ export class MailService {
     private i18n: I18nService,
     private mailerService: MailerService,
     private configService: ConfigService,
-  ) {}
+  ) {
+  }
 
   async userUpdateStatus(mailData: MailData<{}>, status?: StatusEnum) {
     let textMessage: string;

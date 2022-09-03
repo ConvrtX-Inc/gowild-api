@@ -1,10 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
 import { EntityHelper } from 'src/utils/entity-helper';
@@ -30,4 +24,4 @@ export class Room extends EntityHelper {
   @UpdateDateColumn({ name: 'updated_date' })
   updatedDate: Date;
 
-  }
+}

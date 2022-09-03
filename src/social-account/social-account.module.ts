@@ -10,4 +10,5 @@ import { SocialAccount } from './social-account.entity';
   exports: [SocialAccountService],
   imports: [TypeOrmModule.forFeature([SocialAccount])],
 })
-export class SocialAccountModule {}
+export class SocialAccountModule {
+}

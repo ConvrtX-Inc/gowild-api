@@ -6,7 +6,8 @@ import { AuthAppleLoginDto } from './dtos/auth-apple-login.dto';
 
 @Injectable()
 export class AuthAppleService {
-  constructor(private configService: ConfigService) {}
+  constructor(private configService: ConfigService) {
+  }
 
   async getProfileByToken(
     loginDto: AuthAppleLoginDto,

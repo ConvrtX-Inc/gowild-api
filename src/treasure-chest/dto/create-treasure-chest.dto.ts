@@ -1,1 +1,2 @@
-export class CreateTreasureChestDto {}
+export class CreateTreasureChestDto {
+}

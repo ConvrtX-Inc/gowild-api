@@ -32,25 +32,25 @@ yarn install
 Generate migration
 
 ```bash
-npm run migration:generate 
+yarn migration:generate 
 ```
 
 Run migration
 
 ```bash
-npm run migration:run
+yarn migration:run
 ```
 
 Run seed
 
 ```bash
-npm run seed:run
+yarn seed:run
 ```
 
 Start Project
 
 ```bash
-npm run start
+yarn start
 ```
 
 ## Note
@@ -65,8 +65,8 @@ change the version
 
 ```bash
 # unit tests
-npm run test
+yarn test
 
 # e2e tests
-npm run test:e2e
+yarn test:e2e
 ```

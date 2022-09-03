@@ -1,1 +1,2 @@
-export class CreateRouteHistoricalEventPhotoDto {}
+export class CreateRouteHistoricalEventPhotoDto {
+}

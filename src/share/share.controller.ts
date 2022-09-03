@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController } from '@nestjsx/crud';
@@ -31,10 +31,11 @@ import { ShareService } from './share.service';
   path: 'share',
   version: '1',
 })
-export class ShareController implements CrudController<Share>{
-  constructor(readonly service: ShareService) {}
+export class ShareController implements CrudController<Share> {
+  constructor(readonly service: ShareService) {
+  }
 
-  get base(): CrudController<Share>{
+  get base(): CrudController<Share> {
     return this;
   }
 }

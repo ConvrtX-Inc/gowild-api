@@ -5,10 +5,10 @@ import { RouteHistoricalEventPhoto } from './entities/route-historical-event-pho
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class RouteHistoricalEventPhotoService extends TypeOrmCrudService<RouteHistoricalEventPhoto>{
+export class RouteHistoricalEventPhotoService extends TypeOrmCrudService<RouteHistoricalEventPhoto> {
   constructor(@InjectRepository(RouteHistoricalEventPhoto)
-  private RouteHistoricalEventPhotoRepository: Repository<RouteHistoricalEventPhoto>,
-  ){
+              private RouteHistoricalEventPhotoRepository: Repository<RouteHistoricalEventPhoto>,
+  ) {
     super(RouteHistoricalEventPhotoRepository);
   }
 }

@@ -10,7 +10,8 @@ export class ForgotService {
   constructor(
     @InjectRepository(Forgot)
     private forgotRepository: Repository<Forgot>,
-  ) {}
+  ) {
+  }
 
   async findOneEntity(options: FindOptions<Forgot>) {
     return this.forgotRepository.findOne({

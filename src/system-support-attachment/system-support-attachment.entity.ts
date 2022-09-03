@@ -9,10 +9,10 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import {Allow, IsOptional, Validate} from 'class-validator';
+import { Allow, IsOptional, Validate } from 'class-validator';
 import { EntityHelper } from 'src/utils/entity-helper';
 import { IsExist } from 'src/utils/validators/is-exists.validator';
-import {Transform} from "class-transformer";
+import { Transform } from 'class-transformer';
 import * as base64_arraybuffer from 'base64-arraybuffer-converter';
 
 @Entity()
@@ -38,6 +38,10 @@ export class SystemSupportAttachment extends EntityHelper {
     nullable: true,
   })
   attachment?: Buffer | null | string;
+  @CreateDateColumn({ name: 'create_date' })
+  createDate: Date;
+  @UpdateDateColumn({ name: 'updated_date' })
+  updatedDate: Date;
 
   @BeforeUpdate()
   @BeforeInsert()
@@ -55,12 +59,8 @@ export class SystemSupportAttachment extends EntityHelper {
           new Uint8Array(base64_arraybuffer.base64_2_ab(this.attachment)),
         );
       }
-    } catch (e) {}
+    } catch (e) {
+    }
   }
-  @CreateDateColumn({ name: 'create_date' })
-  createDate: Date;
-
-  @UpdateDateColumn({ name: 'updated_date' })
-  updatedDate: Date;
 
 }
