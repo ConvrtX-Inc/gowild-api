@@ -135,5 +135,4 @@ dist
 .data
 /files
 /ormconfig.json
-yarn.lock
 package-lock.json
