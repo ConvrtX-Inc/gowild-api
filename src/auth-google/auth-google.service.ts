@@ -30,6 +30,7 @@ export class AuthGoogleService {
       email: data.email,
       firstName: data.given_name,
       lastName: data.family_name,
+      emailVerified: data.email_verified,
     };
   }
 }

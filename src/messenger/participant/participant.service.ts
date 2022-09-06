@@ -36,9 +36,9 @@ export class ParticipantService extends TypeOrmCrudService<Participant> {
     return this.participantRepository.save(
       this.participantRepository.create(data),
     );
-  }  
+  }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await this.participantRepository.delete(id);
   }
 }

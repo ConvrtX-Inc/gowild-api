@@ -10,10 +10,15 @@ import { UsersModule } from 'src/users/users.module';
 import { ForgotModule } from 'src/forgot/forgot.module';
 import { MailModule } from 'src/mail/mail.module';
 import { SmsModule } from 'src/sms/sms.module';
-import { SocialAccountModule } from "src/social-account/social-account.module";
+import { SocialAccountModule } from 'src/social-account/social-account.module';
+import { TokenService } from './token.service';
+import { AuthConfig } from './dtos/auth.config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { RefreshTokenEntity } from './refresh-token.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([RefreshTokenEntity]),
     UsersModule,
     ForgotModule,
     PassportModule,
@@ -24,7 +29,7 @@ import { SocialAccountModule } from "src/social-account/social-account.module";
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get('auth.secret'),
+        secret: configService.get<AuthConfig>('auth').accessToken.secret,
         signOptions: {
           expiresIn: configService.get('auth.expires'),
         },
@@ -32,7 +37,8 @@ import { SocialAccountModule } from "src/social-account/social-account.module";
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, AnonymousStrategy],
+  providers: [AuthService, JwtStrategy, AnonymousStrategy, TokenService],
   exports: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule {
+}

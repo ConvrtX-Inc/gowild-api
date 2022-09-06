@@ -1,1 +1,2 @@
-export class CreateShareDto {}
+export class CreateShareDto {
+}

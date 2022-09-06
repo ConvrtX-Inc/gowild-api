@@ -1,1 +1,2 @@
-export class CreateTicketMessageDto {}
+export class CreateTicketMessageDto {
+}

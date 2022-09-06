@@ -1,8 +1,7 @@
-import { Controller, Request, UseGuards } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { CurrencyService } from './currency.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
-import { Crud, CrudController, Override } from '@nestjsx/crud';
+import { ApiTags } from '@nestjs/swagger';
+import { Crud, CrudController } from '@nestjsx/crud';
 import { Currency } from './currency.entity';
 
 @ApiTags('Currencies')
@@ -15,7 +14,7 @@ import { Currency } from './currency.entity';
   },
   query: {
     maxLimit: 50,
-    alwaysPaginate: false,
+    alwaysPaginate: true,
   },
   params: {
     id: {
@@ -30,10 +29,10 @@ import { Currency } from './currency.entity';
   version: '1',
 })
 export class CurrencyController implements CrudController<Currency> {
-  constructor(public service: CurrencyService) {}
+  constructor(public service: CurrencyService) {
+  }
 
   get base(): CrudController<Currency> {
     return this;
   }
-
 }

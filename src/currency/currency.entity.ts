@@ -1,37 +1,30 @@
-import {
-  Column,
-  DeleteDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsOptional } from 'class-validator';
-import { EntityHelper } from 'src/utils/entity-helper';
+import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
 
-@Entity()
-export class Currency extends EntityHelper {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+@Entity('gw_currencies')
+export class Currency extends AbstractBaseEntity {
+  @Allow()
+  @ApiProperty({ example: 'USD' })
+  @PrimaryColumn({ nullable: false, unique: true })
+  code?: string;
 
   @Allow()
   @IsOptional()
-  @ApiProperty({ example: 'php' })
+  @ApiProperty({ example: 'US Dollar' })
   @Column({ nullable: true })
-  currency_code?: string;
+  name?: string;
 
   @Allow()
   @IsOptional()
-  @ApiProperty({ example: 'name' })
+  @ApiProperty({ example: 'US Dollars' })
   @Column({ nullable: true })
-  currency_name?: string;
+  namePlural?: string;
 
   @Allow()
   @IsOptional()
-  @ApiProperty({ example: 'symbol' })
+  @ApiProperty({ example: '$' })
   @Column({ nullable: true })
-  currency_symbol?: string;
-
-  @IsOptional()
-  @DeleteDateColumn()
-  deletedAt: Date;
+  symbol?: string;
 }

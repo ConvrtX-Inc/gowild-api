@@ -1,13 +1,13 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow } from 'class-validator';
-import { EntityHelper } from 'src/utils/entity-helper';
+import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
 
-@Entity()
-export class Role extends EntityHelper {
+@Entity('gw_roles')
+export class Role extends AbstractBaseEntity {
   @ApiProperty({ example: 1 })
   @PrimaryColumn()
-  id: number;
+  id: string;
 
   @Allow()
   @ApiProperty({ example: 'Admin' })

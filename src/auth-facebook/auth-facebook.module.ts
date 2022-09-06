@@ -10,4 +10,5 @@ import { AuthModule } from 'src/auth/auth.module';
   exports: [AuthFacebookService],
   controllers: [AuthFacebookController],
 })
-export class AuthFacebookModule {}
+export class AuthFacebookModule {
+}

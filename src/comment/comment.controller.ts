@@ -1,12 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { Controller, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController } from '@nestjsx/crud';
-import { Comment } from './entities/comment.entity'
+import { Comment } from './entities/comment.entity';
 import { CommentService } from './comment.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('Comment')
 @Crud({
   model: {
@@ -17,7 +17,7 @@ import { CommentService } from './comment.service';
   },
   query: {
     maxLimit: 50,
-    alwaysPaginate: false,
+    alwaysPaginate: true,
   },
   params: {
     id: {
@@ -32,9 +32,10 @@ import { CommentService } from './comment.service';
   version: '1',
 })
 export class CommentController implements CrudController<Comment> {
-  constructor(readonly service: CommentService) {}
+  constructor(readonly service: CommentService) {
+  }
 
-  get base(): CrudController<Comment>{
+  get base(): CrudController<Comment> {
     return this;
   }
 }

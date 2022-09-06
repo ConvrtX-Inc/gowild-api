@@ -1,12 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { LikeService } from './like.service';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 import { Like } from './entities/like.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('Like')
 @Crud({
   model: {
@@ -17,7 +17,7 @@ import { Like } from './entities/like.entity';
   },
   query: {
     maxLimit: 50,
-    alwaysPaginate: false,
+    alwaysPaginate: true,
   },
   params: {
     id: {
@@ -31,10 +31,11 @@ import { Like } from './entities/like.entity';
   path: 'like',
   version: '1',
 })
-export class LikeController implements CrudController<Like>{
-  constructor(readonly service: LikeService) {}
+export class LikeController implements CrudController<Like> {
+  constructor(readonly service: LikeService) {
+  }
 
-  get base(): CrudController<Like>{
+  get base(): CrudController<Like> {
     return this;
   }
 }

@@ -9,8 +9,8 @@ import { Message } from './message.entity';
 import { ParticipantService } from '../participant/participant.service';
 
 @Injectable()
-export class MessageService extends TypeOrmCrudService<Message> {    
-  public newRoomID: any;    
+export class MessageService extends TypeOrmCrudService<Message> {
+  public newRoomID: any;
 
   constructor(
     @InjectRepository(Message)
@@ -40,18 +40,18 @@ export class MessageService extends TypeOrmCrudService<Message> {
     return this.roomRepository.save(
       this.roomRepository.create(data),
     );
-  }  
+  }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await this.roomRepository.delete(id);
   }
 
   async updateMessage(id: string, msg: string) {
     return await this.roomRepository.update({
-      id,      
+      id,
     }, {
-      message : msg,
+      message: msg,
     });
-  }  
-          
+  }
+
 }

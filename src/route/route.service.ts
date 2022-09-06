@@ -7,10 +7,10 @@ import { Repository } from 'typeorm';
 import { Route } from './entities/route.entity';
 
 @Injectable()
-export class RouteService extends TypeOrmCrudService<Route>{
+export class RouteService extends TypeOrmCrudService<Route> {
   constructor(@InjectRepository(Route)
-  private routeRepository: Repository<Route>,
-  ){
+              private routeRepository: Repository<Route>,
+  ) {
     super(routeRepository);
   }
 
@@ -36,7 +36,7 @@ export class RouteService extends TypeOrmCrudService<Route>{
     );
   }
 
-  async softDelete(id: number): Promise<void> {
+  async softDelete(id: string): Promise<void> {
     await this.routeRepository.softDelete(id);
   }
 

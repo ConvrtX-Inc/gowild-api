@@ -16,7 +16,8 @@ import { TypeOrmConfigService } from '../typeorm-config.service';
   ],
   providers: [TypeOrmConfigService],
 })
-class AppModule {}
+class AppModule {
+}
 
 const setConfig = async () => {
   const app = await NestFactory.create(AppModule);

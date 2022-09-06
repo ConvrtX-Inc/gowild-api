@@ -10,4 +10,5 @@ import { GuidelineLogsModule } from 'src/guideline-logs/guideline-logs.module';
   providers: [GuidelineService],
   imports: [GuidelineLogsModule, TypeOrmModule.forFeature([Guideline])],
 })
-export class GuidelinesModule {}
+export class GuidelinesModule {
+}

@@ -9,4 +9,5 @@ import { Route } from './entities/route.entity';
   providers: [RouteService],
   imports: [TypeOrmModule.forFeature([Route])],
 })
-export class RouteModule {}
+export class RouteModule {
+}

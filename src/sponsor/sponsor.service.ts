@@ -6,10 +6,10 @@ import { Repository } from 'typeorm';
 
 
 @Injectable()
-export class SponsorService extends TypeOrmCrudService<Sponsor>{
+export class SponsorService extends TypeOrmCrudService<Sponsor> {
   constructor(@InjectRepository(Sponsor)
-  private sponsorRepository: Repository<Sponsor>,
-  ){
+              private sponsorRepository: Repository<Sponsor>,
+  ) {
     super(sponsorRepository);
   }
 

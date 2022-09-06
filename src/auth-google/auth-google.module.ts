@@ -10,4 +10,5 @@ import { AuthModule } from 'src/auth/auth.module';
   exports: [AuthGoogleService],
   controllers: [AuthGoogleController],
 })
-export class AuthGoogleModule {}
+export class AuthGoogleModule {
+}

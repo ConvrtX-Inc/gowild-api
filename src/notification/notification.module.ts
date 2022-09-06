@@ -9,4 +9,5 @@ import { Notification } from './notification.entity';
   providers: [NotificationService],
   imports: [TypeOrmModule.forFeature([Notification])],
 })
-export class NotificationModule {}
+export class NotificationModule {
+}

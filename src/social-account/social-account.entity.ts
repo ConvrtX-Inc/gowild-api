@@ -1,54 +1,41 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, Validate } from 'class-validator';
-import { EntityHelper } from 'src/utils/entity-helper';
-import { IsExist } from 'src/utils/validators/is-exists.validator';
-import {Transform} from "class-transformer";
+import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
+import { Transform } from 'class-transformer';
+import { IsExist } from '../utils/validators/is-exists.validator';
 
-@Entity()
-export class SocialAccount extends EntityHelper {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+@Entity('gw_social_accounts')
+export class SocialAccount extends AbstractBaseEntity {
   @IsOptional()
-  @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
+  @ApiProperty({
+    example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae',
+    nullable: false,
+  })
   @Transform((value: null | string) => (value == null ? '' : value))
   @Validate(IsExist, ['User', 'id'], {
     message: 'User not Found',
   })
   @Column({ nullable: true })
-  user_id?: string | null;
+  userId?: string | null;
 
   @IsOptional()
-  @ApiProperty({ example: 'description' })
-  @Column({ length: 100,nullable: true })
+  @ApiProperty({ nullable: true })
+  @Column({ length: 100, nullable: true })
   description?: string;
 
   @IsOptional()
-  @ApiProperty({ example: 'account_email' })
-  @Column({ length: 100,nullable: true })
-  account_email?: string;
+  @ApiProperty({ nullable: true })
+  @Column({ length: 100, nullable: true })
+  accountEmail?: string;
 
   @IsOptional()
-  @ApiProperty({ example: 'social_id' })
-  @Column({ length: 100,nullable: true })
-  social_id?: string;
+  @ApiProperty({ nullable: true })
+  @Column({ length: 100, nullable: true })
+  socialId?: string;
 
   @IsOptional()
-  @ApiProperty({ example: 'provider' })
-  @Column({ length: 100,nullable: true })
+  @ApiProperty({ nullable: true })
+  @Column({ length: 100, nullable: true })
   provider?: string;
-
-  @CreateDateColumn()
-  created_date: Date;
-
-  @UpdateDateColumn()
-  updated_date: Date;
-
 }

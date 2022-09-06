@@ -1,11 +1,15 @@
 export enum StatusEnum {
-  Cancelled = 1,
-  Active = 2,
-  Disabled = 3,
-  Approved = 4,
-  Refunded = 5,
-  Rejected = 6,
-  Completed = 7,
-  Pending = 8,
-  Inactive = 9,
+  Cancelled = 'cancelled',
+  Active = 'active',
+  Disabled = 'disabled',
+  Approved = 'approved',
+  Refunded = 'refunded',
+  Rejected = 'rejected',
+  Completed = 'completed',
+  Pending = 'pending',
+  Inactive = 'inactive',
 }
+
+export const statusEnumsNames = Object.values(StatusEnum)
+  .filter((i) => typeof i === 'string')
+  .map((e) => e as string);

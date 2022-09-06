@@ -1,18 +1,12 @@
-import {
-  HttpException,
-  HttpStatus,
-  ValidationError,
-  ValidationPipeOptions,
-} from '@nestjs/common';
+import { HttpStatus, UnprocessableEntityException, ValidationError, ValidationPipeOptions } from '@nestjs/common';
 
-const validationOptions: ValidationPipeOptions = {
+export const validationOptions: ValidationPipeOptions = {
   transform: true,
   whitelist: true,
   errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
   exceptionFactory: (errors: ValidationError[]) =>
-    new HttpException(
+    new UnprocessableEntityException(
       {
-        status: HttpStatus.UNPROCESSABLE_ENTITY,
         errors: errors.reduce(
           (accumulator, currentValue) => ({
             ...accumulator,
@@ -23,8 +17,5 @@ const validationOptions: ValidationPipeOptions = {
           {},
         ),
       },
-      HttpStatus.UNPROCESSABLE_ENTITY,
     ),
 };
-
-export default validationOptions;

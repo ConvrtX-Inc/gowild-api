@@ -9,4 +9,5 @@ import { RouteHistoricalEventPhoto } from './entities/route-historical-event-pho
   providers: [RouteHistoricalEventPhotoService],
   imports: [TypeOrmModule.forFeature([RouteHistoricalEventPhoto])],
 })
-export class RouteHistoricalEventPhotoModule {}
+export class RouteHistoricalEventPhotoModule {
+}

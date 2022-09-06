@@ -1,12 +1,12 @@
 import { Controller, UseGuards } from '@nestjs/common';
 import { RouteService } from './route.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { Route } from './entities/route.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('Route')
 @Crud({
   model: {
@@ -17,7 +17,7 @@ import { Route } from './entities/route.entity';
   },
   query: {
     maxLimit: 50,
-    alwaysPaginate: false,
+    alwaysPaginate: true,
   },
   params: {
     id: {
@@ -31,10 +31,11 @@ import { Route } from './entities/route.entity';
   path: 'route',
   version: '1',
 })
-export class RouteController implements CrudController<Route>{
-  constructor(readonly service: RouteService) {}
+export class RouteController implements CrudController<Route> {
+  constructor(readonly service: RouteService) {
+  }
 
-  get base(): CrudController<Route>{
+  get base(): CrudController<Route> {
     return this;
   }
 }

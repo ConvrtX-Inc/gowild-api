@@ -10,4 +10,5 @@ import { Friends } from './entities/friend.entity';
   providers: [FriendsService],
   imports: [TypeOrmModule.forFeature([Friends])],
 })
-export class FriendsModule {}
+export class FriendsModule {
+}

@@ -1,22 +1,26 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
-  Request,
   Post,
+  Request,
+  Session,
   UseGuards,
-  Patch,
-  Delete,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthGuard } from '@nestjs/passport';
-import {ApiBearerAuth, ApiOperation, ApiTags} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthEmailLoginDto } from './dtos/auth-email-login.dto';
 import { AuthForgotPasswordDto } from './dtos/auth-forgot-password.dto';
-import {AuthResetPasswordAdminDto, AuthResetPasswordDto} from './dtos/auth-reset-password.dto';
+import { AuthResetPasswordAdminDto, AuthResetPasswordDto } from './dtos/auth-reset-password.dto';
 import { AuthRegisterLoginDto } from './dtos/auth-register-login.dto';
+import { TokenResponse } from './dtos/token';
+import { AuthRefreshTokenDto } from './dtos/auth-refresh-token.dto';
+import { User } from '../users/user.entity';
+import { userTokenCookieKey } from '../utils/constants/cookie.keys';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @ApiTags('Auth')
 @Controller({
@@ -24,57 +28,104 @@ import { AuthRegisterLoginDto } from './dtos/auth-register-login.dto';
   version: '1',
 })
 export class AuthController {
-  constructor(public service: AuthService) {}
+  constructor(public service: AuthService) {
+  }
 
+  @ApiResponse({ type: TokenResponse })
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login account' })
-  public async login(@Body() loginDto: AuthEmailLoginDto) {
-    return this.service.validateLogin(loginDto);
+  public async login(
+    @Session() session: Record<string, unknown>,
+    @Body() loginDto: AuthEmailLoginDto,
+  ): Promise<TokenResponse> {
+    const token = await this.service.validateLogin(loginDto);
+    session[userTokenCookieKey] = token;
+    return token;
   }
 
+  @ApiResponse({ type: User })
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register new account' })
-  async register(@Body() createUserDto: AuthRegisterLoginDto) {
+  async register(@Body() createUserDto: AuthRegisterLoginDto): Promise<User> {
     return this.service.register(createUserDto);
   }
 
   @Post('forgot/password')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Request forgot password' })
-  async forgotPassword(@Body() forgotPasswordDto: AuthForgotPasswordDto) {
+  async forgotPassword(
+    @Body() forgotPasswordDto: AuthForgotPasswordDto,
+  ): Promise<void> {
     return this.service.forgotPassword(forgotPasswordDto);
   }
 
   @Post('reset/password')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Reset user password' })
-  async resetPassword(@Body() resetPasswordDto: AuthResetPasswordDto) {
+  async resetPassword(
+    @Body() resetPasswordDto: AuthResetPasswordDto,
+  ): Promise<void> {
     return this.service.resetPassword(
       resetPasswordDto.hash,
       resetPasswordDto.password,
     );
   }
 
+  @ApiResponse({ type: User })
   @Get('generate-admin')
   @ApiOperation({ summary: 'Generates default admin' })
   @HttpCode(HttpStatus.OK)
-  public async generateAdmin() {
+  public async generateAdmin(): Promise<User> {
     return this.service.generateAdmin();
   }
 
+  @ApiResponse({ type: User })
   @Post('reset-admin-password')
   @ApiOperation({ summary: 'Reset password for default admin' })
-  public async resetAdminPassword(@Body() dto: AuthResetPasswordAdminDto) {
+  public async resetAdminPassword(
+    @Body() dto: AuthResetPasswordAdminDto,
+  ): Promise<User> {
     return this.service.resetAdminPassword(dto);
   }
 
+  @ApiResponse({ type: User })
   @ApiBearerAuth()
   @Get('me')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  public async me(@Request() request) {
-    return this.service.me(request.user);
+  public async me(@Request() request: Express.Request): Promise<User> {
+    return this.service.me(request.user?.sub);
+  }
+
+  @Get('logout')
+  @HttpCode(HttpStatus.OK)
+  public async logout(@Request() request: Express.Request): Promise<void> {
+    request.session = null;
+  }
+
+  @ApiOperation({ summary: 'Refresh token using a previous RefreshToken' })
+  @ApiResponse({ type: TokenResponse, description: 'Token object' })
+  @Post('refresh-token')
+  @HttpCode(HttpStatus.OK)
+  public async refreshToken(
+    @Session() session: Record<string, unknown>,
+    @Body() dto: AuthRefreshTokenDto,
+  ): Promise<TokenResponse> {
+    let refreshToken = dto.refreshToken;
+    if (!refreshToken) {
+      const token = session[userTokenCookieKey] as TokenResponse;
+      if (token) {
+        refreshToken = token.refreshToken;
+      }
+    }
+    if (!refreshToken) {
+      throw new BadRequestException('No refresh token provided');
+    }
+
+    const token = await this.service.refreshToken(refreshToken);
+    session[userTokenCookieKey] = token;
+    return token;
   }
 }

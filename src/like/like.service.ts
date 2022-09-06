@@ -5,10 +5,10 @@ import { Repository } from 'typeorm';
 import { Like } from './entities/like.entity';
 
 @Injectable()
-export class LikeService extends TypeOrmCrudService<Like>{
-  constructor (@InjectRepository(Like)
-  private likeRepository: Repository<Like>,
-  ){
+export class LikeService extends TypeOrmCrudService<Like> {
+  constructor(@InjectRepository(Like)
+              private likeRepository: Repository<Like>,
+  ) {
     super(likeRepository);
-  }  
+  }
 }

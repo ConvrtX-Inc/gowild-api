@@ -10,7 +10,8 @@ export class ForgotService {
   constructor(
     @InjectRepository(Forgot)
     private forgotRepository: Repository<Forgot>,
-  ) {}
+  ) {
+  }
 
   async findOneEntity(options: FindOptions<Forgot>) {
     return this.forgotRepository.findOne({
@@ -28,7 +29,7 @@ export class ForgotService {
     return this.forgotRepository.save(this.forgotRepository.create(data));
   }
 
-  async softDelete(id: number): Promise<void> {
+  async softDelete(id: string): Promise<void> {
     await this.forgotRepository.softDelete(id);
   }
 }

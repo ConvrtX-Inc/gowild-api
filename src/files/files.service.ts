@@ -1,27 +1,29 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FileEntity } from './file.entity';
 import { Repository } from 'typeorm';
+import { FilesDto } from './files.dto';
 
 @Injectable()
 export class FilesService {
   constructor(
     private readonly configService: ConfigService,
     @InjectRepository(FileEntity)
-    private fileRepository: Repository<FileEntity>,
-  ) {}
+    private readonly fileRepository: Repository<FileEntity>,
+  ) {
+  }
 
-  async uploadFile(file): Promise<FileEntity> {
+  public async uploadFile(file: FilesDto): Promise<FileEntity> {
     if (!file) {
-      throw new HttpException(
+      throw new BadRequestException(
         {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            file: 'selectFile',
-          },
+          errors: [
+            {
+              file: 'selectFile',
+            },
+          ],
         },
-        HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
 
@@ -33,7 +35,28 @@ export class FilesService {
     return this.fileRepository.save(
       this.fileRepository.create({
         path: path[this.configService.get('file.driver')],
+        size: file.size,
+        mimetype: file.mimetype,
+        fileName: file.originalname,
       }),
     );
+  }
+
+  public async fileById(id: string): Promise<FileEntity> {
+    const file = this.fileRepository.findOne({
+      where: { id: id },
+    });
+
+    if (!file) {
+      throw new NotFoundException({
+        errors: [
+          {
+            user: 'file do not exist',
+          },
+        ],
+      });
+    }
+
+    return file;
   }
 }

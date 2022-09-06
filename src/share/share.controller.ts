@@ -1,12 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { Controller, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { Share } from './entities/share.entity';
 import { ShareService } from './share.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('Share')
 @Crud({
   model: {
@@ -17,7 +17,7 @@ import { ShareService } from './share.service';
   },
   query: {
     maxLimit: 50,
-    alwaysPaginate: false,
+    alwaysPaginate: true,
   },
   params: {
     id: {
@@ -31,10 +31,11 @@ import { ShareService } from './share.service';
   path: 'share',
   version: '1',
 })
-export class ShareController implements CrudController<Share>{
-  constructor(readonly service: ShareService) {}
+export class ShareController implements CrudController<Share> {
+  constructor(readonly service: ShareService) {
+  }
 
-  get base(): CrudController<Share>{
+  get base(): CrudController<Share> {
     return this;
   }
 }

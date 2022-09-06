@@ -1,12 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { Ticket } from './entities/ticket.entity';
-import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('Ticket')
 @Crud({
   model: {
@@ -29,12 +29,13 @@ import { AuthGuard } from '@nestjs/passport';
 })
 @Controller({
   path: 'ticket',
-  version:'1',
+  version: '1',
 })
 export class TicketController implements CrudController<Ticket> {
-  constructor(readonly service: TicketService) {}
+  constructor(readonly service: TicketService) {
+  }
 
-  get base(): CrudController<Ticket>{
+  get base(): CrudController<Ticket> {
     return this;
   }
 }

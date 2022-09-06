@@ -1,5 +1,4 @@
-import { HttpException, HttpStatus, Module } from '@nestjs/common';
-import { FilesController } from './files.controller';
+import { Module, UnprocessableEntityException } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { diskStorage } from 'multer';
@@ -9,6 +8,7 @@ import * as multerS3 from 'multer-s3';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FileEntity } from './file.entity';
 import { FilesService } from './files.service';
+import { FilesController } from './files.controller';
 
 @Module({
   imports: [
@@ -61,15 +61,13 @@ import { FilesService } from './files.service';
           fileFilter: (request, file, callback) => {
             if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
               return callback(
-                new HttpException(
-                  {
-                    status: HttpStatus.UNPROCESSABLE_ENTITY,
-                    errors: {
+                new UnprocessableEntityException({
+                  errors: [
+                    {
                       file: `cantUploadFileType`,
                     },
-                  },
-                  HttpStatus.UNPROCESSABLE_ENTITY,
-                ),
+                  ],
+                }),
                 false,
               );
             }
@@ -86,5 +84,7 @@ import { FilesService } from './files.service';
   ],
   controllers: [FilesController],
   providers: [ConfigModule, ConfigService, FilesService],
+  exports: [FilesService],
 })
-export class FilesModule {}
+export class FilesModule {
+}

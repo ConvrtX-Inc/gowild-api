@@ -9,4 +9,5 @@ import { TicketMessage } from './entities/ticket-message.entity';
   providers: [TicketMessagesService],
   imports: [TypeOrmModule.forFeature([TicketMessage])],
 })
-export class TicketMessagesModule {}
+export class TicketMessagesModule {
+}

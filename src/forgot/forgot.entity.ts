@@ -1,35 +1,21 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  DeleteDateColumn,
-} from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Allow } from 'class-validator';
-import { EntityHelper } from 'src/utils/entity-helper';
+import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
+import { ApiProperty } from '@nestjs/swagger';
 
-@Entity()
-export class Forgot extends EntityHelper {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+@Entity('gw_forgot_passwords')
+export class Forgot extends AbstractBaseEntity {
+  @ApiProperty({ nullable: true })
   @Allow()
   @Column()
   @Index()
   hash: string;
 
   @Allow()
+  @ApiProperty({ nullable: true })
   @ManyToOne(() => User, {
     eager: true,
   })
   user: User;
-
-  @CreateDateColumn()
-  created_date: Date;
-
-  @DeleteDateColumn()
-  deleted_date: Date;
 }

@@ -10,4 +10,5 @@ import { GuidelineLogsController } from './guideline-logs.controller';
   imports: [TypeOrmModule.forFeature([GuidelineLog])],
   exports: [GuidelineLogsService],
 })
-export class GuidelineLogsModule {}
+export class GuidelineLogsModule {
+}

@@ -22,13 +22,17 @@ export class AuthFacebookService {
   ): Promise<SocialInterface> {
     this.fb.setAccessToken(loginDto.access_token);
 
-    const data: FacebookInterface = await new Promise((resolve) => {
+    const data: FacebookInterface = await new Promise((resolve, reject) => {
       this.fb.api(
         '/me',
         'get',
         { fields: 'id,last_name,email,first_name' },
         (response) => {
-          resolve(response);
+          if (!response || response.error) {
+            reject(!response ? new Error('error occurred') : response.error);
+          } else {
+            resolve(response);
+          }
         },
       );
     });

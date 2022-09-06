@@ -1,14 +1,11 @@
-import {
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
-} from 'class-validator';
+import { ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 import { getRepository } from 'typeorm';
 import { ValidationArguments } from 'class-validator/types/validation/ValidationArguments';
 
 type ValidationEntity =
   | {
-      id?: number | string;
-    }
+  id?: number | string;
+}
   | undefined;
 
 @ValidatorConstraint({ name: 'IsNotExist', async: true })

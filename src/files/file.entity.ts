@@ -1,24 +1,34 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  AfterLoad,
-  AfterInsert,
-} from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
+import { AfterInsert, AfterLoad, Column, Entity } from 'typeorm';
 import { Allow } from 'class-validator';
-import { EntityHelper } from 'src/utils/entity-helper';
+import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
+
 import appConfig from '../config/app.config';
+import { ApiProperty } from '@nestjs/swagger';
 
-@Entity({ name: 'file' })
-export class FileEntity extends EntityHelper {
-  @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+@Entity({ name: 'gw_files' })
+export class FileEntity extends AbstractBaseEntity {
+  @ApiProperty()
   @Allow()
   @Column()
   path: string;
+
+  @ApiProperty()
+  @Column()
+  size: number;
+
+  @ApiProperty()
+  @Allow()
+  @Column()
+  mimetype: string;
+
+  @ApiProperty({ nullable: true })
+  @Allow()
+  @Column({ nullable: true, name: 'file_name' })
+  fileName: string;
+
+  @ApiProperty({ type: () => FileMetaData, nullable: true })
+  @Column('simple-json', { name: 'meta_data', nullable: true })
+  metaData: any;
 
   @AfterLoad()
   @AfterInsert()
@@ -27,4 +37,8 @@ export class FileEntity extends EntityHelper {
       this.path = appConfig().backendDomain + this.path;
     }
   }
+}
+
+export class FileMetaData {
+  encoding: string;
 }

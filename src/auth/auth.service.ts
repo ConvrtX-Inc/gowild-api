@@ -1,69 +1,67 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
-import {JwtService} from '@nestjs/jwt';
-import {User} from '../users/user.entity';
-import * as bcrypt from 'bcryptjs';
-import {AuthEmailLoginDto} from './dtos/auth-email-login.dto';
-import {randomStringGenerator} from '@nestjs/common/utils/random-string-generator.util';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { User } from '../users/user.entity';
+import { AuthEmailLoginDto } from './dtos/auth-email-login.dto';
+import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import * as crypto from 'crypto';
-import {SocialInterface} from 'src/social/interfaces/social.interface';
-import {AuthRegisterLoginDto} from './dtos/auth-register-login.dto';
-import {UsersService} from 'src/users/users.service';
-import {ForgotService} from 'src/forgot/forgot.service';
-import {MailService} from 'src/mail/mail.service';
-import {SmsService} from "src/sms/sms.service";
-import {SocialAccountService} from "src/social-account/social-account.service";
-import {plainToClass} from "class-transformer";
-import {getConnection} from "typeorm";
+import { SocialInterface } from 'src/social/interfaces/social.interface';
+import { AuthRegisterLoginDto } from './dtos/auth-register-login.dto';
+import { UsersService } from 'src/users/users.service';
+import { ForgotService } from 'src/forgot/forgot.service';
+import { MailService } from 'src/mail/mail.service';
+import { SocialAccountService } from 'src/social-account/social-account.service';
+import { PasswordService } from '../users/password.service';
+import { AuthForgotPasswordDto } from './dtos/auth-forgot-password.dto';
+import { NotFoundException } from '../exceptions/not-found.exception';
+import { AuthResetPasswordAdminDto } from './dtos/auth-reset-password.dto';
+import { UserAuthResponse } from './dtos/auth-response';
+import { TokenService } from './token.service';
+import { TokenResponse } from './dtos/token';
+import { SmsService } from '../sms/sms.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private jwtService: JwtService,
-    private usersService: UsersService,
-    private forgotService: ForgotService,
-    private smsService: SmsService,
-    private mailService: MailService,
-    private socialAccountService: SocialAccountService,
+    private readonly tokenService: TokenService,
+    private readonly usersService: UsersService,
+    private readonly forgotService: ForgotService,
+    private readonly smsService: SmsService,
+    private readonly mailService: MailService,
+    private readonly socialAccountService: SocialAccountService,
+    private readonly passwordService: PasswordService,
   ) {
   }
 
-  async validateLogin(
+  public async validateLogin(
     loginDto: AuthEmailLoginDto,
-  ): Promise<{ token: string; user: User }> {
+  ): Promise<TokenResponse> {
     const user = await this.usersService.findOneEntity({
       where: {
         email: loginDto.email,
       },
     });
 
-    const isValidPassword = await bcrypt.compare(
+    const isValidPassword = await this.passwordService.verifyPassword(
+      user,
       loginDto.password,
-      user.password,
     );
 
     if (isValidPassword) {
-      const token = await this.jwtService.sign({
-        id: user.id,
-      });
-
-      return {token, user: user};
+      return await this.tokenService.generateToken(user);
     } else {
-      throw new HttpException(
-        {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            password: 'incorrectPassword',
+      throw new UnprocessableEntityException({
+        errors: [
+          {
+            password: 'incorrectCredentials',
           },
-        },
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
+        ],
+      });
     }
   }
 
-  async validateSocialLogin(
+  public async validateSocialLogin(
     authProvider: string,
     socialData: SocialInterface,
-  ) {
+  ): Promise<UserAuthResponse> {
     let user: User;
     const socialEmail = socialData.email?.toLowerCase();
 
@@ -84,10 +82,11 @@ export class AuthService {
     if (socialAccount) {
       user = await this.usersService.findOneEntity({
         where: {
-          id: socialAccount.user_id,
+          id: socialAccount.userId,
         },
       });
     }
+
     if (user) {
       if (!userByEmail) {
         user.email = socialEmail;
@@ -96,17 +95,17 @@ export class AuthService {
     } else if (userByEmail) {
       user = userByEmail;
     } else {
-      const full_name = socialData.firstName?.trim() + ' ' + socialData.lastName?.trim();
       user = await this.usersService.saveEntity({
         email: socialEmail,
-        full_name: full_name,
+        firstName: socialData.firstName,
+        lastName: socialData.lastName,
         username: socialEmail,
       });
       await this.socialAccountService.saveEntity({
-        user_id: user.id,
-        social_id: socialData.id,
+        userId: user.id,
+        socialId: socialData.id,
         provider: authProvider,
-        account_email: socialEmail,
+        accountEmail: socialEmail,
       });
       user = await this.usersService.findOneEntity({
         where: {
@@ -114,52 +113,50 @@ export class AuthService {
         },
       });
     }
-    const jwtToken = await this.jwtService.sign({
-      id: user.id,
-    });
-
-    return {
-      token: jwtToken,
-      user,
-    };
+    const token = await this.tokenService.generateToken(user);
+    const response = new UserAuthResponse();
+    response.user = user;
+    response.token = token;
+    return response;
   }
 
-  async register(dto: AuthRegisterLoginDto): Promise<User> {
-    const hash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
+  public async register(dto: AuthRegisterLoginDto): Promise<User> {
+    const hash = this.genHash();
 
-    const user = await this.usersService.saveEntity({
-      ...dto,
-      email: dto.email,
-      phone_no: dto.phone_no,
-      hash,
-    });
-    return user;
+    const entity = new User();
+    entity.firstName = dto.firstName;
+    entity.lastName = dto.lastName;
+    entity.gender = dto.gender;
+    entity.email = dto.email;
+    entity.phoneNo = dto.phoneNo;
+    entity.hash = hash;
+    return await this.usersService.saveEntity(entity);
   }
 
-  async resetAdminPassword(dto) {
-    const user = await this.usersService.findOneEntity({
+  public async resetAdminPassword(
+    dto: AuthResetPasswordAdminDto,
+  ): Promise<User> {
+    let user = await this.usersService.findOneEntity({
       where: {
         email: 'admin@convrtx.com',
       },
     });
+
+    const password = dto.password ?? 'qwerty123';
     if (!user) {
-      const user = await this.usersService.saveEntity({
-        full_name: 'Admin',
-        username: 'admin',
-        email: 'admin@convrtx.com',
-        password: dto.password ?? 'qwerty123',
-      })
-    } else {
-      user.password = dto.password ?? 'qwerty123';
-      await user.save();
+      user = new User();
+      user.firstName = 'Admin';
+      user.lastName = 'User';
+      user.username = 'admin';
+      user.email = 'admin@convrtx.com';
+      user = await this.usersService.saveEntity(user);
     }
+
+    await this.passwordService.createPassword(user, password);
     return user;
   }
 
-  async forgotPassword(dto): Promise<void> {
+  public async forgotPassword(dto: AuthForgotPasswordDto): Promise<void> {
     let user = null;
     if (dto.email) {
       user = await this.usersService.findOneEntity({
@@ -170,47 +167,40 @@ export class AuthService {
     } else {
       user = await this.usersService.findOneEntity({
         where: {
-          phone_no: dto.phone,
+          phoneNo: dto.phone,
         },
       });
     }
 
     if (!user) {
-      throw new HttpException(
-        {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            user: 'user do not exist',
-          },
-        },
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    } else {
-      const hash = Math.floor(1000 + Math.random() * 9000).toString();
-      await this.forgotService.saveEntity({
-        hash,
-        user,
+      throw new NotFoundException({
+        user: 'user do not exist',
       });
-      if (dto.email) {
-        await this.mailService.forgotPassword({
-          to: dto.email,
-          data: {
-            hash,
-          },
-        });
-      } else {
-        await this.smsService.send({
-          phone_number: user.phone_no.toString(),
-          message: 'You have requested reset password on Go Wild App. Please use this code to reset password:' + hash
-        });
-      }
+    }
+
+    const hash = this.genHash();
+    await this.forgotService.saveEntity({
+      hash,
+      user,
+    });
+    if (dto.email) {
+      await this.mailService.forgotPassword({
+        to: dto.email,
+        data: {
+          hash,
+        },
+      });
+    } else {
+      await this.smsService.send({
+        phone_number: user.phone_no.toString(),
+        message:
+          'You have requested reset password on Go Wild App. Please use this code to reset password:' +
+          hash,
+      });
     }
   }
 
-  async resetPassword(
-    hash: string,
-    password: string,
-  ): Promise<void> {
+  public async resetPassword(hash: string, password: string): Promise<void> {
     let user = null;
     const forgot = await this.forgotService.findOneEntity({
       where: {
@@ -218,15 +208,9 @@ export class AuthService {
       },
     });
     if (!forgot) {
-      throw new HttpException(
-        {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            hash: `notFound`,
-          },
-        },
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
+      throw new NotFoundException({
+        hash: `notFound`,
+      });
     }
     user = forgot.user;
     await this.forgotService.softDelete(forgot.id);
@@ -234,33 +218,50 @@ export class AuthService {
     await user.save();
   }
 
-  async me(user: User) {
-    const data = await this.usersService.findOneEntity({
+  public async me(userId: string): Promise<User> {
+    return await this.usersService.findOneEntity({
       where: {
-        id: user.id,
+        id: userId,
       },
     });
-    return {
-      status: HttpStatus.OK,
-      success: true,
-      user: data
-    }
   }
 
-  async generateAdmin() {
-    const user = await this.usersService.findOneEntity({
+  public async generateAdmin() {
+    let user = await this.usersService.findOneEntity({
       where: {
         email: 'admin@convrtx.com',
       },
     });
+
     if (!user) {
-      const user = await this.usersService.saveEntity({
-        full_name: 'Admin',
-        username: 'admin',
-        email: 'admin@convrtx.com',
-        password: 'qwerty123',
-      })
+      user = new User();
+      user.firstName = 'Admin';
+      user.lastName = 'User';
+      user.username = 'admin';
+      user.email = 'admin@convrtx.com';
+      user = await this.usersService.saveEntity(user);
     }
+
+    await this.passwordService.createPassword(user, 'qwerty123');
     return user;
+  }
+
+  public async refreshToken(
+    refreshToken: string,
+  ): Promise<TokenResponse> {
+    const entity = await this.tokenService.verifyRefreshToken(
+      refreshToken,
+    );
+    await this.tokenService.invalidateRefreshToken(entity);
+    const userId = this.tokenService.userIdByRefreshToken(refreshToken);
+    const user = await this.usersService.findOne(userId);
+    return this.tokenService.generateToken(user);
+  }
+
+  private genHash(): string {
+    return crypto
+      .createHash('sha256')
+      .update(randomStringGenerator())
+      .digest('hex');
   }
 }

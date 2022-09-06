@@ -1,13 +1,13 @@
 import { Controller, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
-import { Crud, CrudController, Override } from '@nestjsx/crud';
+import { Crud, CrudController } from '@nestjsx/crud';
 
 import { Participant } from './participant.entity';
 import { ParticipantService } from './participant.service';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('Participant')
 @Crud({
   model: {
@@ -18,7 +18,7 @@ import { ParticipantService } from './participant.service';
   },
   query: {
     maxLimit: 50,
-    alwaysPaginate: false,
+    alwaysPaginate: true,
   },
   params: {
     id: {
@@ -33,10 +33,11 @@ import { ParticipantService } from './participant.service';
   version: '1',
 })
 export class ParticipantController implements CrudController<Participant> {
-  constructor(public service: ParticipantService) {}
+  constructor(public service: ParticipantService) {
+  }
 
   get base(): CrudController<Participant> {
     return this;
   }
-  
+
 }

@@ -1,12 +1,12 @@
-import { Controller, Request, UseGuards } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
-import { Crud, CrudController, Override } from '@nestjsx/crud';
+import { Crud, CrudController } from '@nestjsx/crud';
 import { Notification } from './notification.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('Notification')
 @Crud({
   model: {
@@ -17,7 +17,7 @@ import { Notification } from './notification.entity';
   },
   query: {
     maxLimit: 50,
-    alwaysPaginate: false,
+    alwaysPaginate: true,
   },
   params: {
     id: {
@@ -32,7 +32,8 @@ import { Notification } from './notification.entity';
   version: '1',
 })
 export class NotificationController implements CrudController<Notification> {
-  constructor(public service: NotificationService) {}
+  constructor(public service: NotificationService) {
+  }
 
   get base(): CrudController<Notification> {
     return this;

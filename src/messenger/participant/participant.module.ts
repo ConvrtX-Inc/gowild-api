@@ -11,4 +11,5 @@ import { Participant } from './participant.entity';
   imports: [TypeOrmModule.forFeature([Participant])],
   exports: [ParticipantService],
 })
-export class ParticipantModule {}
+export class ParticipantModule {
+}

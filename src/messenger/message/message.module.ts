@@ -3,8 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { MessageService } from './message.service';
 import { Message } from './message.entity';
-import { ParticipantService } from '../participant/participant.service';  
-import { ParticipantModule } from '../participant/participant.module';  
+import { ParticipantModule } from '../participant/participant.module';
 
 @Module({
   controllers: [],
@@ -13,4 +12,5 @@ import { ParticipantModule } from '../participant/participant.module';
   exports: [MessageService],
 })
 
-export class MessageModule {}
+export class MessageModule {
+}

@@ -3,6 +3,7 @@ import { Repository } from 'typeorm';
 import { Status } from './status.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
+import { StatusEnum } from '../auth/status.enum';
 
 @Injectable()
 export class StatusService extends TypeOrmCrudService<Status> {
@@ -13,4 +14,7 @@ export class StatusService extends TypeOrmCrudService<Status> {
     super(statusesRepository);
   }
 
+  public async findByEnum(status: StatusEnum) {
+    return this.statusesRepository.findOne({ where: { statusName: status } });
+  }
 }

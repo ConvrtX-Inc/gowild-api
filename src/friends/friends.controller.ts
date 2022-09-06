@@ -1,12 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { FriendsService } from './friends.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { Friends } from './entities/friend.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('Friends')
 @Crud({
   model: {
@@ -17,7 +17,7 @@ import { Friends } from './entities/friend.entity';
   },
   query: {
     maxLimit: 50,
-    alwaysPaginate: false,
+    alwaysPaginate: true,
   },
   params: {
     id: {
@@ -31,10 +31,11 @@ import { Friends } from './entities/friend.entity';
   path: 'friends',
   version: '1',
 })
-export class FriendsController implements CrudController<Friends>{
-  constructor(readonly service: FriendsService) {}
+export class FriendsController implements CrudController<Friends> {
+  constructor(readonly service: FriendsService) {
+  }
 
-  get base(): CrudController<Friends>{
+  get base(): CrudController<Friends> {
     return this;
   }
 

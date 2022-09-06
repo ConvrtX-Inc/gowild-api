@@ -12,4 +12,5 @@ import { Friends } from 'src/friends/entities/friend.entity';
   providers: [PostFeedService, FriendsService],
   imports: [TypeOrmModule.forFeature([PostFeed, Friends])],
 })
-export class PostFeedModule {}
+export class PostFeedModule {
+}

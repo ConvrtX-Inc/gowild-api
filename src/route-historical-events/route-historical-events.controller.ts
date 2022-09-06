@@ -1,12 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards} from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
+import { Controller, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { RouteHistoricalEvent } from './entities/route-historical-event.entity';
 import { RouteHistoricalEventsService } from './route-historical-events.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('Route Historical Event')
 @Crud({
   model: {
@@ -32,9 +32,10 @@ import { RouteHistoricalEventsService } from './route-historical-events.service'
   version: '1',
 })
 export class RouteHistoricalEventsController implements CrudController<RouteHistoricalEvent> {
-  constructor(readonly service: RouteHistoricalEventsService) {}
+  constructor(readonly service: RouteHistoricalEventsService) {
+  }
 
-  get base(): CrudController<RouteHistoricalEvent>{
+  get base(): CrudController<RouteHistoricalEvent> {
     return this;
   }
 

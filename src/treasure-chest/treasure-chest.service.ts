@@ -5,10 +5,10 @@ import { Repository } from 'typeorm';
 import { TreasureChest } from './entities/treasure-chest.entity';
 
 @Injectable()
-export class TreasureChestService extends TypeOrmCrudService<TreasureChest>{
+export class TreasureChestService extends TypeOrmCrudService<TreasureChest> {
   constructor(@InjectRepository(TreasureChest)
-  private treasureChestRepository: Repository<TreasureChest>,
-  ){
+              private treasureChestRepository: Repository<TreasureChest>,
+  ) {
     super(treasureChestRepository);
   }
 }
