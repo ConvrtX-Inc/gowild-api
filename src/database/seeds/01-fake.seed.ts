@@ -8,6 +8,10 @@ import { Password } from '../../users/password.entity';
 export default class FakeSeed implements Seeder {
 
   public async run(factory: Factory, connection: Connection): Promise<void> {
+    if (process.env.SEDD_FAKE_DATA !== 'true') {
+      return;
+    }
+
     const status = await connection
       .createQueryBuilder()
       .select('s')

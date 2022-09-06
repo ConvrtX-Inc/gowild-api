@@ -116,6 +116,7 @@ dist
 # IDEs and editors
 /.idea
 /.vscode
+/.github
 /.husky
 .project
 .classpath

@@ -6,7 +6,8 @@ import { StatusEnum } from '../../auth/status.enum';
 import { Password } from '../../users/password.entity';
 import * as bcrypt from 'bcryptjs';
 
-const adminEmail = 'admin@convrtx.com';
+const adminEmail = process.env.SEED_ADMIN_EMAIL || 'admin@convrtx.com';
+const adminPassword = process.env.SEED_ADMIN_PASSWORD || 'query123';
 
 export default class AdminSeed implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<void> {
@@ -50,7 +51,7 @@ export default class AdminSeed implements Seeder {
       await factory(Password)()
         .map(async (p) => {
           const salt = bcrypt.genSaltSync();
-          p.hashedValue = bcrypt.hashSync('query123', salt);
+          p.hashedValue = bcrypt.hashSync(adminPassword, salt);
           p.metaData = JSON.stringify({ salt });
           p.user = user;
           return p;
