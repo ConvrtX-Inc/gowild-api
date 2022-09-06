@@ -82,7 +82,7 @@ export class User extends AbstractBaseEntity {
   hash: string;
 
   @ApiHideProperty()
-  @OneToMany(() => Password, (p) => p.user)
+  @OneToMany(() => Password, (p) => p.user, { cascade: ['remove'] })
   @Exclude()
   passwords: Password[];
 
