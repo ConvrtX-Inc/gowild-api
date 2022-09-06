@@ -1,25 +1,13 @@
-import { EntityHelper } from 'src/utils/entity-helper';
-import {
-  AfterLoad,
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
+import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsOptional, Validate } from 'class-validator';
 import { IsExist } from 'src/utils/validators/is-exists.validator';
 import { Transform } from 'class-transformer';
 import * as base64_arraybuffer from 'base64-arraybuffer-converter';
 
-@Entity()
-export class Sponsor extends EntityHelper {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+@Entity('gw_sponsors')
+export class Sponsor extends AbstractBaseEntity {
   @ApiProperty({ example: 'beff5885-a523-4cb3-8ea6-410caace6795' })
   @Validate(IsExist, ['TreasureChest', 'id'], {
     message: 'Treasure Chest Id not Found',
@@ -56,10 +44,6 @@ export class Sponsor extends EntityHelper {
     default: 'link',
   })
   link: string | null;
-  @CreateDateColumn({ name: 'create_date' })
-  createDate: Date;
-  @UpdateDateColumn({ name: 'updated_date' })
-  updatedDate: Date;
 
   @BeforeUpdate()
   @BeforeInsert()

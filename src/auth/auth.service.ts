@@ -8,16 +8,15 @@ import { AuthRegisterLoginDto } from './dtos/auth-register-login.dto';
 import { UsersService } from 'src/users/users.service';
 import { ForgotService } from 'src/forgot/forgot.service';
 import { MailService } from 'src/mail/mail.service';
-import { SmsService } from 'src/sms/sms.service';
 import { SocialAccountService } from 'src/social-account/social-account.service';
-import { PasswordService } from '../users/password/password.service';
+import { PasswordService } from '../users/password.service';
 import { AuthForgotPasswordDto } from './dtos/auth-forgot-password.dto';
 import { NotFoundException } from '../exceptions/not-found.exception';
 import { AuthResetPasswordAdminDto } from './dtos/auth-reset-password.dto';
 import { UserAuthResponse } from './dtos/auth-response';
-import { TokenService } from './token/token.service';
-import { AuthRefreshTokenDto } from './dtos/auth-refresh-token.dto';
+import { TokenService } from './token.service';
 import { TokenResponse } from './dtos/token';
+import { SmsService } from '../sms/sms.service';
 
 @Injectable()
 export class AuthService {
@@ -32,10 +31,9 @@ export class AuthService {
   ) {
   }
 
-
   public async validateLogin(
     loginDto: AuthEmailLoginDto,
-  ): Promise<UserAuthResponse> {
+  ): Promise<TokenResponse> {
     const user = await this.usersService.findOneEntity({
       where: {
         email: loginDto.email,
@@ -48,16 +46,12 @@ export class AuthService {
     );
 
     if (isValidPassword) {
-      const token = await this.tokenService.generateToken(user);
-      const response = new UserAuthResponse();
-      response.user = user;
-      response.token = token;
-      return response;
+      return await this.tokenService.generateToken(user);
     } else {
       throw new UnprocessableEntityException({
         errors: [
           {
-            password: 'incorrectPassword',
+            password: 'incorrectCredentials',
           },
         ],
       });
@@ -252,12 +246,14 @@ export class AuthService {
     return user;
   }
 
-  // TODO Should not refresh a already refreshed token
   public async refreshToken(
-    request: AuthRefreshTokenDto,
+    refreshToken: string,
   ): Promise<TokenResponse> {
-    await this.tokenService.verifyRefreshToken(request.refreshToken);
-    const userId = this.tokenService.userIdByRefreshToken(request.refreshToken);
+    const entity = await this.tokenService.verifyRefreshToken(
+      refreshToken,
+    );
+    await this.tokenService.invalidateRefreshToken(entity);
+    const userId = this.tokenService.userIdByRefreshToken(refreshToken);
     const user = await this.usersService.findOne(userId);
     return this.tokenService.generateToken(user);
   }

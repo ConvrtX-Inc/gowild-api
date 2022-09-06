@@ -1,15 +1,12 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, Validate } from 'class-validator';
-import { EntityHelper } from 'src/utils/entity-helper';
-import { IsExist } from 'src/utils/validators/is-exists.validator';
+import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
 import { Transform } from 'class-transformer';
+import { IsExist } from '../utils/validators/is-exists.validator';
 
-@Entity('social_accounts')
-export class SocialAccount extends EntityHelper {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+@Entity('gw_social_accounts')
+export class SocialAccount extends AbstractBaseEntity {
   @IsOptional()
   @ApiProperty({
     example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae',
@@ -41,10 +38,4 @@ export class SocialAccount extends EntityHelper {
   @ApiProperty({ nullable: true })
   @Column({ length: 100, nullable: true })
   provider?: string;
-
-  @CreateDateColumn({ name: 'create_date' })
-  createdDate: Date;
-
-  @UpdateDateColumn({ name: 'updated_date' })
-  updatedDate: Date;
 }

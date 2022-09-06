@@ -1,14 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, Validate } from 'class-validator';
-import { EntityHelper } from 'src/utils/entity-helper';
+import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
 import { IsExist } from 'src/utils/validators/is-exists.validator';
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 
-@Entity()
-export class RouteHistoricalEventPhoto extends EntityHelper {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+@Entity('gw_route_historical_event_photos')
+export class RouteHistoricalEventPhoto extends AbstractBaseEntity {
   @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
   @Validate(IsExist, ['RouteHistoricalEvent', 'id'], {
     message: 'Route Historical Event Id not Found',
@@ -26,10 +23,4 @@ export class RouteHistoricalEventPhoto extends EntityHelper {
     nullable: true,
   })
   event_photo_url: string | null;
-
-  @CreateDateColumn({ name: 'create_date' })
-  createDate: Date;
-
-  @UpdateDateColumn({ name: 'updated_date' })
-  updatedDate: Date;
 }

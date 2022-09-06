@@ -9,6 +9,7 @@ export interface SimpleUser {
   phoneNo: string | null;
   email: string | null;
   fullName: string | null;
+  picture: string | null;
 }
 
 export type TokenType = 'accessToken' | 'refreshToken';

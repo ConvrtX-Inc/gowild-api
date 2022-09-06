@@ -1,9 +1,13 @@
+import { AccessToken } from './src/auth/dtos/token';
+
 export {};
 
 declare global {
   namespace Express {
-    interface User {
-      id: string;
+    interface User extends AccessToken {
+      iat: number;
+      exp: number;
+      sub: string;
     }
   }
 }

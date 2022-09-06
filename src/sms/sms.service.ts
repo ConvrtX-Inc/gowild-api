@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectTwilio, TwilioClient } from 'nestjs-twilio';
 import { SmsDto } from './dto/sms.dto';
 
@@ -17,10 +17,11 @@ export class SmsService {
         })
         .then((message) => message);
     } catch (error) {
+      Logger.error(error);
       throw new BadRequestException({
         errors: [
           {
-            details: 'Something went wrong: ' + error.message,
+            details: 'error.sending.sms',
           },
         ],
       });

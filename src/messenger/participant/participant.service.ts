@@ -38,7 +38,7 @@ export class ParticipantService extends TypeOrmCrudService<Participant> {
     );
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await this.participantRepository.delete(id);
   }
 }

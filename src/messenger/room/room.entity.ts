@@ -1,13 +1,10 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
-import { EntityHelper } from 'src/utils/entity-helper';
+import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
 
-@Entity()
-export class Room extends EntityHelper {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+@Entity('gw_rooms')
+export class Room extends AbstractBaseEntity {
   @IsOptional()
   @ApiProperty({ example: 'name' })
   @Column({ length: 100 })
@@ -17,11 +14,4 @@ export class Room extends EntityHelper {
   @ApiProperty({ example: 'type' })
   @Column({ length: 100 })
   type?: string;
-
-  @CreateDateColumn({ name: 'create_date' })
-  createDate: Date;
-
-  @UpdateDateColumn({ name: 'updated_date' })
-  updatedDate: Date;
-
 }

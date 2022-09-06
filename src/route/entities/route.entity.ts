@@ -1,25 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { Allow, IsOptional, Validate } from 'class-validator';
-import { EntityHelper } from 'src/utils/entity-helper';
+import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
 import { IsExist } from 'src/utils/validators/is-exists.validator';
-import {
-  AfterLoad,
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 import * as base64_arraybuffer from 'base64-arraybuffer-converter';
 
-@Entity()
-export class Route extends EntityHelper {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+@Entity('gw_routes')
+export class Route extends AbstractBaseEntity {
   @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
   @Validate(IsExist, ['User', 'id'], {
     message: 'User not Found',
@@ -99,10 +87,6 @@ export class Route extends EntityHelper {
   @ApiProperty({ example: 'description' })
   @Column({ type: 'text' })
   description?: string;
-  @CreateDateColumn({ name: 'create_date' })
-  createDate: Date;
-  @UpdateDateColumn({ name: 'updated_date' })
-  updatedDate: Date;
 
   @BeforeUpdate()
   @BeforeInsert()

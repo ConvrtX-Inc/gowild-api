@@ -1,12 +1,12 @@
 import { Controller, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController } from '@nestjsx/crud';
-import { AuthGuard } from '@nestjs/passport';
 import { GuidelineLog } from './guideline-log.entity';
 import { GuidelineLogsService } from './guideline-logs.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('Guideline Logs')
 @Crud({
   model: {

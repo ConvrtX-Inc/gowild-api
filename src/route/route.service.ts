@@ -36,7 +36,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     );
   }
 
-  async softDelete(id: number): Promise<void> {
+  async softDelete(id: string): Promise<void> {
     await this.routeRepository.softDelete(id);
   }
 

@@ -2,11 +2,11 @@ import { Controller, UseGuards } from '@nestjs/common';
 import { LikeService } from './like.service';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 import { Like } from './entities/like.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('Like')
 @Crud({
   model: {

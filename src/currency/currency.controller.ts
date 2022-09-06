@@ -29,7 +29,8 @@ import { Currency } from './currency.entity';
   version: '1',
 })
 export class CurrencyController implements CrudController<Currency> {
-  constructor(public service: CurrencyService) {}
+  constructor(public service: CurrencyService) {
+  }
 
   get base(): CrudController<Currency> {
     return this;

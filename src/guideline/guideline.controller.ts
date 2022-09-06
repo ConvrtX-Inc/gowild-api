@@ -1,14 +1,14 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController, CrudRequest, Override, ParsedBody, ParsedRequest } from '@nestjsx/crud';
-import { AuthGuard } from '@nestjs/passport';
 import { GuidelineService } from './guideline.service';
 import { Guideline } from './guideline.entity';
 import { GuidelineLogsService } from 'src/guideline-logs/guideline-logs.service';
 import { GuidelineLog } from 'src/guideline-logs/guideline-log.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('Guidelines')
 @Crud({
   model: {
@@ -34,8 +34,8 @@ import { GuidelineLog } from 'src/guideline-logs/guideline-log.entity';
   version: '1',
 })
 export class GuidelinesController implements CrudController<Guideline> {
-  constructor(public service: GuidelineService,
-              public guidelineLogsService: GuidelineLogsService) {
+  constructor(public readonly service: GuidelineService,
+              public readonly guidelineLogsService: GuidelineLogsService) {
   }
 
   get base(): CrudController<Guideline> {
@@ -55,8 +55,7 @@ export class GuidelinesController implements CrudController<Guideline> {
     const result = this.base.updateOneBase(req, dto);
     const logData = new GuidelineLog();
     logData.guideline_type = dto.type;
-    logData.last_updateDate = new Date();
-    logData.user_id = dto.last_updated_user;
+    logData.userId = dto.last_updated_user;
     this.guidelineLogsService.saveOne(logData);
     return result;
   }

@@ -1,25 +1,13 @@
-import {
-  AfterLoad,
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsOptional, Validate } from 'class-validator';
-import { EntityHelper } from 'src/utils/entity-helper';
+import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
 import { IsExist } from 'src/utils/validators/is-exists.validator';
 import { Transform } from 'class-transformer';
 import * as base64_arraybuffer from 'base64-arraybuffer-converter';
 
-@Entity()
-export class SystemSupportAttachment extends EntityHelper {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+@Entity('gw_system_support_attachments')
+export class SystemSupportAttachment extends AbstractBaseEntity {
   @IsOptional()
   @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
   @Validate(IsExist, ['SystemSupport', 'id'], {
@@ -38,10 +26,6 @@ export class SystemSupportAttachment extends EntityHelper {
     nullable: true,
   })
   attachment?: Buffer | null | string;
-  @CreateDateColumn({ name: 'create_date' })
-  createDate: Date;
-  @UpdateDateColumn({ name: 'updated_date' })
-  updatedDate: Date;
 
   @BeforeUpdate()
   @BeforeInsert()

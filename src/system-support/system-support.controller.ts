@@ -1,12 +1,12 @@
 import { Controller, UseGuards } from '@nestjs/common';
 import { SystemSupportService } from './system-support.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { SystemSupport } from './system-support.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('System Support')
 @Crud({
   model: {

@@ -1,29 +1,25 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsOptional } from 'class-validator';
-import { EntityHelper } from 'src/utils/entity-helper';
+import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
+import { StatusEnum } from '../auth/status.enum';
 
-@Entity()
-export class Status extends EntityHelper {
-  @ApiProperty({ example: 1 })
-  @PrimaryColumn({ type: 'smallint' })
-  id: number;
-
+@Entity('gw_statuses')
+export class Status extends AbstractBaseEntity {
   @Allow()
-  @ApiProperty({ example: 'Active', name: 'status_name' })
-  @Column({ name: 'status_name' })
-  statusName?: string;
+  @ApiProperty({ example: '2', type: 'string', enum: StatusEnum })
+  @Column({
+    enum: StatusEnum,
+    enumName: 'StatusEnum',
+    name: 'status_name',
+    nullable: false,
+    unique: true,
+  })
+  statusName: string;
 
   @Allow()
   @IsOptional()
   @ApiProperty({ example: false })
   @Column({ type: 'bool', nullable: true, default: 'FALSE' })
-  is_active?: boolean | null;
-
-  @CreateDateColumn({ name: 'create_date' })
-  createDate: Date;
-
-  @UpdateDateColumn({ name: 'updated_date' })
-  updatedDate: Date;
-
+  isActive?: boolean | null;
 }

@@ -1,14 +1,11 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, Validate } from 'class-validator';
-import { EntityHelper } from 'src/utils/entity-helper';
+import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
 import { IsExist } from 'src/utils/validators/is-exists.validator';
 
-@Entity()
-export class Message extends EntityHelper {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+@Entity('gw_messages')
+export class Message extends AbstractBaseEntity {
   @IsOptional()
   @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
   @Validate(IsExist, ['Room', 'id'], {
@@ -29,11 +26,4 @@ export class Message extends EntityHelper {
   @ApiProperty({ example: 'Hey' })
   @Column({ type: 'text' })
   message?: string;
-
-  @CreateDateColumn({ name: 'create_date' })
-  createDate: Date;
-
-  @UpdateDateColumn({ name: 'updated_date' })
-  updatedDate: Date;
-
 }

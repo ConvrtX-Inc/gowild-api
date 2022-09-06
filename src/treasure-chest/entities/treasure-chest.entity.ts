@@ -1,26 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { time } from 'aws-sdk/clients/frauddetector';
-import { EntityHelper } from 'src/utils/entity-helper';
-import {
-  AfterLoad,
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
+import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 import { Allow, IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
 import * as base64_arraybuffer from 'base64-arraybuffer-converter';
 
 
-@Entity()
-export class TreasureChest extends EntityHelper {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+@Entity('gw_treasure_chests')
+export class TreasureChest extends AbstractBaseEntity {
   @IsOptional()
   @ApiProperty({ example: 'First On The List' })
   @Column({
@@ -95,10 +83,6 @@ export class TreasureChest extends EntityHelper {
   @ApiProperty({ example: 'augmented reality' })
   @Column({ nullable: true })
   a_r?: string;
-  @CreateDateColumn({ name: 'create_date' })
-  createDate: Date;
-  @UpdateDateColumn({ name: 'updated_date' })
-  updatedDate: Date;
 
   @BeforeUpdate()
   @BeforeInsert()

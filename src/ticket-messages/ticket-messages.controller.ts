@@ -1,12 +1,12 @@
 import { Controller, UseGuards } from '@nestjs/common';
 import { TicketMessagesService } from './ticket-messages.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 import { TicketMessage } from './entities/ticket-message.entity';
 import { Crud, CrudController } from '@nestjsx/crud';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('Ticket Messages')
 @Crud({
   model: {

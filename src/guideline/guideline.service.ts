@@ -37,8 +37,7 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
     const result = await this.saveEntity(data);
     const logData = new GuidelineLog();
     logData.guideline_type = data.type;
-    logData.last_updateDate = new Date();
-    logData.user_id = data.last_updated_user;
+    logData.userId = data.last_updated_user;
     await this.guidelineLogsService.saveOne(logData);
     return result;
   }
@@ -49,7 +48,7 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
     );
   }
 
-  async softDelete(id: number): Promise<void> {
+  async softDelete(id: string): Promise<void> {
     await this.guidelinesRepository.softDelete(id);
   }
 

@@ -1,21 +1,18 @@
-import { EntityHelper } from '../utils/entity-helper';
-import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { AbstractBaseEntity } from '../utils/abstract-base-entity';
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { IsOptional } from 'class-validator';
 import { CrudValidationGroups } from '@nestjsx/crud';
 import { User } from './user.entity';
 
 @Index('idx_password_user_by_status', (obj: Password) => [obj.user])
-@Entity('passwords')
-export class Password extends EntityHelper {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+@Entity('gw_user_passwords')
+export class Password extends AbstractBaseEntity {
   @IsOptional({ groups: [CrudValidationGroups.UPDATE] })
   @Column({ nullable: false })
   hashedValue: string;
 
   @Column({ nullable: false })
-  algoritm: string;
+  algorithm: string;
 
   @Column({ nullable: true, type: 'text' })
   metaData: string;

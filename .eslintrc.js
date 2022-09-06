@@ -1,3 +1,5 @@
+const prettierConfig = require('.prettierrc.js');
+
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -26,6 +28,6 @@ module.exports = {
     'require-await': 'off',
     '@typescript-eslint/require-await': 'error',
     '@typescript-eslint/no-floating-promises': 'error',
-    'prettier': ['error', {singleQuote: 'true'}]
+    'prettier': ['error', prettierConfig]
   },
 };

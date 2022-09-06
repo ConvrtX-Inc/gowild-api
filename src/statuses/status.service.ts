@@ -15,6 +15,6 @@ export class StatusService extends TypeOrmCrudService<Status> {
   }
 
   public async findByEnum(status: StatusEnum) {
-    return this.statusesRepository.findOne({ where: { id: status } });
+    return this.statusesRepository.findOne({ where: { statusName: status } });
   }
 }

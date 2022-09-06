@@ -11,11 +11,14 @@ import { ForgotModule } from 'src/forgot/forgot.module';
 import { MailModule } from 'src/mail/mail.module';
 import { SmsModule } from 'src/sms/sms.module';
 import { SocialAccountModule } from 'src/social-account/social-account.module';
-import { TokenService } from './token/token.service';
+import { TokenService } from './token.service';
 import { AuthConfig } from './dtos/auth.config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { RefreshTokenEntity } from './refresh-token.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([RefreshTokenEntity]),
     UsersModule,
     ForgotModule,
     PassportModule,

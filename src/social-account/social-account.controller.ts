@@ -1,12 +1,12 @@
 import { Controller, UseGuards } from '@nestjs/common';
 import { SocialAccountService } from './social-account.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { SocialAccount } from './social-account.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('SocialAccount')
 @Crud({
   model: {

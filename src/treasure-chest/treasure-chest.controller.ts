@@ -3,11 +3,11 @@ import { TreasureChestService } from './treasure-chest.service';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { TreasureChest } from './entities/treasure-chest.entity';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('Treasure Chest')
 @Crud({
   model: {

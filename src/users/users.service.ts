@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +8,7 @@ import { DeepPartial } from 'src/utils/types/deep-partial.type';
 import { StatusEnum } from 'src/auth/status.enum';
 import { MailService } from 'src/mail/mail.service';
 import { StatusService } from '../statuses/status.service';
+import { FilesService } from '../files/files.service';
 
 @Injectable()
 export class UsersService extends TypeOrmCrudService<User> {
@@ -16,6 +17,7 @@ export class UsersService extends TypeOrmCrudService<User> {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
     private readonly statusService: StatusService,
+    private readonly filesService: FilesService,
   ) {
     super(usersRepository);
   }
@@ -40,41 +42,55 @@ export class UsersService extends TypeOrmCrudService<User> {
     return this.usersRepository.save(this.usersRepository.create(data));
   }
 
-  async softDelete(id: number): Promise<void> {
+  async softDelete(id: string): Promise<void> {
     await this.usersRepository.softDelete(id);
   }
 
-  async updateUserStatus(id: string, status: StatusEnum) {
+  async updateUserStatus(id: string, statusEnum: StatusEnum): Promise<User> {
     const user = await this.usersRepository.findOne({
       where: { id: id },
     });
     if (!user) {
-      throw new HttpException(
-        {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
+      throw new NotFoundException({
+        errors: [
+          {
             user: 'user do not exist',
           },
-        },
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    } else {
-      user.status = await this.statusService.findByEnum(status);
-      await user.save();
-
-      await this.mailService.userUpdateStatus(
-        {
-          to: user.email,
-          name: user.fullName,
-          data: {},
-        },
-        status,
-      );
-
-      return {
-        status: HttpStatus.OK,
-        user: user,
-      };
+        ],
+      });
     }
+    const status = await this.statusService.findByEnum(statusEnum);
+    user.status = status;
+    await user.save();
+
+    await this.mailService.userUpdateStatus(
+      {
+        to: user.email,
+        name: user.fullName,
+        data: {},
+      },
+      status,
+    );
+
+    return user;
+  }
+
+  public async updateAvatar(id: string, fileId: string) {
+    const user = await this.usersRepository.findOne({
+      where: { id: id },
+    });
+
+    if (!user) {
+      throw new NotFoundException({
+        errors: [
+          {
+            user: 'user do not exist',
+          },
+        ],
+      });
+    }
+
+    user.picture = await this.filesService.fileById(fileId);
+    await user.save();
   }
 }

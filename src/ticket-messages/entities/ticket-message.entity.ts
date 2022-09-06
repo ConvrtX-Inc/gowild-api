@@ -1,14 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EntityHelper } from 'src/utils/entity-helper';
+import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
 import { IsExist } from 'src/utils/validators/is-exists.validator';
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { IsOptional, Validate } from 'class-validator';
 
-@Entity()
-export class TicketMessage extends EntityHelper {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+@Entity('gw_ticket_messages')
+export class TicketMessage extends AbstractBaseEntity {
   @ApiProperty({ example: '1235CA2B2' })
   @Validate(IsExist, ['Ticket', 'id'], {
     message: 'Ticket Id not Found',
@@ -33,10 +30,4 @@ export class TicketMessage extends EntityHelper {
   @ApiProperty({ example: 'Description' })
   @Column({ type: 'text' })
   message?: string;
-
-  @CreateDateColumn({ name: 'create_date' })
-  createDate: Date;
-
-  @UpdateDateColumn({ name: 'updated_date' })
-  updatedDate: Date;
 }

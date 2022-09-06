@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { I18nService } from 'nestjs-i18n';
 import { StatusEnum } from 'src/auth/status.enum';
 import { MailData } from './interfaces/mail-data.interface';
+import { Status } from '../statuses/status.entity';
 
 @Injectable()
 export class MailService {
@@ -14,9 +15,9 @@ export class MailService {
   ) {
   }
 
-  async userUpdateStatus(mailData: MailData<{}>, status?: StatusEnum) {
+  async userUpdateStatus(mailData: MailData<{}>, status?: Status) {
     let textMessage: string;
-    switch (status) {
+    switch (status.statusName) {
       case StatusEnum.Approved: {
         textMessage = await this.i18n.t('common.approved');
         break;

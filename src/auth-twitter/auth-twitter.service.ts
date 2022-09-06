@@ -19,12 +19,13 @@ export class AuthTwitterService {
       access_token_secret: loginDto.accessTokenSecret,
     });
 
-    const data: Twitter.ResponseData = await new Promise((resolve) => {
+    const data: Twitter.ResponseData = await new Promise((resolve, reject) => {
       twitter.get(
         'account/verify_credentials',
         { include_email: true },
         (error, profile) => {
-          resolve(profile);
+          if (error) reject(error);
+          else resolve(profile);
         },
       );
     });
@@ -33,6 +34,7 @@ export class AuthTwitterService {
       id: data.id.toString(),
       email: data.email,
       firstName: data.name,
+      emailVerified: data.email_verified,
     };
   }
 }

@@ -53,6 +53,7 @@ import { TicketMessagesModule } from './ticket-messages/ticket-messages.module';
 import { GuidelineLogsModule } from './guideline-logs/guideline-logs.module';
 import { HealthModule } from './health/health.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { CookieSessionModule, NestCookieSessionOptions } from 'nestjs-cookie-session';
 
 @Module({
   imports: [
@@ -71,6 +72,17 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
       ],
       envFilePath: ['.env'],
       expandVariables: true,
+    }),
+    CookieSessionModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService): Promise<NestCookieSessionOptions> =>
+        Promise.resolve({
+          session: {
+            secret: config.get('COOKIE_SECRET'),
+            name: config.get('COOKIE_NAME'),
+          },
+        }),
     }),
     TypeOrmModule.forRootAsync({
       useClass: TypeOrmConfigService,

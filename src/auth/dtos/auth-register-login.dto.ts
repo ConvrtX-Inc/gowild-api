@@ -26,9 +26,9 @@ export class AuthRegisterLoginDto {
   lastName: string | null;
 
   @IsEnum(GenderEnum)
-  @ApiProperty({ enum: GenderEnum, example: GenderEnum.Male, nullable: true })
+  @ApiProperty({ enum: GenderEnum, example: GenderEnum.Male, nullable: true, enumName: 'GenderEnum' })
   @Allow()
-  gender: string | null;
+  gender: GenderEnum;
 
   @ApiProperty({ example: '+639506703401', nullable: true })
   @Allow()

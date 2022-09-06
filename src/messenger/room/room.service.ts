@@ -49,7 +49,7 @@ export class RoomService extends TypeOrmCrudService<Room> {
     );
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await this.roomRepository.delete(id);
   }
 

@@ -1,12 +1,12 @@
 import { Controller, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { RouteHistoricalEventPhotoService } from './route-historical-event-photo.service';
 import { RouteHistoricalEventPhoto } from './entities/route-historical-event-photo.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('Route Historical Event Photo')
 @Crud({
   model: {

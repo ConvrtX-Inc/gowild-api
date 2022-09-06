@@ -37,7 +37,7 @@ export class GuidelineLogsService extends TypeOrmCrudService<GuidelineLog> {
     );
   }
 
-  async softDelete(id: number): Promise<void> {
+  async softDelete(id: string): Promise<void> {
     await this.GuidelineLogsRepository.softDelete(id);
   }
 

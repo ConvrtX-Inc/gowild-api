@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
-import { Password } from '../password.entity';
+import { Password } from './password.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TypeOrmCrudService } from '@nestjsx/crud-typeorm/lib/typeorm-crud.service';
-import { User } from '../user.entity';
+import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
+import { User } from './user.entity';
 
 @Injectable()
 export class PasswordService extends TypeOrmCrudService<Password> {
@@ -15,27 +15,36 @@ export class PasswordService extends TypeOrmCrudService<Password> {
     super(repository);
   }
 
-  public static async generatePassword(
+  public async generatePassword(
     user: User,
     password: string,
   ): Promise<Password> {
-    const salt = await bcrypt.genSalt();
+    const { salt, hash } = await this.hash(password);
     const entity = new Password();
-    entity.hashedValue = await bcrypt.hash(password, salt);
-    entity.algoritm = 'bcrypt';
+    entity.hashedValue = hash;
+    entity.algorithm = 'bcrypt';
     entity.user = user;
     entity.status = 'true';
     entity.metaData = JSON.stringify({ salt });
     return entity;
   }
 
-  async verifyPassword(user: User, password: string): Promise<boolean> {
+  public async hash(raw: string): Promise<{ hash: string; salt: string; }> {
+    const salt = await bcrypt.genSalt();
+    return { hash: await bcrypt.hash(raw, salt), salt };
+  }
+
+  public async compare(raw: string, hashed: string): Promise<boolean> {
+    return await bcrypt.compare(raw, hashed);
+  }
+
+  public async verifyPassword(user: User, password: string): Promise<boolean> {
     const previous = await this.findPrevious(user);
     if (previous === null) {
       return false;
     }
 
-    return await bcrypt.compare(password, previous.hashedValue);
+    return await this.compare(password, previous.hashedValue);
   }
 
   async createPassword(user: User, password: string): Promise<void> {
@@ -45,7 +54,7 @@ export class PasswordService extends TypeOrmCrudService<Password> {
       await this.repository.save(previous);
     }
 
-    const entity = await PasswordService.generatePassword(user, password);
+    const entity = await this.generatePassword(user, password);
     await this.repository.save(entity);
   }
 

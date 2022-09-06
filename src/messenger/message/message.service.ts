@@ -42,7 +42,7 @@ export class MessageService extends TypeOrmCrudService<Message> {
     );
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     await this.roomRepository.delete(id);
   }
 
