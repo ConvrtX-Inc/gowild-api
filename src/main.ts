@@ -4,12 +4,9 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express/interfaces/nest-express-application.interface';
-import { StatusEnum } from './auth/status.enum';
 import { validationOptions } from './utils/validation-options';
 
 async function bootstrap() {
-  const v = Object.values(StatusEnum);
-  console.log({ v });
   const app: NestExpressApplication = await NestFactory.create(AppModule, {
     cors: true,
   });

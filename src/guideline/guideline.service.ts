@@ -32,8 +32,6 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
 
 
   async saveOne(data) {
-    console.log(data);
-    console.log('DITO NAMAN TO');
     const result = await this.saveEntity(data);
     const logData = new GuidelineLog();
     logData.guideline_type = data.type;

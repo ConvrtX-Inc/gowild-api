@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Param, Post, Request, UseGuards } from '@nestjs/common';
-import { Crud, CrudController, Override } from '@nestjsx/crud';
+import { Crud, CrudController, CrudRequest, GetManyDefaultResponse, Override } from '@nestjsx/crud';
 import { User } from './user.entity';
 import { UsersService } from './users.service';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -7,6 +7,8 @@ import { StatusEnum } from 'src/auth/status.enum';
 import { validationOptions } from '../utils/validation-options';
 import { PictureUpdateDto } from './dtos/picture-update.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+
+class UserList extends Array<User> {}
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -21,7 +23,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   },
   query: {
     maxLimit: 50,
-    alwaysPaginate: false,
+    alwaysPaginate: true,
     join: {
       picture: {
         eager: true,
