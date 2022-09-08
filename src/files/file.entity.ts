@@ -40,5 +40,6 @@ export class FileEntity extends AbstractBaseEntity {
 }
 
 export class FileMetaData {
+  @ApiProperty({ nullable: true })
   encoding: string;
 }
