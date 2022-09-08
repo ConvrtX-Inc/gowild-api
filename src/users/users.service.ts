@@ -25,6 +25,7 @@ export class UsersService extends TypeOrmCrudService<User> {
   async findOneEntity(options: FindOptions<User>): Promise<User | null> {
     const user = await this.usersRepository.findOne({
       where: options.where,
+      relations: ['picture']
     });
     if (user) {
       return user;
@@ -35,6 +36,7 @@ export class UsersService extends TypeOrmCrudService<User> {
   async findManyEntities(options: FindOptions<User>) {
     return this.usersRepository.find({
       where: options.where,
+      relations: ['picture']
     });
   }
 
@@ -49,6 +51,7 @@ export class UsersService extends TypeOrmCrudService<User> {
   async updateUserStatus(id: string, statusEnum: StatusEnum): Promise<User> {
     const user = await this.usersRepository.findOne({
       where: { id: id },
+      relations: ['picture']
     });
     if (!user) {
       throw new NotFoundException({
@@ -78,6 +81,7 @@ export class UsersService extends TypeOrmCrudService<User> {
   public async updateAvatar(id: string, fileId: string) {
     const user = await this.usersRepository.findOne({
       where: { id: id },
+      relations: ['picture']
     });
 
     if (!user) {
