@@ -23,7 +23,7 @@ export class User extends AbstractBaseEntity {
   lastName: string | null;
 
   @IsOptional()
-  @ApiProperty({ example: '1999-12-12 11:11:11' })
+  @ApiProperty({ example: '1999-12-12 11:11:11', nullable: true })
   @Column({ type: 'timestamp', nullable: true })
   birthDate?: Date;
 
@@ -33,7 +33,7 @@ export class User extends AbstractBaseEntity {
   gender?: GenderEnum;
 
   @Allow()
-  @ApiProperty({ example: 'username' })
+  @ApiProperty({ example: 'username', nullable: true })
   @Transform((value: string | null) => value?.toLowerCase().trim())
   @IsOptional({ groups: [CrudValidationGroups.UPDATE] })
   @IsNotEmpty({ groups: [CrudValidationGroups.CREATE] })

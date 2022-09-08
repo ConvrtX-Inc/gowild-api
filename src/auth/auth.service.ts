@@ -17,6 +17,8 @@ import { UserAuthResponse } from './dtos/auth-response';
 import { TokenService } from './token.service';
 import { TokenResponse } from './dtos/token';
 import { SmsService } from '../sms/sms.service';
+import { StatusEnum } from './status.enum';
+import { StatusService } from '../statuses/status.service';
 
 @Injectable()
 export class AuthService {
@@ -28,6 +30,7 @@ export class AuthService {
     private readonly mailService: MailService,
     private readonly socialAccountService: SocialAccountService,
     private readonly passwordService: PasswordService,
+    private readonly statusService: StatusService,
   ) {
   }
 
@@ -128,8 +131,12 @@ export class AuthService {
     entity.lastName = dto.lastName;
     entity.gender = dto.gender;
     entity.email = dto.email;
+    entity.username = dto.email;
     entity.phoneNo = dto.phoneNo;
     entity.hash = hash;
+
+    const status = await this.statusService.findByEnum(StatusEnum.Active);
+    entity.status = status;
     return await this.usersService.saveEntity(entity);
   }
 

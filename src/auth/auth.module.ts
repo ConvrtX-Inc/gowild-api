@@ -15,6 +15,7 @@ import { TokenService } from './token.service';
 import { AuthConfig } from './dtos/auth.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RefreshTokenEntity } from './refresh-token.entity';
+import { StatusModule } from '../statuses/status.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { RefreshTokenEntity } from './refresh-token.entity';
     MailModule,
     SmsModule,
     SocialAccountModule,
+    StatusModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
