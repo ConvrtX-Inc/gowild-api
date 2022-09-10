@@ -126,7 +126,7 @@ export class AuthService {
   public async register(dto: AuthRegisterLoginDto): Promise<User> {
     const hash = this.genHash();
 
-    const entity = new User();
+    let entity = new User();
     entity.firstName = dto.firstName;
     entity.lastName = dto.lastName;
     entity.gender = dto.gender;
@@ -135,9 +135,11 @@ export class AuthService {
     entity.phoneNo = dto.phoneNo;
     entity.hash = hash;
 
-    const status = await this.statusService.findByEnum(StatusEnum.Active);
-    entity.status = status;
-    return await this.usersService.saveEntity(entity);
+    entity.status = await this.statusService.findByEnum(StatusEnum.Active);
+    entity = await this.usersService.saveEntity(entity);
+
+    await this.passwordService.createPassword(entity, dto.password);
+    return entity;
   }
 
   public async resetAdminPassword(

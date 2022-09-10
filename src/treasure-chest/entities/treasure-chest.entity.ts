@@ -23,7 +23,7 @@ export class TreasureChest extends AbstractBaseEntity {
   description?: string;
 
   @IsOptional()
-  @ApiProperty({ example: '65.5234' })
+  @ApiProperty({ example: '65.5234', type: 'number', format: 'double' })
   @Column({
     type: 'decimal',
     precision: 8,
@@ -33,7 +33,7 @@ export class TreasureChest extends AbstractBaseEntity {
   location_long?: number;
 
   @IsOptional()
-  @ApiProperty({ example: '1.12378' })
+  @ApiProperty({ example: '1.12378', type: 'number', format: 'double' })
   @Column({
     type: 'decimal',
     precision: 8,

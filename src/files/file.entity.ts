@@ -12,7 +12,7 @@ export class FileEntity extends AbstractBaseEntity {
   @Column()
   path: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number', format: 'double' })
   @Column()
   size: number;
 

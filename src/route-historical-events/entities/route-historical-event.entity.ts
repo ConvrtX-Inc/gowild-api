@@ -25,7 +25,7 @@ export class RouteHistoricalEvent extends AbstractBaseEntity {
   closure_uid?: string;
 
   @IsOptional()
-  @ApiProperty({ example: 32.4832 })
+  @ApiProperty({ example: 32.4832, type: 'number', format: 'double' })
   @Column({
     type: 'decimal',
     precision: 8,
@@ -35,7 +35,7 @@ export class RouteHistoricalEvent extends AbstractBaseEntity {
   event_long?: number;
 
   @IsOptional()
-  @ApiProperty({ example: 42.1437 })
+  @ApiProperty({ example: 42.1437, type: 'number', format: 'double' })
   @Column({
     type: 'decimal',
     precision: 8,

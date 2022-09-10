@@ -37,7 +37,7 @@ export class Route extends AbstractBaseEntity {
   })
   route_photo?: Buffer | null | string;
   @IsOptional()
-  @ApiProperty({ example: 32.4832 })
+  @ApiProperty({ example: 32.4832, type: 'number', format: 'double' })
   @Column({
     type: 'decimal',
     precision: 8,
@@ -46,8 +46,9 @@ export class Route extends AbstractBaseEntity {
     nullable: true,
   })
   start_point_long?: number;
+
   @IsOptional()
-  @ApiProperty({ example: 12.4233 })
+  @ApiProperty({ example: 12.4233, type: 'number', format: 'double' })
   @Column({
     type: 'decimal',
     precision: 8,
@@ -56,8 +57,9 @@ export class Route extends AbstractBaseEntity {
     nullable: true,
   })
   start_point_lat?: number;
+
   @IsOptional()
-  @ApiProperty({ example: 65.5234 })
+  @ApiProperty({ example: 65.5234, type: 'number', format: 'double' })
   @Column({
     type: 'decimal',
     precision: 8,
@@ -66,8 +68,9 @@ export class Route extends AbstractBaseEntity {
     nullable: true,
   })
   stop_point_long?: number;
+
   @IsOptional()
-  @ApiProperty({ example: 12.4233 })
+  @ApiProperty({ example: 12.4233, type: 'number', format: 'double' })
   @Column({
     type: 'decimal',
     precision: 8,
@@ -76,6 +79,7 @@ export class Route extends AbstractBaseEntity {
     nullable: true,
   })
   stop_point_lat?: number;
+
   @IsOptional()
   @ApiProperty({ example: 'Firebase img url' })
   @Column({
@@ -83,6 +87,7 @@ export class Route extends AbstractBaseEntity {
     nullable: true,
   })
   img_url: string | null;
+
   @IsOptional()
   @ApiProperty({ example: 'description' })
   @Column({ type: 'text' })

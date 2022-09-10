@@ -18,7 +18,7 @@ export class RouteClue extends AbstractBaseEntity {
   route_id?: string;
 
   @IsOptional()
-  @ApiProperty({ example: 32.4832 })
+  @ApiProperty({ example: 32.4832, type: 'number', format: 'double' })
   @Column({
     type: 'decimal',
     precision: 8,
@@ -28,7 +28,7 @@ export class RouteClue extends AbstractBaseEntity {
   location_point_long?: number;
 
   @IsOptional()
-  @ApiProperty({ example: 32.4832 })
+  @ApiProperty({ example: 32.4832, type: 'number', format: 'double' })
   @Column({
     type: 'decimal',
     precision: 8,
@@ -38,7 +38,7 @@ export class RouteClue extends AbstractBaseEntity {
   location_point_lat?: number;
 
   @IsOptional()
-  @ApiProperty({ example: 32.4832 })
+  @ApiProperty({ example: 32.4832, type: 'number', format: 'double' })
   @Column({
     type: 'decimal',
     precision: 8,
@@ -48,7 +48,7 @@ export class RouteClue extends AbstractBaseEntity {
   clue_point_long?: number;
 
   @IsOptional()
-  @ApiProperty({ example: 32.4832 })
+  @ApiProperty({ example: 32.4832, type: 'number', format: 'double' })
   @Column({
     type: 'decimal',
     precision: 8,

@@ -2,7 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, Validate } from 'class-validator';
 import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
 import { IsExist } from 'src/utils/validators/is-exists.validator';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { Status } from '../../statuses/status.entity';
 
 @Entity('gw_tickets')
 export class Ticket extends AbstractBaseEntity {
@@ -38,10 +39,7 @@ export class Ticket extends AbstractBaseEntity {
   img_url: string | null;
 
   @IsOptional()
-  @ApiProperty({ example: '0' })
-  @Column({
-    type: 'integer',
-    nullable: false,
-  })
-  status?: number;
+  @ApiProperty({ type: Status })
+  @ManyToOne(() => Status, { nullable: true })
+  status?: Status;
 }
