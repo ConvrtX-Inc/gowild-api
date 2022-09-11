@@ -6,11 +6,9 @@ import { PostFeed } from './entities/post-feed.entity';
 import { FriendsService } from 'src/friends/friends.service';
 import { Friends } from 'src/friends/entities/friend.entity';
 
-
 @Module({
   controllers: [PostFeedController],
   providers: [PostFeedService, FriendsService],
   imports: [TypeOrmModule.forFeature([PostFeed, Friends])],
 })
-export class PostFeedModule {
-}
+export class PostFeedModule {}

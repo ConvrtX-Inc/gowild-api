@@ -31,9 +31,10 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   path: 'system-support-attachments',
   version: '1',
 })
-export class SystemSupportAttachmentController implements CrudController<SystemSupportAttachment> {
-  constructor(public service: SystemSupportAttachmentService) {
-  }
+export class SystemSupportAttachmentController
+  implements CrudController<SystemSupportAttachment>
+{
+  constructor(public service: SystemSupportAttachmentService) {}
 
   get base(): CrudController<SystemSupportAttachment> {
     return this;

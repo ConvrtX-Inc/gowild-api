@@ -32,8 +32,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   version: '1',
 })
 export class GuidelineLogsController implements CrudController<GuidelineLog> {
-  constructor(public service: GuidelineLogsService) {
-  }
+  constructor(public service: GuidelineLogsService) {}
 
   get base(): CrudController<GuidelineLog> {
     return this;

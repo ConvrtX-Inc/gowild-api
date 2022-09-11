@@ -32,8 +32,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   version: '1',
 })
 export class SponsorController implements CrudController<Sponsor> {
-  constructor(readonly service: SponsorService) {
-  }
+  constructor(readonly service: SponsorService) {}
 
   get base(): CrudController<Sponsor> {
     return this;

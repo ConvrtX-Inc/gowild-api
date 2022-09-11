@@ -1,15 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { DeepPartial } from 'src/utils/types/deep-partial.type';
-import { FindOptions } from 'src/utils/types/find-options.type';
+import { DeepPartial } from 'src/common/types/deep-partial.type';
+import { FindOptions } from 'src/common/types/find-options.type';
 import { Repository } from 'typeorm';
 import { Route } from './entities/route.entity';
+import { FilesService } from '../files/files.service';
 
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
-  constructor(@InjectRepository(Route)
-              private routeRepository: Repository<Route>,
+  constructor(
+    @InjectRepository(Route)
+    private readonly routeRepository: Repository<Route>,
+    private readonly filesService: FilesService,
   ) {
     super(routeRepository);
   }
@@ -31,9 +34,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
   }
 
   async saveEntity(data: DeepPartial<Route>[]) {
-    return this.routeRepository.save(
-      this.routeRepository.create(data),
-    );
+    return this.routeRepository.save(this.routeRepository.create(data));
   }
 
   async softDelete(id: string): Promise<void> {
@@ -42,5 +43,24 @@ export class RouteService extends TypeOrmCrudService<Route> {
 
   async hardDelete(id) {
     await this.routeRepository.delete(id);
+  }
+
+  public async updatePicture(id: string, fileId: string) {
+    const route = await this.routeRepository.findOne({
+      where: { id: id },
+    });
+
+    if (!route) {
+      throw new NotFoundException({
+        errors: [
+          {
+            user: 'route do not exist',
+          },
+        ],
+      });
+    }
+
+    route.picture = await this.filesService.fileById(fileId);
+    return await route.save();
   }
 }

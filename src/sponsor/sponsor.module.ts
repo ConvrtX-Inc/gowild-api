@@ -9,5 +9,4 @@ import { Sponsor } from './entities/sponsor.entity';
   providers: [SponsorService],
   imports: [TypeOrmModule.forFeature([Sponsor])],
 })
-export class SponsorModule {
-}
+export class SponsorModule {}

@@ -33,11 +33,9 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
   version: '1',
 })
 export class ParticipantController implements CrudController<Participant> {
-  constructor(public service: ParticipantService) {
-  }
+  constructor(public service: ParticipantService) {}
 
   get base(): CrudController<Participant> {
     return this;
   }
-
 }

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { User } from './user.entity';
+import { UserEntity } from './user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
@@ -10,10 +10,13 @@ import { Password } from './password.entity';
 import { FilesModule } from '../files/files.module';
 
 @Module({
-  imports: [StatusModule, TypeOrmModule.forFeature([User, Password]), FilesModule],
+  imports: [
+    StatusModule,
+    TypeOrmModule.forFeature([UserEntity, Password]),
+    FilesModule,
+  ],
   controllers: [UsersController],
   providers: [UsersService, MailService, PasswordService],
   exports: [UsersService, PasswordService],
 })
-export class UsersModule {
-}
+export class UsersModule {}

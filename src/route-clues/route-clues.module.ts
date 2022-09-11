@@ -9,5 +9,4 @@ import { RouteClue } from './entities/route-clue.entity';
   providers: [RouteCluesService],
   imports: [TypeOrmModule.forFeature([RouteClue])],
 })
-export class RouteCluesModule {
-}
+export class RouteCluesModule {}

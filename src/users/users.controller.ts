@@ -1,14 +1,12 @@
 import { Body, Controller, HttpCode, HttpStatus, Param, Post, Request, UseGuards } from '@nestjs/common';
-import { Crud, CrudController, CrudRequest, GetManyDefaultResponse, Override } from '@nestjsx/crud';
-import { User } from './user.entity';
+import { Crud, CrudController, Override } from '@nestjsx/crud';
+import { UserEntity } from './user.entity';
 import { UsersService } from './users.service';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { StatusEnum } from 'src/auth/status.enum';
-import { validationOptions } from '../utils/validation-options';
-import { PictureUpdateDto } from './dtos/picture-update.dto';
+import { validationOptions } from '../common/validation-options';
+import { ImageUpdateDto } from './dtos/image-update.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-
-class UserList extends Array<User> {}
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -16,7 +14,7 @@ class UserList extends Array<User> {}
 @Crud({
   validation: validationOptions,
   model: {
-    type: User,
+    type: UserEntity,
   },
   routes: {
     exclude: ['replaceOneBase', 'createManyBase'],
@@ -47,11 +45,10 @@ class UserList extends Array<User> {}
   path: 'users',
   version: '1',
 })
-export class UsersController implements CrudController<User> {
-  constructor(public service: UsersService) {
-  }
+export class UsersController implements CrudController<UserEntity> {
+  constructor(public service: UsersService) {}
 
-  get base(): CrudController<User> {
+  get base(): CrudController<UserEntity> {
     return this;
   }
 
@@ -60,7 +57,7 @@ export class UsersController implements CrudController<User> {
     return this.service.softDelete(request.params.id);
   }
 
-  @ApiResponse({ type: User })
+  @ApiResponse({ type: UserEntity })
   @ApiOperation({ summary: 'Approved an user.' })
   @Post(':id/approve')
   @HttpCode(HttpStatus.OK)
@@ -68,7 +65,7 @@ export class UsersController implements CrudController<User> {
     return this.service.updateUserStatus(id, StatusEnum.Approved);
   }
 
-  @ApiResponse({ type: User })
+  @ApiResponse({ type: UserEntity })
   @ApiOperation({ summary: 'Reject an user.' })
   @Post(':id/reject')
   @HttpCode(HttpStatus.OK)
@@ -76,12 +73,15 @@ export class UsersController implements CrudController<User> {
     return this.service.updateUserStatus(id, StatusEnum.Rejected);
   }
 
-  @ApiResponse({ type: User })
-  @ApiBody({ type: PictureUpdateDto })
-  @ApiOperation({ summary: 'Update user\'s profile picture' })
+  @ApiResponse({ type: UserEntity })
+  @ApiBody({ type: ImageUpdateDto })
+  @ApiOperation({ summary: "Update user's profile picture" })
   @Post(':id/update-avatar')
   @HttpCode(HttpStatus.OK)
-  public async updateAvatar(@Param('id') id: string, @Body() dto: PictureUpdateDto) {
+  public async updateAvatar(
+    @Param('id') id: string,
+    @Body() dto: ImageUpdateDto,
+  ) {
     return this.service.updateAvatar(id, dto.fileId);
   }
 }

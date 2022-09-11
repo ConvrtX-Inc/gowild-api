@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
-import { IsExist } from 'src/utils/validators/is-exists.validator';
+import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
+import { IsExist } from 'src/common/validators/is-exists.validator';
 import { Column, Entity } from 'typeorm';
 import { IsOptional, Validate } from 'class-validator';
 

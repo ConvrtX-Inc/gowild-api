@@ -6,8 +6,9 @@ import { TicketMessage } from './entities/ticket-message.entity';
 
 @Injectable()
 export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
-  constructor(@InjectRepository(TicketMessage)
-              private ticketMessageRepository: Repository<TicketMessage>,
+  constructor(
+    @InjectRepository(TicketMessage)
+    private ticketMessageRepository: Repository<TicketMessage>,
   ) {
     super(ticketMessageRepository);
   }

@@ -21,5 +21,4 @@ export class ClientSocketInfo {
   get UserID(): string {
     return this._userID;
   }
-
 }

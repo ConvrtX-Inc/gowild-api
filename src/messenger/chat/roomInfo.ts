@@ -10,5 +10,4 @@ export class RoomInfo {
   get RoomID(): string {
     return this._roomID;
   }
-
 }

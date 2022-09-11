@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { DeepPartial } from '../../utils/types/deep-partial.type';
-import { FindOptions } from '../../utils/types/find-options.type';
+import { DeepPartial } from '../../common/types/deep-partial.type';
+import { FindOptions } from '../../common/types/find-options.type';
 
 import { Participant } from './participant.entity';
 

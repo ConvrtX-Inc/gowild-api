@@ -6,8 +6,7 @@ import { AuthTwitterLoginDto } from './dtos/auth-twitter-login.dto';
 
 @Injectable()
 export class AuthTwitterService {
-  constructor(private configService: ConfigService) {
-  }
+  constructor(private configService: ConfigService) {}
 
   async getProfileByToken(
     loginDto: AuthTwitterLoginDto,

@@ -4,7 +4,11 @@ import { IsPhoneNumber } from 'class-validator';
 
 export class CheckVerificationTokenDto {
   @ApiProperty({ example: '+639506703405' })
-  @Transform((value: string) => value.toLowerCase().trim().charAt(1) != '+' ? '+' + value.toLowerCase().trim().charAt(1) : value.toLowerCase().trim().charAt(1))
+  @Transform((value: string) =>
+    value.toLowerCase().trim().charAt(1) != '+'
+      ? '+' + value.toLowerCase().trim().charAt(1)
+      : value.toLowerCase().trim().charAt(1),
+  )
   @IsPhoneNumber()
   phone_number: string;
 

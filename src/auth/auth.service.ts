@@ -1,5 +1,5 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { User } from '../users/user.entity';
+import { UserEntity } from '../users/user.entity';
 import { AuthEmailLoginDto } from './dtos/auth-email-login.dto';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import * as crypto from 'crypto';
@@ -31,8 +31,7 @@ export class AuthService {
     private readonly socialAccountService: SocialAccountService,
     private readonly passwordService: PasswordService,
     private readonly statusService: StatusService,
-  ) {
-  }
+  ) {}
 
   public async validateLogin(
     loginDto: AuthEmailLoginDto,
@@ -65,7 +64,7 @@ export class AuthService {
     authProvider: string,
     socialData: SocialInterface,
   ): Promise<UserAuthResponse> {
-    let user: User;
+    let user: UserEntity;
     const socialEmail = socialData.email?.toLowerCase();
 
     const userByEmail = await this.usersService.findOneEntity({
@@ -123,10 +122,10 @@ export class AuthService {
     return response;
   }
 
-  public async register(dto: AuthRegisterLoginDto): Promise<User> {
+  public async register(dto: AuthRegisterLoginDto): Promise<UserEntity> {
     const hash = this.genHash();
 
-    let entity = new User();
+    let entity = new UserEntity();
     entity.firstName = dto.firstName;
     entity.lastName = dto.lastName;
     entity.gender = dto.gender;
@@ -144,7 +143,7 @@ export class AuthService {
 
   public async resetAdminPassword(
     dto: AuthResetPasswordAdminDto,
-  ): Promise<User> {
+  ): Promise<UserEntity> {
     let user = await this.usersService.findOneEntity({
       where: {
         email: 'admin@convrtx.com',
@@ -153,7 +152,7 @@ export class AuthService {
 
     const password = dto.password ?? 'qwerty123';
     if (!user) {
-      user = new User();
+      user = new UserEntity();
       user.firstName = 'Admin';
       user.lastName = 'User';
       user.username = 'admin';
@@ -227,7 +226,7 @@ export class AuthService {
     await user.save();
   }
 
-  public async me(userId: string): Promise<User> {
+  public async me(userId: string): Promise<UserEntity> {
     return await this.usersService.findOneEntity({
       where: {
         id: userId,
@@ -243,7 +242,7 @@ export class AuthService {
     });
 
     if (!user) {
-      user = new User();
+      user = new UserEntity();
       user.firstName = 'Admin';
       user.lastName = 'User';
       user.username = 'admin';
@@ -255,12 +254,8 @@ export class AuthService {
     return user;
   }
 
-  public async refreshToken(
-    refreshToken: string,
-  ): Promise<TokenResponse> {
-    const entity = await this.tokenService.verifyRefreshToken(
-      refreshToken,
-    );
+  public async refreshToken(refreshToken: string): Promise<TokenResponse> {
+    const entity = await this.tokenService.verifyRefreshToken(refreshToken);
     await this.tokenService.invalidateRefreshToken(entity);
     const userId = this.tokenService.userIdByRefreshToken(refreshToken);
     const user = await this.usersService.findOne(userId);

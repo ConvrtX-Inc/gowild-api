@@ -32,8 +32,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   version: '1',
 })
 export class SocialAccountController implements CrudController<SocialAccount> {
-  constructor(public service: SocialAccountService) {
-  }
+  constructor(public service: SocialAccountService) {}
 
   get base(): CrudController<SocialAccount> {
     return this;

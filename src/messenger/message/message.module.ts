@@ -11,6 +11,4 @@ import { ParticipantModule } from '../participant/participant.module';
   imports: [ParticipantModule, TypeOrmModule.forFeature([Message])],
   exports: [MessageService],
 })
-
-export class MessageModule {
-}
+export class MessageModule {}

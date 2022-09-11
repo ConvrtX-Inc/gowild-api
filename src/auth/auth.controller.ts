@@ -18,8 +18,8 @@ import { AuthResetPasswordAdminDto, AuthResetPasswordDto } from './dtos/auth-res
 import { AuthRegisterLoginDto } from './dtos/auth-register-login.dto';
 import { TokenResponse } from './dtos/token';
 import { AuthRefreshTokenDto } from './dtos/auth-refresh-token.dto';
-import { User } from '../users/user.entity';
-import { userTokenCookieKey } from '../utils/constants/cookie.keys';
+import { UserEntity } from '../users/user.entity';
+import { userTokenCookieKey } from '../common/constants/cookie.keys';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
 @ApiTags('Auth')
@@ -28,8 +28,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';
   version: '1',
 })
 export class AuthController {
-  constructor(public service: AuthService) {
-  }
+  constructor(public service: AuthService) {}
 
   @ApiResponse({ type: TokenResponse })
   @Post('login')
@@ -44,11 +43,13 @@ export class AuthController {
     return token;
   }
 
-  @ApiResponse({ type: User })
+  @ApiResponse({ type: UserEntity })
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register new account' })
-  async register(@Body() createUserDto: AuthRegisterLoginDto): Promise<User> {
+  async register(
+    @Body() createUserDto: AuthRegisterLoginDto,
+  ): Promise<UserEntity> {
     return this.service.register(createUserDto);
   }
 
@@ -73,29 +74,29 @@ export class AuthController {
     );
   }
 
-  @ApiResponse({ type: User })
+  @ApiResponse({ type: UserEntity })
   @Get('generate-admin')
   @ApiOperation({ summary: 'Generates default admin' })
   @HttpCode(HttpStatus.OK)
-  public async generateAdmin(): Promise<User> {
+  public async generateAdmin(): Promise<UserEntity> {
     return this.service.generateAdmin();
   }
 
-  @ApiResponse({ type: User })
+  @ApiResponse({ type: UserEntity })
   @Post('reset-admin-password')
   @ApiOperation({ summary: 'Reset password for default admin' })
   public async resetAdminPassword(
     @Body() dto: AuthResetPasswordAdminDto,
-  ): Promise<User> {
+  ): Promise<UserEntity> {
     return this.service.resetAdminPassword(dto);
   }
 
-  @ApiResponse({ type: User })
+  @ApiResponse({ type: UserEntity })
   @ApiBearerAuth()
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  public async me(@Request() request: Express.Request): Promise<User> {
+  public async me(@Request() request: Express.Request): Promise<UserEntity> {
     return this.service.me(request.user?.sub);
   }
 

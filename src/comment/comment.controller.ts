@@ -32,8 +32,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   version: '1',
 })
 export class CommentController implements CrudController<Comment> {
-  constructor(readonly service: CommentService) {
-  }
+  constructor(readonly service: CommentService) {}
 
   get base(): CrudController<Comment> {
     return this;

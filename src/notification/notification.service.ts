@@ -12,5 +12,4 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
   ) {
     super(destinationsRepository);
   }
-
 }

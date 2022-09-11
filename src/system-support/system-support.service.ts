@@ -12,5 +12,4 @@ export class SystemSupportService extends TypeOrmCrudService<SystemSupport> {
   ) {
     super(systemSupportRepository);
   }
-
 }

@@ -10,5 +10,4 @@ import { SystemSupport } from './system-support.entity';
   exports: [SystemSupportService],
   imports: [TypeOrmModule.forFeature([SystemSupport])],
 })
-export class SystemSupportModule {
-}
+export class SystemSupportModule {}

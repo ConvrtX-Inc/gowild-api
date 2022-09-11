@@ -6,8 +6,9 @@ import { Ticket } from './entities/ticket.entity';
 
 @Injectable()
 export class TicketService extends TypeOrmCrudService<Ticket> {
-  constructor(@InjectRepository(Ticket)
-              private ticketRepository: Repository<Ticket>,
+  constructor(
+    @InjectRepository(Ticket)
+    private ticketRepository: Repository<Ticket>,
   ) {
     super(ticketRepository);
   }

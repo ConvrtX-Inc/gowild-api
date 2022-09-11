@@ -9,5 +9,4 @@ import { RouteHistoricalEvent } from './entities/route-historical-event.entity';
   providers: [RouteHistoricalEventsService],
   imports: [TypeOrmModule.forFeature([RouteHistoricalEvent])],
 })
-export class RouteHistoricalEventsModule {
-}
+export class RouteHistoricalEventsModule {}

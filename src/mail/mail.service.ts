@@ -12,8 +12,7 @@ export class MailService {
     private i18n: I18nService,
     private mailerService: MailerService,
     private configService: ConfigService,
-  ) {
-  }
+  ) {}
 
   async userUpdateStatus(mailData: MailData<{}>, status?: Status) {
     let textMessage: string;
@@ -34,7 +33,7 @@ export class MailService {
         ' ' +
         (await this.i18n.t('common.emailSubject')),
       text: '',
-      template: './user-update-status',
+      template: process.cwd() + '/user-update-status',
       context: {
         app_name: this.configService.get('app.name'),
         header: (await this.i18n.t('common.hello')) + ' ' + mailData.name,
@@ -52,7 +51,7 @@ export class MailService {
       text: `${this.configService.get('app.frontendDomain')}/confirm-email/${
         mailData.data.hash
       } ${await this.i18n.t('common.confirmEmail')}`,
-      template: './activation',
+      template: process.cwd() + '/activation',
       context: {
         title: await this.i18n.t('common.confirmEmail'),
         url: `${this.configService.get('app.frontendDomain')}/confirm-email/${
@@ -74,7 +73,7 @@ export class MailService {
       text: `${this.configService.get('app.frontendDomain')}/password-change/${
         mailData.data.hash
       } ${await this.i18n.t('common.resetPassword')}`,
-      template: './reset-password',
+      template: process.cwd() + '/reset-password',
       context: {
         title: await this.i18n.t('common.resetPassword'),
         url: `${this.configService.get('app.frontendDomain')}/password-change/${

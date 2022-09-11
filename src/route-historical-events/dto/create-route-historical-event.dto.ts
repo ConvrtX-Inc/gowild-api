@@ -1,2 +1,1 @@
-export class CreateRouteHistoricalEventDto {
-}
+export class CreateRouteHistoricalEventDto {}

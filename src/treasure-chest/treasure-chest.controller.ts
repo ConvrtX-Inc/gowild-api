@@ -5,7 +5,6 @@ import { TreasureChest } from './entities/treasure-chest.entity';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @ApiTags('Treasure Chest')
@@ -33,8 +32,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   version: '1',
 })
 export class TreasureChestController implements CrudController<TreasureChest> {
-  constructor(readonly service: TreasureChestService) {
-  }
+  constructor(readonly service: TreasureChestService) {}
 
   get base(): CrudController<TreasureChest> {
     return this;

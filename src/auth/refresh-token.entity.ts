@@ -1,5 +1,5 @@
 import { Column, Entity } from 'typeorm';
-import { AbstractBaseEntity } from '../utils/abstract-base-entity';
+import { AbstractBaseEntity } from '../common/abstract-base-entity';
 
 @Entity('gw_refresh_tokens')
 export class RefreshTokenEntity extends AbstractBaseEntity {

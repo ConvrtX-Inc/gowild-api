@@ -1,9 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
 import { Allow, IsOptional, Validate } from 'class-validator';
-import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
-import { IsExist } from 'src/utils/validators/is-exists.validator';
-import { Column, Entity } from 'typeorm';
+import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
+import { Column, Entity, ManyToMany } from 'typeorm';
+import { Route } from '../../route/entities/route.entity';
+import { Geometry } from 'geojson';
+import { AppPoint } from '../../common/lat-lng.embedded';
+import { FileEntity } from '../../files/file.entity';
+import { JoinTable } from 'typeorm/browser';
+import { IsExist } from '../../common/validators/is-exists.validator';
 
 @Entity('gw_route_clues')
 export class RouteClue extends AbstractBaseEntity {
@@ -18,52 +22,20 @@ export class RouteClue extends AbstractBaseEntity {
   route_id?: string;
 
   @IsOptional()
-  @ApiProperty({ example: 32.4832, type: 'number', format: 'double' })
+  @Allow()
+  @ApiProperty({ type: () => AppPoint })
   @Column({
-    type: 'decimal',
-    precision: 8,
-    scale: 4,
+    type: 'geometry',
     nullable: true,
   })
-  location_point_long?: number;
-
-  @IsOptional()
-  @ApiProperty({ example: 32.4832, type: 'number', format: 'double' })
-  @Column({
-    type: 'decimal',
-    precision: 8,
-    scale: 4,
-    nullable: true,
-  })
-  location_point_lat?: number;
-
-  @IsOptional()
-  @ApiProperty({ example: 32.4832, type: 'number', format: 'double' })
-  @Column({
-    type: 'decimal',
-    precision: 8,
-    scale: 4,
-    nullable: true,
-  })
-  clue_point_long?: number;
-
-  @IsOptional()
-  @ApiProperty({ example: 32.4832, type: 'number', format: 'double' })
-  @Column({
-    type: 'decimal',
-    precision: 8,
-    scale: 4,
-    nullable: true,
-  })
-  clue_point_lat?: number;
+  point?: Geometry;
 
   @IsOptional()
   @ApiProperty({ example: 'First On the List' })
   @Column({
-    length: 50,
     nullable: true,
   })
-  clue_title?: string;
+  title?: string;
 
   @IsOptional()
   @ApiProperty({ example: 'message' })
@@ -71,20 +43,10 @@ export class RouteClue extends AbstractBaseEntity {
   description?: string;
 
   @Allow()
-  @IsOptional()
-  @ApiProperty({ example: 'byte64image' })
-  @Transform((value: Buffer | null | string) => (value == null ? '' : value))
-  @Column({
-    name: 'clue_img',
-    type: 'bytea',
-    nullable: true,
-  })
-  clue_img?: Buffer | null | string;
-
-  @IsOptional()
-  @ApiProperty({ example: 'video' })
-  @Column({ nullable: true })
-  video_url?: string;
+  @ApiProperty({ nullable: true, type: [FileEntity] })
+  @ManyToMany(() => FileEntity)
+  @JoinTable({ name: 'gw_route_clue_medias' })
+  medias: FileEntity[];
 
   @IsOptional()
   @ApiProperty({ example: 'augmented reality' })

@@ -32,8 +32,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   version: '1',
 })
 export class NotificationController implements CrudController<Notification> {
-  constructor(public service: NotificationService) {
-  }
+  constructor(public service: NotificationService) {}
 
   get base(): CrudController<Notification> {
     return this;

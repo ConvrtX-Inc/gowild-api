@@ -13,5 +13,4 @@ import { MessageModule } from '../message/message.module';
   imports: [ParticipantModule, MessageModule, TypeOrmModule.forFeature([Room])],
   exports: [RoomService],
 })
-export class RoomModule {
-}
+export class RoomModule {}

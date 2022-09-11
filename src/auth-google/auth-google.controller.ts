@@ -4,7 +4,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { AuthGoogleService } from './auth-google.service';
 import { AuthGoogleLoginDto } from './dtos/auth-google-login.dto';
 import { UserAuthResponse } from '../auth/dtos/auth-response';
-import { userTokenCookieKey } from '../utils/constants/cookie.keys';
+import { userTokenCookieKey } from '../common/constants/cookie.keys';
 
 @ApiTags('Auth')
 @Controller({
@@ -15,8 +15,7 @@ export class AuthGoogleController {
   constructor(
     public authService: AuthService,
     public authGoogleService: AuthGoogleService,
-  ) {
-  }
+  ) {}
 
   @ApiResponse({ type: UserAuthResponse })
   @Post('login')
@@ -24,9 +23,13 @@ export class AuthGoogleController {
   @ApiOperation({ summary: 'Login using google' })
   async login(
     @Session() session: Record<string, unknown>,
-    @Body() loginDto: AuthGoogleLoginDto): Promise<UserAuthResponse> {
+    @Body() loginDto: AuthGoogleLoginDto,
+  ): Promise<UserAuthResponse> {
     const socialData = await this.authGoogleService.getProfileByToken(loginDto);
-    const token = await this.authService.validateSocialLogin('google', socialData);
+    const token = await this.authService.validateSocialLogin(
+      'google',
+      socialData,
+    );
     session[userTokenCookieKey] = token;
     return token;
   }

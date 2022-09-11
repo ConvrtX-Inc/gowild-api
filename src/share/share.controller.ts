@@ -32,8 +32,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   version: '1',
 })
 export class ShareController implements CrudController<Share> {
-  constructor(readonly service: ShareService) {
-  }
+  constructor(readonly service: ShareService) {}
 
   get base(): CrudController<Share> {
     return this;

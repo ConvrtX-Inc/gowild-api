@@ -2,8 +2,8 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Exclude, Transform } from 'class-transformer';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Allow, IsEmail, IsNotEmpty, IsOptional, Validate } from 'class-validator';
-import { IsNotExist } from '../utils/validators/is-not-exists.validator';
-import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
+import { IsNotExist } from '../common/validators/is-not-exists.validator';
+import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { CrudValidationGroups } from '@nestjsx/crud';
 import { Status } from 'src/statuses/status.entity';
 import { Password } from './password.entity';
@@ -11,7 +11,7 @@ import { FileEntity } from '../files/file.entity';
 import { GenderEnum } from './gender.enum';
 
 @Entity('gw_users')
-export class User extends AbstractBaseEntity {
+export class UserEntity extends AbstractBaseEntity {
   @ApiProperty({ example: 'John', nullable: true })
   @IsOptional()
   @Column({ nullable: true, name: 'first_name' })
@@ -27,7 +27,12 @@ export class User extends AbstractBaseEntity {
   @Column({ type: 'timestamp', nullable: true })
   birthDate?: Date;
 
-  @ApiProperty({ example: GenderEnum.Male, nullable: true, enum: GenderEnum, enumName: 'GenderEnum' })
+  @ApiProperty({
+    example: GenderEnum.Male,
+    nullable: true,
+    enum: GenderEnum,
+    enumName: 'GenderEnum',
+  })
   @IsOptional()
   @Column({ nullable: true, enum: GenderEnum, enumName: 'GenderEnum' })
   gender?: GenderEnum;

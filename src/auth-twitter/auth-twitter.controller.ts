@@ -4,7 +4,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { AuthTwitterService } from './auth-twitter.service';
 import { AuthTwitterLoginDto } from './dtos/auth-twitter-login.dto';
 import { UserAuthResponse } from '../auth/dtos/auth-response';
-import { userTokenCookieKey } from '../utils/constants/cookie.keys';
+import { userTokenCookieKey } from '../common/constants/cookie.keys';
 
 @ApiTags('Auth')
 @Controller({
@@ -15,8 +15,7 @@ export class AuthTwitterController {
   constructor(
     public authService: AuthService,
     public authTwitterService: AuthTwitterService,
-  ) {
-  }
+  ) {}
 
   @ApiResponse({ type: UserAuthResponse })
   @Post('login')

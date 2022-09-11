@@ -3,8 +3,7 @@ import { Reflector } from '@nestjs/core';
 
 @Injectable()
 export class CurrencyGuard implements CanActivate {
-  constructor(private reflector: Reflector) {
-  }
+  constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
     const currency = this.reflector.getAllAndOverride<number[]>('currency', [

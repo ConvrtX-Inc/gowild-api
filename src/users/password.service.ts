@@ -4,7 +4,7 @@ import { Password } from './password.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { User } from './user.entity';
+import { UserEntity } from './user.entity';
 
 @Injectable()
 export class PasswordService extends TypeOrmCrudService<Password> {
@@ -16,7 +16,7 @@ export class PasswordService extends TypeOrmCrudService<Password> {
   }
 
   public async generatePassword(
-    user: User,
+    user: UserEntity,
     password: string,
   ): Promise<Password> {
     const { salt, hash } = await this.hash(password);
@@ -29,7 +29,7 @@ export class PasswordService extends TypeOrmCrudService<Password> {
     return entity;
   }
 
-  public async hash(raw: string): Promise<{ hash: string; salt: string; }> {
+  public async hash(raw: string): Promise<{ hash: string; salt: string }> {
     const salt = await bcrypt.genSalt();
     return { hash: await bcrypt.hash(raw, salt), salt };
   }
@@ -38,7 +38,10 @@ export class PasswordService extends TypeOrmCrudService<Password> {
     return await bcrypt.compare(raw, hashed);
   }
 
-  public async verifyPassword(user: User, password: string): Promise<boolean> {
+  public async verifyPassword(
+    user: UserEntity,
+    password: string,
+  ): Promise<boolean> {
     const previous = await this.findPrevious(user);
     if (previous === null) {
       return false;
@@ -47,7 +50,7 @@ export class PasswordService extends TypeOrmCrudService<Password> {
     return await this.compare(password, previous.hashedValue);
   }
 
-  async createPassword(user: User, password: string): Promise<void> {
+  async createPassword(user: UserEntity, password: string): Promise<void> {
     const previous = await this.findPrevious(user);
     if (previous !== null) {
       previous.status = 'false';
@@ -58,7 +61,7 @@ export class PasswordService extends TypeOrmCrudService<Password> {
     await this.repository.save(entity);
   }
 
-  private async findPrevious(user: User): Promise<Password | null> {
+  private async findPrevious(user: UserEntity): Promise<Password | null> {
     const found = await this.repository.findOne({
       where: { user, status: 'true' },
     });

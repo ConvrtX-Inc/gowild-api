@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { DeepPartial } from '../../utils/types/deep-partial.type';
-import { FindOptions } from '../../utils/types/find-options.type';
+import { DeepPartial } from '../../common/types/deep-partial.type';
+import { FindOptions } from '../../common/types/find-options.type';
 
 import { Message } from './message.entity';
 import { ParticipantService } from '../participant/participant.service';
@@ -37,9 +37,7 @@ export class MessageService extends TypeOrmCrudService<Message> {
   }
 
   async saveEntity(data: DeepPartial<Message>[]) {
-    return this.roomRepository.save(
-      this.roomRepository.create(data),
-    );
+    return this.roomRepository.save(this.roomRepository.create(data));
   }
 
   async delete(id: string): Promise<void> {
@@ -47,11 +45,13 @@ export class MessageService extends TypeOrmCrudService<Message> {
   }
 
   async updateMessage(id: string, msg: string) {
-    return await this.roomRepository.update({
-      id,
-    }, {
-      message: msg,
-    });
+    return await this.roomRepository.update(
+      {
+        id,
+      },
+      {
+        message: msg,
+      },
+    );
   }
-
 }

@@ -1,6 +1,6 @@
 import { AfterInsert, AfterLoad, Column, Entity } from 'typeorm';
 import { Allow } from 'class-validator';
-import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
+import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 
 import appConfig from '../config/app.config';
 import { ApiProperty } from '@nestjs/swagger';

@@ -9,7 +9,9 @@ describe('RouteHistoricalEventsService', () => {
       providers: [RouteHistoricalEventsService],
     }).compile();
 
-    service = module.get<RouteHistoricalEventsService>(RouteHistoricalEventsService);
+    service = module.get<RouteHistoricalEventsService>(
+      RouteHistoricalEventsService,
+    );
   });
 
   it('should be defined', () => {

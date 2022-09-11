@@ -6,8 +6,9 @@ import { Comment } from './entities/comment.entity';
 
 @Injectable()
 export class CommentService extends TypeOrmCrudService<Comment> {
-  constructor(@InjectRepository(Comment)
-              private commentRepository: Repository<Comment>,
+  constructor(
+    @InjectRepository(Comment)
+    private commentRepository: Repository<Comment>,
   ) {
     super(commentRepository);
   }

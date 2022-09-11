@@ -12,8 +12,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   version: '1',
 })
 export class FilesController {
-  constructor(private readonly filesService: FilesService) {
-  }
+  constructor(private readonly filesService: FilesService) {}
 
   @ApiResponse({ type: FileEntity })
   @ApiBearerAuth()

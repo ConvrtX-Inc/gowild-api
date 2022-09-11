@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { AuthConfig } from '../dtos/auth.config';
-import { customJwtResolver } from '../../utils/constants/jwt.functions';
+import { customJwtResolver } from '../../common/constants/jwt.functions';
 import { TokenService } from '../token.service';
 
 @Injectable()

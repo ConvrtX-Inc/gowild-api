@@ -32,8 +32,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   version: '1',
 })
 export class FriendsController implements CrudController<Friends> {
-  constructor(readonly service: FriendsService) {
-  }
+  constructor(readonly service: FriendsService) {}
 
   get base(): CrudController<Friends> {
     return this;
@@ -44,5 +43,4 @@ export class FriendsController implements CrudController<Friends> {
   public async getSuggestedFriends(@Param('user_id') user_id: string) {
     return this.service.suggestedFriends(user_id);
   }
-
 }

@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { DeepPartial } from '../../utils/types/deep-partial.type';
-import { FindOptions } from '../../utils/types/find-options.type';
+import { DeepPartial } from '../../common/types/deep-partial.type';
+import { FindOptions } from '../../common/types/find-options.type';
 
 import { Room } from './room.entity';
 import { ParticipantService } from '../participant/participant.service';
@@ -16,7 +16,6 @@ import { classToPlain } from 'class-transformer';
 @Injectable()
 export class RoomService extends TypeOrmCrudService<Room> {
   public newRoomID: any;
-
 
   constructor(
     @InjectRepository(Room)
@@ -44,9 +43,7 @@ export class RoomService extends TypeOrmCrudService<Room> {
   }
 
   async saveEntity(data: DeepPartial<Room>[]) {
-    return this.roomRepository.save(
-      this.roomRepository.create(data),
-    );
+    return this.roomRepository.save(this.roomRepository.create(data));
   }
 
   async delete(id: string): Promise<void> {
@@ -65,14 +62,16 @@ export class RoomService extends TypeOrmCrudService<Room> {
     query.innerJoin(
       'participant',
       'p',
-      'p.room_id::text = room.id::text AND p.user_id = \'' + user_id + '\'',
+      "p.room_id::text = room.id::text AND p.user_id = '" + user_id + "'",
     );
     query.innerJoin(
       'participant',
       'p2',
-      'p2.room_id::text = room.id::text AND p2.room_id::text = p.room_id::text AND p2.user_id = \'' + recipient_id + '\'',
+      "p2.room_id::text = room.id::text AND p2.room_id::text = p.room_id::text AND p2.user_id = '" +
+        recipient_id +
+        "'",
     );
-    query.where('room.type = \'conversation\'');
+    query.where("room.type = 'conversation'");
     roomid = classToPlain(await query.getRawOne());
 
     if (roomid) {
@@ -81,7 +80,7 @@ export class RoomService extends TypeOrmCrudService<Room> {
       const room = new Room();
       room.name = 'conversation';
       room.type = 'conversation';
-      this.newRoomID = (await (room.save())).id;
+      this.newRoomID = (await room.save()).id;
 
       let data1 = new Participant();
       data1.user_id = user_id;
@@ -113,7 +112,10 @@ export class RoomService extends TypeOrmCrudService<Room> {
         await userMessage.save();
       } else {
         msgData[0].message = msgData[0].message + msg;
-        await this.messageService.updateMessage(msgData[0].id, msgData[0].message);
+        await this.messageService.updateMessage(
+          msgData[0].id,
+          msgData[0].message,
+        );
       }
     }
   }

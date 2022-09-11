@@ -42,5 +42,4 @@ import { StatusModule } from '../statuses/status.module';
   providers: [AuthService, JwtStrategy, AnonymousStrategy, TokenService],
   exports: [AuthService],
 })
-export class AuthModule {
-}
+export class AuthModule {}

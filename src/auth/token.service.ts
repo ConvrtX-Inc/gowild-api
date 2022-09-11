@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { AccessToken, RefreshToken, SimpleUser, TokenResponse, TokenType } from './dtos/token';
-import { User } from '../users/user.entity';
+import { UserEntity } from '../users/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { AuthConfig } from './dtos/auth.config';
 import { randomUUID } from 'crypto';
@@ -24,7 +24,7 @@ export class TokenService {
     this.authConfig = configService.get<AuthConfig>('auth');
   }
 
-  public async generateToken(user: User): Promise<TokenResponse> {
+  public async generateToken(user: UserEntity): Promise<TokenResponse> {
     const [accessTokenStr, refreshTokenStr] = await Promise.all([
       this.generateAccessToken(user),
       this.generateRefreshToken(user),
@@ -105,7 +105,7 @@ export class TokenService {
     });
   }
 
-  private mapUserToSimpleUser(user: User): SimpleUser {
+  private mapUserToSimpleUser(user: UserEntity): SimpleUser {
     return {
       email: user.email,
       firstName: user.firstName,
@@ -127,7 +127,7 @@ export class TokenService {
     };
   }
 
-  private async generateRefreshToken(user: User): Promise<string> {
+  private async generateRefreshToken(user: UserEntity): Promise<string> {
     const refreshToken: RefreshToken = {
       email: user.email,
       user: this.mapUserToSimpleUser(user),
@@ -149,7 +149,7 @@ export class TokenService {
     return tokenStr;
   }
 
-  private async generateAccessToken(user: User): Promise<string> {
+  private async generateAccessToken(user: UserEntity): Promise<string> {
     const accessToken: AccessToken = {
       email: user.email,
       user: this.mapUserToSimpleUser(user),

@@ -4,8 +4,8 @@ import { ValidationArguments } from 'class-validator/types/validation/Validation
 
 type ValidationEntity =
   | {
-  id?: number | string;
-}
+      id?: number | string;
+    }
   | undefined;
 
 @ValidatorConstraint({ name: 'IsNotExist', async: true })

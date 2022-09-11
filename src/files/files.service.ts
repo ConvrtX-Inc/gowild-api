@@ -11,20 +11,17 @@ export class FilesService {
     private readonly configService: ConfigService,
     @InjectRepository(FileEntity)
     private readonly fileRepository: Repository<FileEntity>,
-  ) {
-  }
+  ) {}
 
   public async uploadFile(file: FilesDto): Promise<FileEntity> {
     if (!file) {
-      throw new BadRequestException(
-        {
-          errors: [
-            {
-              file: 'selectFile',
-            },
-          ],
-        },
-      );
+      throw new BadRequestException({
+        errors: [
+          {
+            file: 'selectFile',
+          },
+        ],
+      });
     }
 
     const path = {

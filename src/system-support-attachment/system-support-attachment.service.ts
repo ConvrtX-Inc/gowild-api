@@ -12,5 +12,4 @@ export class SystemSupportAttachmentService extends TypeOrmCrudService<SystemSup
   ) {
     super(destinationsRepository);
   }
-
 }

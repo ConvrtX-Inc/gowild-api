@@ -1,31 +1,33 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { User } from './user.entity';
+import { UserEntity } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { FindOptions } from 'src/utils/types/find-options.type';
-import { DeepPartial } from 'src/utils/types/deep-partial.type';
+import { FindOptions } from 'src/common/types/find-options.type';
+import { DeepPartial } from 'src/common/types/deep-partial.type';
 import { StatusEnum } from 'src/auth/status.enum';
 import { MailService } from 'src/mail/mail.service';
 import { StatusService } from '../statuses/status.service';
 import { FilesService } from '../files/files.service';
 
 @Injectable()
-export class UsersService extends TypeOrmCrudService<User> {
+export class UsersService extends TypeOrmCrudService<UserEntity> {
   constructor(
     private readonly mailService: MailService,
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
+    @InjectRepository(UserEntity)
+    private readonly usersRepository: Repository<UserEntity>,
     private readonly statusService: StatusService,
     private readonly filesService: FilesService,
   ) {
     super(usersRepository);
   }
 
-  async findOneEntity(options: FindOptions<User>): Promise<User | null> {
+  async findOneEntity(
+    options: FindOptions<UserEntity>,
+  ): Promise<UserEntity | null> {
     const user = await this.usersRepository.findOne({
       where: options.where,
-      relations: ['picture']
+      relations: ['picture'],
     });
     if (user) {
       return user;
@@ -33,14 +35,14 @@ export class UsersService extends TypeOrmCrudService<User> {
     return null;
   }
 
-  async findManyEntities(options: FindOptions<User>) {
+  async findManyEntities(options: FindOptions<UserEntity>) {
     return this.usersRepository.find({
       where: options.where,
-      relations: ['picture']
+      relations: ['picture'],
     });
   }
 
-  async saveEntity(data: DeepPartial<User>) {
+  async saveEntity(data: DeepPartial<UserEntity>) {
     return this.usersRepository.save(this.usersRepository.create(data));
   }
 
@@ -48,10 +50,13 @@ export class UsersService extends TypeOrmCrudService<User> {
     await this.usersRepository.softDelete(id);
   }
 
-  async updateUserStatus(id: string, statusEnum: StatusEnum): Promise<User> {
+  async updateUserStatus(
+    id: string,
+    statusEnum: StatusEnum,
+  ): Promise<UserEntity> {
     const user = await this.usersRepository.findOne({
       where: { id: id },
-      relations: ['picture']
+      relations: ['picture'],
     });
     if (!user) {
       throw new NotFoundException({
@@ -81,7 +86,6 @@ export class UsersService extends TypeOrmCrudService<User> {
   public async updateAvatar(id: string, fileId: string) {
     const user = await this.usersRepository.findOne({
       where: { id: id },
-      relations: ['picture']
     });
 
     if (!user) {
@@ -95,6 +99,6 @@ export class UsersService extends TypeOrmCrudService<User> {
     }
 
     user.picture = await this.filesService.fileById(fileId);
-    await user.save();
+    return await user.save();
   }
 }

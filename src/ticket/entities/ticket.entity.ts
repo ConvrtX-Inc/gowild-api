@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, Validate } from 'class-validator';
-import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
-import { IsExist } from 'src/utils/validators/is-exists.validator';
+import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
+import { IsExist } from 'src/common/validators/is-exists.validator';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { Status } from '../../statuses/status.entity';
 
@@ -31,7 +31,7 @@ export class Ticket extends AbstractBaseEntity {
   message?: string;
 
   @IsOptional()
-  @ApiProperty({ example: 'Firebase img url' })
+  @ApiProperty()
   @Column({
     type: 'text',
     nullable: true,

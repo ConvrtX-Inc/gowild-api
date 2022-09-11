@@ -1,8 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, Validate } from 'class-validator';
-import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
-import { IsExist } from 'src/utils/validators/is-exists.validator';
-import { Column, Entity } from 'typeorm';
+import { Allow, IsOptional, Validate } from 'class-validator';
+import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne } from 'typeorm';
+import { Route } from '../../route/entities/route.entity';
+import { AppPoint } from '../../common/lat-lng.embedded';
+import { Geometry } from 'geojson';
+import { FileEntity } from '../../files/file.entity';
+import { JoinTable } from 'typeorm/browser';
+import { IsExist } from '../../common/validators/is-exists.validator';
 
 @Entity('gw_route_historical_events')
 export class RouteHistoricalEvent extends AbstractBaseEntity {
@@ -22,27 +27,16 @@ export class RouteHistoricalEvent extends AbstractBaseEntity {
     length: 50,
     nullable: true,
   })
-  closure_uid?: string;
+  closureUid?: string;
 
   @IsOptional()
-  @ApiProperty({ example: 32.4832, type: 'number', format: 'double' })
+  @Allow()
+  @ApiProperty({ type: () => AppPoint })
   @Column({
-    type: 'decimal',
-    precision: 8,
-    scale: 4,
+    type: 'geometry',
     nullable: true,
   })
-  event_long?: number;
-
-  @IsOptional()
-  @ApiProperty({ example: 42.1437, type: 'number', format: 'double' })
-  @Column({
-    type: 'decimal',
-    precision: 8,
-    scale: 4,
-    nullable: true,
-  })
-  event_lat?: number;
+  point?: Geometry;
 
   @IsOptional()
   @ApiProperty({ example: 'First On the List' })
@@ -50,7 +44,7 @@ export class RouteHistoricalEvent extends AbstractBaseEntity {
     length: 50,
     nullable: true,
   })
-  event_title?: string;
+  title?: string;
 
   @IsOptional()
   @ApiProperty({ example: 'Subtitle' })
@@ -58,10 +52,22 @@ export class RouteHistoricalEvent extends AbstractBaseEntity {
     length: 50,
     nullable: true,
   })
-  event_subtitle?: string;
+  subtitle?: string;
 
   @IsOptional()
   @ApiProperty({ example: 'description' })
   @Column({ nullable: true })
   description?: string;
+
+  @Allow()
+  @ApiProperty({ nullable: true, type: () => FileEntity })
+  @ManyToOne(() => FileEntity, { nullable: true, cascade: false, eager: true })
+  @JoinColumn({ name: 'picture_id' })
+  picture: FileEntity;
+
+  @Allow()
+  @ApiProperty({ nullable: true, type: [FileEntity] })
+  @ManyToMany(() => FileEntity)
+  @JoinTable({ name: 'gw_route_historical_event_medias' })
+  medias: FileEntity[];
 }

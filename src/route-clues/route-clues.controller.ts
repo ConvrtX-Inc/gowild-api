@@ -1,9 +1,10 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
 import { RouteCluesService } from './route-clues.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { RouteClue } from './entities/route-clue.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ImageUpdateDto } from '../users/dtos/image-update.dto';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -32,8 +33,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   version: '1',
 })
 export class RouteCluesController implements CrudController<RouteClue> {
-  constructor(readonly service: RouteCluesService) {
-  }
+  constructor(readonly service: RouteCluesService) {}
 
   get base(): CrudController<RouteClue> {
     return this;
@@ -43,5 +43,19 @@ export class RouteCluesController implements CrudController<RouteClue> {
   @Get('all-clues/:route_id')
   public async getAllClues(@Param('route_id') route_id: string) {
     return this.service.allClues(route_id);
+  }
+
+  @ApiResponse({ type: RouteClue })
+  @ApiBody({ type: [ImageUpdateDto] })
+  @Post(':id/medias')
+  @HttpCode(HttpStatus.OK)
+  public async updateMedias(
+    @Param('id') id: string,
+    @Body() dtos: ImageUpdateDto[],
+  ) {
+    return this.service.updateMedias(
+      id,
+      dtos.map(({ fileId }) => fileId),
+    );
   }
 }

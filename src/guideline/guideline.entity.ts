@@ -1,7 +1,7 @@
 import { Column, Entity } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
-import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
+import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 
 @Entity('gw_guidelines')
 export class Guideline extends AbstractBaseEntity {
@@ -20,4 +20,3 @@ export class Guideline extends AbstractBaseEntity {
   @Column({ nullable: true, type: 'uuid' })
   last_updated_user?: string; // TODO
 }
-

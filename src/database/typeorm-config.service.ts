@@ -4,8 +4,7 @@ import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
-  constructor(private configService: ConfigService) {
-  }
+  constructor(private configService: ConfigService) {}
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
     return {
@@ -35,19 +34,19 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
         max: this.configService.get('database.maxConnections'),
         ssl: this.configService.get('database.sslEnabled')
           ? {
-            rejectUnauthorized: this.configService.get(
-              'database.rejectUnauthorized',
-            ),
-            ca: this.configService.get('database.ca')
-              ? this.configService.get('database.ca')
-              : undefined,
-            key: this.configService.get('database.key')
-              ? this.configService.get('database.key')
-              : undefined,
-            cert: this.configService.get('database.cert')
-              ? this.configService.get('database.cert')
-              : undefined,
-          }
+              rejectUnauthorized: this.configService.get(
+                'database.rejectUnauthorized',
+              ),
+              ca: this.configService.get('database.ca')
+                ? this.configService.get('database.ca')
+                : undefined,
+              key: this.configService.get('database.key')
+                ? this.configService.get('database.key')
+                : undefined,
+              cert: this.configService.get('database.cert')
+                ? this.configService.get('database.cert')
+                : undefined,
+            }
           : undefined,
       },
     } as TypeOrmModuleOptions;

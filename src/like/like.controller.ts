@@ -32,8 +32,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   version: '1',
 })
 export class LikeController implements CrudController<Like> {
-  constructor(readonly service: LikeService) {
-  }
+  constructor(readonly service: LikeService) {}
 
   get base(): CrudController<Like> {
     return this;

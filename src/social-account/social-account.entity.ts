@@ -1,9 +1,9 @@
 import { Column, Entity } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, Validate } from 'class-validator';
-import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
+import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { Transform } from 'class-transformer';
-import { IsExist } from '../utils/validators/is-exists.validator';
+import { IsExist } from '../common/validators/is-exists.validator';
 
 @Entity('gw_social_accounts')
 export class SocialAccount extends AbstractBaseEntity {

@@ -32,12 +32,9 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   version: '1',
 })
 export class TicketController implements CrudController<Ticket> {
-  constructor(readonly service: TicketService) {
-  }
+  constructor(readonly service: TicketService) {}
 
   get base(): CrudController<Ticket> {
     return this;
   }
 }
-
-

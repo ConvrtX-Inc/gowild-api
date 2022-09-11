@@ -34,9 +34,10 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   version: '1',
 })
 export class GuidelinesController implements CrudController<Guideline> {
-  constructor(public readonly service: GuidelineService,
-              public readonly guidelineLogsService: GuidelineLogsService) {
-  }
+  constructor(
+    public readonly service: GuidelineService,
+    public readonly guidelineLogsService: GuidelineLogsService,
+  ) {}
 
   get base(): CrudController<Guideline> {
     return this;
@@ -59,7 +60,6 @@ export class GuidelinesController implements CrudController<Guideline> {
     this.guidelineLogsService.saveOne(logData);
     return result;
   }
-
 
   @Get('/:type')
   @ApiOperation({ summary: 'Get Terms and Conditions by Type' })

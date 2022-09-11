@@ -33,11 +33,9 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
   version: '1',
 })
 export class RoomController implements CrudController<Room> {
-  constructor(public service: RoomService) {
-  }
+  constructor(public service: RoomService) {}
 
   get base(): CrudController<Room> {
     return this;
   }
-
 }

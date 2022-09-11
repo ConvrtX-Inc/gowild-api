@@ -1,11 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { time } from 'aws-sdk/clients/frauddetector';
-import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
+import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 import { Allow, IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
 import * as base64_arraybuffer from 'base64-arraybuffer-converter';
-
 
 @Entity('gw_treasure_chests')
 export class TreasureChest extends AbstractBaseEntity {
@@ -61,7 +60,7 @@ export class TreasureChest extends AbstractBaseEntity {
   no_of_participants?: number;
 
   @IsOptional()
-  @ApiProperty({ example: 'Firebase img url' })
+  @ApiProperty()
   @Column({
     type: 'text',
     nullable: true,
@@ -95,12 +94,14 @@ export class TreasureChest extends AbstractBaseEntity {
   @AfterLoad()
   public async decodeImage() {
     try {
-      if (typeof this.thumbnail_img !== null && this.thumbnail_img != undefined) {
+      if (
+        typeof this.thumbnail_img !== null &&
+        this.thumbnail_img != undefined
+      ) {
         this.thumbnail_img = await base64_arraybuffer.ab_2_base64(
           new Uint8Array(base64_arraybuffer.base64_2_ab(this.thumbnail_img)),
         );
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 }

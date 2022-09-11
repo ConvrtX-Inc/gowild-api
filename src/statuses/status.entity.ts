@@ -1,7 +1,7 @@
 import { Column, Entity } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsOptional } from 'class-validator';
-import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
+import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { StatusEnum } from '../auth/status.enum';
 
 @Entity('gw_statuses')

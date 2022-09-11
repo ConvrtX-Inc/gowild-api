@@ -1,12 +1,11 @@
 import { Factory, Seeder } from 'typeorm-seeding';
 import { Connection } from 'typeorm';
-import { User } from '../../users/user.entity';
+import { UserEntity } from '../../users/user.entity';
 import { Status } from '../../statuses/status.entity';
 import { StatusEnum } from '../../auth/status.enum';
 import { Password } from '../../users/password.entity';
 
 export default class FakeSeed implements Seeder {
-
   public async run(factory: Factory, connection: Connection): Promise<void> {
     if (process.env.SEED_FAKE_DATA !== 'true') {
       return;
@@ -21,7 +20,7 @@ export default class FakeSeed implements Seeder {
       })
       .getOne();
 
-    const users = await factory(User)()
+    const users = await factory(UserEntity)()
       .map(async (u) => {
         u.status = status;
         return u;

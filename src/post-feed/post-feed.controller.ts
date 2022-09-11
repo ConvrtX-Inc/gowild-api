@@ -32,8 +32,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   version: '1',
 })
 export class PostFeedController implements CrudController<PostFeed> {
-  constructor(readonly service: PostFeedService) {
-  }
+  constructor(readonly service: PostFeedService) {}
 
   get base(): CrudController<PostFeed> {
     return this;

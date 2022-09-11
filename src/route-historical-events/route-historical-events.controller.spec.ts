@@ -11,7 +11,9 @@ describe('RouteHistoricalEventsController', () => {
       providers: [RouteHistoricalEventsService],
     }).compile();
 
-    controller = module.get<RouteHistoricalEventsController>(RouteHistoricalEventsController);
+    controller = module.get<RouteHistoricalEventsController>(
+      RouteHistoricalEventsController,
+    );
   });
 
   it('should be defined', () => {

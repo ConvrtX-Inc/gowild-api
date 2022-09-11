@@ -1,4 +1,4 @@
-import { User } from '../../users/user.entity';
+import { UserEntity } from '../../users/user.entity';
 import { TokenResponse } from './token';
 import { Exclude, Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
@@ -11,14 +11,14 @@ export class AuthResponse<T> {
   data: T;
 }
 
-export class UserAuthResponse extends AuthResponse<User> {
+export class UserAuthResponse extends AuthResponse<UserEntity> {
   @Expose()
   @ApiProperty()
-  get user(): User {
+  get user(): UserEntity {
     return this.data;
   }
 
-  set user(u: User) {
+  set user(u: UserEntity) {
     this.data = u;
   }
 }

@@ -9,13 +9,11 @@ import { ApiTags } from '@nestjs/swagger';
   version: '1',
 })
 export class SmsController {
-  constructor(private readonly smsService: SmsService) {
-  }
+  constructor(private readonly smsService: SmsService) {}
 
   @Post('send')
   @HttpCode(HttpStatus.OK)
   async send(@Body() dto: SmsDto): Promise<void> {
     await this.smsService.send(dto);
   }
-
 }

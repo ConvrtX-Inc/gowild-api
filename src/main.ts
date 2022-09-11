@@ -4,7 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express/interfaces/nest-express-application.interface';
-import { validationOptions } from './utils/validation-options';
+import { validationOptions } from './common/validation-options';
 
 async function bootstrap() {
   const app: NestExpressApplication = await NestFactory.create(AppModule, {

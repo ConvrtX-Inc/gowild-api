@@ -1,8 +1,8 @@
 import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsOptional, Validate } from 'class-validator';
-import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
-import { IsExist } from 'src/utils/validators/is-exists.validator';
+import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
+import { IsExist } from 'src/common/validators/is-exists.validator';
 import { Transform } from 'class-transformer';
 import * as base64_arraybuffer from 'base64-arraybuffer-converter';
 
@@ -43,8 +43,6 @@ export class SystemSupportAttachment extends AbstractBaseEntity {
           new Uint8Array(base64_arraybuffer.base64_2_ab(this.attachment)),
         );
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
-
 }

@@ -1,2 +1,1 @@
-export class CreateSponsorDto {
-}
+export class CreateSponsorDto {}

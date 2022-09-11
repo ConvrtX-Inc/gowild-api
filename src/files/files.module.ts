@@ -86,5 +86,4 @@ import { FilesController } from './files.controller';
   providers: [ConfigModule, ConfigService, FilesService],
   exports: [FilesService],
 })
-export class FilesModule {
-}
+export class FilesModule {}

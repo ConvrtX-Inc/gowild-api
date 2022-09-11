@@ -8,5 +8,4 @@ import { ConfigModule } from '@nestjs/config';
   controllers: [HomeController],
   providers: [HomeService],
 })
-export class HomeModule {
-}
+export class HomeModule {}

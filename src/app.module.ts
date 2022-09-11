@@ -152,5 +152,4 @@ import { CookieSessionModule, NestCookieSessionOptions } from 'nestjs-cookie-ses
     },
   ],
 })
-export class AppModule {
-}
+export class AppModule {}

@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { SocialAccount } from './social-account.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { DeepPartial } from '../utils/types/deep-partial.type';
+import { DeepPartial } from '../common/types/deep-partial.type';
 
 @Injectable()
 export class SocialAccountService extends TypeOrmCrudService<SocialAccount> {

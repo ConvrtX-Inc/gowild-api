@@ -1,8 +1,8 @@
-import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
+import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsOptional, Validate } from 'class-validator';
-import { IsExist } from 'src/utils/validators/is-exists.validator';
+import { IsExist } from 'src/common/validators/is-exists.validator';
 import { Transform } from 'class-transformer';
 import * as base64_arraybuffer from 'base64-arraybuffer-converter';
 
@@ -19,7 +19,7 @@ export class Sponsor extends AbstractBaseEntity {
   treasure_chest_id?: string;
 
   @IsOptional()
-  @ApiProperty({ example: 'Firebase img url' })
+  @ApiProperty()
   @Column({
     type: 'text',
     nullable: true,
@@ -48,9 +48,7 @@ export class Sponsor extends AbstractBaseEntity {
   @BeforeUpdate()
   @BeforeInsert()
   public encodeImage() {
-    this.img = this.img
-      ? base64_arraybuffer.base64_2_ab(this.img)
-      : '';
+    this.img = this.img ? base64_arraybuffer.base64_2_ab(this.img) : '';
   }
 
   @AfterLoad()
@@ -61,7 +59,6 @@ export class Sponsor extends AbstractBaseEntity {
           new Uint8Array(base64_arraybuffer.base64_2_ab(this.img)),
         );
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 }

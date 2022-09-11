@@ -11,17 +11,19 @@ import { ApiTags } from '@nestjs/swagger';
   version: '1',
 })
 export class VerifyController {
-  constructor(private readonly verifyService: VerifyService) {
-  }
+  constructor(private readonly verifyService: VerifyService) {}
 
   @Post('mobile/send')
-  async sendPhoneVerificationToken(@Body() request: SendVerificationTokenDto): Promise<Verify> {
+  async sendPhoneVerificationToken(
+    @Body() request: SendVerificationTokenDto,
+  ): Promise<Verify> {
     return this.verifyService.sendPhoneVerificationToken(request);
   }
 
   @Post('mobile/check')
-  async checkMobileVerificationToken(@Body() request: CheckVerificationTokenDto): Promise<Verify> {
+  async checkMobileVerificationToken(
+    @Body() request: CheckVerificationTokenDto,
+  ): Promise<Verify> {
     return this.verifyService.checkPhoneVerificationToken(request);
   }
-
 }

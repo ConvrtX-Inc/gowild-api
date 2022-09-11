@@ -9,5 +9,4 @@ import { Comment } from './entities/comment.entity';
   providers: [CommentService],
   imports: [TypeOrmModule.forFeature([Comment])],
 })
-export class CommentModule {
-}
+export class CommentModule {}

@@ -29,8 +29,7 @@ import { Status } from './status.entity';
   version: '1',
 })
 export class StatusController implements CrudController<Status> {
-  constructor(public service: StatusService) {
-  }
+  constructor(public service: StatusService) {}
 
   get base(): CrudController<Status> {
     return this;

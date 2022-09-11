@@ -1,10 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
 import { Allow, IsOptional, Validate } from 'class-validator';
-import { AbstractBaseEntity } from 'src/utils/abstract-base-entity';
-import { IsExist } from 'src/utils/validators/is-exists.validator';
-import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
-import * as base64_arraybuffer from 'base64-arraybuffer-converter';
+import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { AppPoint } from '../../common/lat-lng.embedded';
+import { Geometry } from 'geojson';
+import { FileEntity } from '../../files/file.entity';
+import { IsExist } from '../../common/validators/is-exists.validator';
 
 @Entity('gw_routes')
 export class Route extends AbstractBaseEntity {
@@ -24,92 +25,32 @@ export class Route extends AbstractBaseEntity {
     length: 50,
     nullable: true,
   })
-  route_name?: string;
+  title?: string;
 
   @Allow()
-  @IsOptional()
-  @ApiProperty({ example: 'byte64image' })
-  @Transform((value: Buffer | null | string) => (value == null ? '' : value))
+  @ApiProperty({ type: () => AppPoint })
   @Column({
-    name: 'route_photo',
-    type: 'bytea',
+    type: 'geometry',
     nullable: true,
   })
-  route_photo?: Buffer | null | string;
-  @IsOptional()
-  @ApiProperty({ example: 32.4832, type: 'number', format: 'double' })
-  @Column({
-    type: 'decimal',
-    precision: 8,
-    scale: 4,
-    default: 0,
-    nullable: true,
-  })
-  start_point_long?: number;
+  startPoint?: Geometry;
 
-  @IsOptional()
-  @ApiProperty({ example: 12.4233, type: 'number', format: 'double' })
+  @Allow()
+  @ApiProperty({ type: () => AppPoint })
   @Column({
-    type: 'decimal',
-    precision: 8,
-    scale: 4,
-    default: 0,
+    type: 'geometry',
     nullable: true,
   })
-  start_point_lat?: number;
+  endPoint?: Geometry;
 
-  @IsOptional()
-  @ApiProperty({ example: 65.5234, type: 'number', format: 'double' })
-  @Column({
-    type: 'decimal',
-    precision: 8,
-    scale: 4,
-    default: 0,
-    nullable: true,
-  })
-  stop_point_long?: number;
-
-  @IsOptional()
-  @ApiProperty({ example: 12.4233, type: 'number', format: 'double' })
-  @Column({
-    type: 'decimal',
-    precision: 8,
-    scale: 4,
-    default: 0,
-    nullable: true,
-  })
-  stop_point_lat?: number;
-
-  @IsOptional()
-  @ApiProperty({ example: 'Firebase img url' })
-  @Column({
-    type: 'text',
-    nullable: true,
-  })
-  img_url: string | null;
+  @Allow()
+  @ApiProperty({ nullable: true, type: () => FileEntity })
+  @ManyToOne(() => FileEntity, { nullable: true, cascade: false, eager: true })
+  @JoinColumn({ name: 'picture_id' })
+  picture: FileEntity;
 
   @IsOptional()
   @ApiProperty({ example: 'description' })
   @Column({ type: 'text' })
   description?: string;
-
-  @BeforeUpdate()
-  @BeforeInsert()
-  public encodeImage() {
-    this.route_photo = this.route_photo
-      ? base64_arraybuffer.base64_2_ab(this.route_photo)
-      : '';
-  }
-
-  @AfterLoad()
-  public async decodeImage() {
-    try {
-      if (typeof this.route_photo !== null && this.route_photo != undefined) {
-        this.route_photo = await base64_arraybuffer.ab_2_base64(
-          new Uint8Array(base64_arraybuffer.base64_2_ab(this.route_photo)),
-        );
-      }
-    } catch (e) {
-    }
-  }
 }

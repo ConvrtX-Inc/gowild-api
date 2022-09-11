@@ -4,9 +4,6 @@ import { RoomModule } from '../room/room.module';
 
 @Module({
   providers: [ChatGateway],
-  imports: [
-    RoomModule,
-  ],
+  imports: [RoomModule],
 })
-export class ChatModule {
-}
+export class ChatModule {}

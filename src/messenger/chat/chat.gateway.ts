@@ -15,15 +15,15 @@ import { RoomInfo } from './roomInfo';
 import { MessageDetail, MessageStatus } from '../message/messageDetail';
 
 @WebSocketGateway({ namespace: '/messenger' })
-export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
-
+export class ChatGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer() wss: Server;
   private logger: Logger = new Logger('ChatGateway');
   private lstClients = [];
   private lstRooms = [];
 
-  constructor(private _roomService: RoomService) {
-  }
+  constructor(private _roomService: RoomService) {}
 
   afterInit(server: Server) {
     this.logger.log('Initialized ChatGateway!');
@@ -53,7 +53,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('msgToServer')
   public handleMessage(client: Socket, payload: any): void {
     var curDate = new Date();
-    let _message = new MessageDetail(payload.sender_id, payload.text, MessageStatus.msSent, curDate);
+    let _message = new MessageDetail(
+      payload.sender_id,
+      payload.text,
+      MessageStatus.msSent,
+      curDate,
+    );
     let room = this.getRoomOfClient(client);
     this.addMessage(_message, room);
     this.wss.to(room).emit('msgToClient', payload);
@@ -80,7 +85,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     var c = new ClientSocketInfo(client.id, room, sender_id);
     this.lstClients.push(c);
 
-    let objRoom = this.lstRooms.find(o => o.RoomID === room);
+    let objRoom = this.lstRooms.find((o) => o.RoomID === room);
     if (objRoom === undefined) {
       var rm = new RoomInfo(room);
       rm.UserMessages = '';
@@ -99,7 +104,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   getRoomOfClient(client: Socket): string {
     var res = '';
-    let objClient = this.lstClients.find(o => o.ClientID === client.id);
+    let objClient = this.lstClients.find((o) => o.ClientID === client.id);
     if (objClient != undefined) {
       res = objClient.RoomID;
     }
@@ -108,18 +113,21 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   async saveMessage(roomID: string) {
     this.logger.log('saveMessage:' + roomID);
-    let objRoom = this.lstRooms.find(o => o.RoomID === roomID);
+    let objRoom = this.lstRooms.find((o) => o.RoomID === roomID);
     if (objRoom != undefined) {
       //this.logger.log('saveMessage:'+objRoom.UserMessages);
       if (objRoom.UserMessages != '') {
-        await this._roomService.saveMessagesofRoom(roomID, objRoom.UserMessages);
+        await this._roomService.saveMessagesofRoom(
+          roomID,
+          objRoom.UserMessages,
+        );
         objRoom.UserMessages = '';
       }
     }
   }
 
   addMessage(UserMessage: MessageDetail, clientRoom: string) {
-    let objRoom = this.lstRooms.find(o => o.RoomID === clientRoom);
+    let objRoom = this.lstRooms.find((o) => o.RoomID === clientRoom);
     if (objRoom === undefined) {
       let myJSON = JSON.stringify(UserMessage);
       let msg = myJSON + ',\r\n';

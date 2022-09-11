@@ -1,6 +1,6 @@
 import { Factory, Seeder } from 'typeorm-seeding';
 import { Connection } from 'typeorm';
-import { User } from '../../users/user.entity';
+import { UserEntity } from '../../users/user.entity';
 import { Status } from '../../statuses/status.entity';
 import { StatusEnum } from '../../auth/status.enum';
 import { Password } from '../../users/password.entity';
@@ -16,7 +16,9 @@ function parseUserData(data: string): string[] {
 }
 
 const usersToAddEmail = parseUserData(process.env.SEED_ADD_USERS_EMAIL ?? '');
-const usersToAddPassword = parseUserData(process.env.SEED_ADD_USERS_PASSWORD ?? '');
+const usersToAddPassword = parseUserData(
+  process.env.SEED_ADD_USERS_PASSWORD ?? '',
+);
 
 export default class AdminSeed implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<void> {
@@ -29,12 +31,12 @@ export default class AdminSeed implements Seeder {
       let user = await connection
         .createQueryBuilder()
         .select('u')
-        .from(User, 'u')
+        .from(UserEntity, 'u')
         .where('u.email = :email', { email: userEmail })
         .getOne();
 
       if (!user) {
-        user = await factory(User)()
+        user = await factory(UserEntity)()
           .map(async (user) => {
             user.status = await connection
               .createQueryBuilder()

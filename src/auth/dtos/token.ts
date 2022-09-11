@@ -37,7 +37,6 @@ export interface IToken {
 }
 
 export class RefreshToken implements IToken {
-
   @ApiProperty()
   rid: string;
 
@@ -49,8 +48,7 @@ export class RefreshToken implements IToken {
 }
 
 export class AccessToken implements IToken {
-
-  @ApiProperty(({ type: () => SimpleUser }))
+  @ApiProperty({ type: () => SimpleUser })
   user: SimpleUser;
 
   @ApiProperty()
