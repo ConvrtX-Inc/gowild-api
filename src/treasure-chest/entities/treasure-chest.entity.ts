@@ -1,10 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { time } from 'aws-sdk/clients/frauddetector';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
-import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Allow, IsOptional } from 'class-validator';
-import { Transform } from 'class-transformer';
-import * as base64_arraybuffer from 'base64-arraybuffer-converter';
+import { AppPoint } from '../../common/lat-lng.embedded';
+import { Geometry } from 'geojson';
+import { FileEntity } from '../../files/file.entity';
 
 @Entity('gw_treasure_chests')
 export class TreasureChest extends AbstractBaseEntity {
@@ -21,30 +22,18 @@ export class TreasureChest extends AbstractBaseEntity {
   @Column({ nullable: false })
   description?: string;
 
-  @IsOptional()
-  @ApiProperty({ example: '65.5234', type: 'number', format: 'double' })
+  @Allow()
+  @ApiProperty({ type: () => AppPoint })
   @Column({
-    type: 'decimal',
-    precision: 8,
-    scale: 4,
-    nullable: false,
+    type: 'geometry',
+    nullable: true,
   })
-  location_long?: number;
-
-  @IsOptional()
-  @ApiProperty({ example: '1.12378', type: 'number', format: 'double' })
-  @Column({
-    type: 'decimal',
-    precision: 8,
-    scale: 4,
-    nullable: false,
-  })
-  location_lat?: number;
+  location?: Geometry;
 
   @IsOptional()
   @ApiProperty({ example: '2021/12/31' })
   @Column({ nullable: false })
-  eventDate: Date;
+  event_date: Date;
 
   @IsOptional()
   @ApiProperty({ example: '07:04' })
@@ -59,49 +48,15 @@ export class TreasureChest extends AbstractBaseEntity {
   })
   no_of_participants?: number;
 
-  @IsOptional()
-  @ApiProperty()
-  @Column({
-    type: 'text',
-    nullable: true,
-  })
-  img_url: string | null;
-
   @Allow()
-  @IsOptional()
-  @ApiProperty({ example: 'byte64image' })
-  @Transform((value: Buffer | null | string) => (value == null ? '' : value))
-  @Column({
-    name: 'thumbnail_img',
-    type: 'bytea',
-    nullable: true,
-  })
-  thumbnail_img?: Buffer | null | string;
+  @ApiProperty({ nullable: true, type: () => FileEntity })
+  @ManyToOne(() => FileEntity, { nullable: true, cascade: false, eager: true })
+  @JoinColumn({ name: 'picture_id' })
+  picture: FileEntity;
 
   @IsOptional()
   @ApiProperty({ example: 'augmented reality' })
   @Column({ nullable: true })
   a_r?: string;
 
-  @BeforeUpdate()
-  @BeforeInsert()
-  public encodeImage() {
-    this.thumbnail_img = this.thumbnail_img
-      ? base64_arraybuffer.base64_2_ab(this.thumbnail_img)
-      : '';
-  }
-
-  @AfterLoad()
-  public async decodeImage() {
-    try {
-      if (
-        typeof this.thumbnail_img !== null &&
-        this.thumbnail_img != undefined
-      ) {
-        this.thumbnail_img = await base64_arraybuffer.ab_2_base64(
-          new Uint8Array(base64_arraybuffer.base64_2_ab(this.thumbnail_img)),
-        );
-      }
-    } catch (e) {}
-  }
 }

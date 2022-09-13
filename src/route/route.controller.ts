@@ -19,6 +19,16 @@ import { ImageUpdateDto } from '../users/dtos/image-update.dto';
   query: {
     maxLimit: 50,
     alwaysPaginate: true,
+    join: {
+      picture: {
+        eager: true,
+        exclude: ['createdDate', 'updatedDate'],
+      },
+      historicalEvents: {
+        eager: true,
+        exclude: ['createdDate', 'updatedDate'],
+      },
+    },
   },
   params: {
     id: {

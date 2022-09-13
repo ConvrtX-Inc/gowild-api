@@ -7,7 +7,7 @@ import { GenderEnum } from 'src/users/gender.enum';
 export class AuthRegisterLoginDto {
   @ApiProperty({ example: 'test1@example.com' })
   @Transform((value: string) => value.toLowerCase().trim())
-  @Validate(IsNotExist, ['User'], {
+  @Validate(IsNotExist, ['UserEntity'], {
     message: 'emailAlreadyExists',
   })
   @IsEmail()

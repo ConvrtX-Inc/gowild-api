@@ -1,26 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, IsOptional, Validate } from 'class-validator';
+import { Allow, IsOptional } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { FileEntity } from '../../files/file.entity';
+import { RouteHistoricalEvent } from '../../route-historical-events/entities/route-historical-event.entity';
 import { AppPoint } from '../../common/lat-lng.embedded';
 import { Geometry } from 'geojson';
-import { FileEntity } from '../../files/file.entity';
-import { IsExist } from '../../common/validators/is-exists.validator';
+import { UserEntity } from '../../users/user.entity';
 
 @Entity('gw_routes')
 export class Route extends AbstractBaseEntity {
-  @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
-  @Validate(IsExist, ['User', 'id'], {
-    message: 'User not Found',
-  })
-  @Column({
-    type: 'uuid',
-    nullable: false,
-  })
-  user_id?: string;
+  @Allow()
+  @ApiProperty({ nullable: true, type: () => UserEntity })
+  @ManyToOne(() => UserEntity, { nullable: true, cascade: false, eager: true })
+  @JoinColumn({ name: 'user_id' })
+  user: UserEntity;
 
   @IsOptional()
-  @ApiProperty({ example: 'First On the List' })
+  @ApiProperty({ example: 'First On the List', nullable: true })
   @Column({
     length: 50,
     nullable: true,
@@ -28,20 +25,27 @@ export class Route extends AbstractBaseEntity {
   title?: string;
 
   @Allow()
-  @ApiProperty({ type: () => AppPoint })
+  @ApiProperty({ type: () => AppPoint, nullable: true })
   @Column({
     type: 'geometry',
     nullable: true,
   })
-  startPoint?: Geometry;
+  start?: Geometry;
 
   @Allow()
-  @ApiProperty({ type: () => AppPoint })
+  @ApiProperty({ type: () => AppPoint, nullable: true })
   @Column({
     type: 'geometry',
     nullable: true,
   })
-  endPoint?: Geometry;
+  end?: Geometry;
+
+  @Allow()
+  @ApiProperty({ type: () => [RouteHistoricalEvent], nullable: true })
+  @OneToMany(() => RouteHistoricalEvent, (obj) => obj.route, {
+    cascade: true,
+  })
+  historicalEvents?: RouteHistoricalEvent[];
 
   @Allow()
   @ApiProperty({ nullable: true, type: () => FileEntity })
@@ -50,7 +54,7 @@ export class Route extends AbstractBaseEntity {
   picture: FileEntity;
 
   @IsOptional()
-  @ApiProperty({ example: 'description' })
+  @ApiProperty({ example: 'description', nullable: true })
   @Column({ type: 'text' })
   description?: string;
 }

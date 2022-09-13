@@ -42,7 +42,7 @@ export class UserEntity extends AbstractBaseEntity {
   @Transform((value: string | null) => value?.toLowerCase().trim())
   @IsOptional({ groups: [CrudValidationGroups.UPDATE] })
   @IsNotEmpty({ groups: [CrudValidationGroups.CREATE] })
-  @Validate(IsNotExist, ['User'], {
+  @Validate(IsNotExist, ['UserEntity'], {
     message: 'username already exists',
     groups: [CrudValidationGroups.CREATE],
   })
@@ -53,7 +53,7 @@ export class UserEntity extends AbstractBaseEntity {
   @Transform((value: string | null) => value?.toLowerCase().trim())
   @IsOptional({ groups: [CrudValidationGroups.UPDATE] })
   @IsNotEmpty({ groups: [CrudValidationGroups.CREATE] })
-  @Validate(IsNotExist, ['User'], {
+  @Validate(IsNotExist, ['UserEntity'], {
     message: 'emailAlreadyExists',
     groups: [CrudValidationGroups.CREATE],
   })

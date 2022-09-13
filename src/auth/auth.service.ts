@@ -154,7 +154,7 @@ export class AuthService {
     if (!user) {
       user = new UserEntity();
       user.firstName = 'Admin';
-      user.lastName = 'User';
+      user.lastName = 'Family';
       user.username = 'admin';
       user.email = 'admin@convrtx.com';
       user = await this.usersService.saveEntity(user);

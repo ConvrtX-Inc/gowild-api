@@ -1,9 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class AppPoint {
-  @ApiProperty({ type: () => AppPoint })
-  type: 'Point';
+  @ApiProperty({ type: 'string', enum: ['Point'] })
+  type: string;
 
-  @ApiProperty({ type: () => [Number] })
-  coordinates: [number, number];
+  @ApiProperty({
+    type: 'array',
+    items: {
+      type: 'number',
+      format: 'double',
+    },
+  })
+  coordinates: number[];
 }

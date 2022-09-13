@@ -8,7 +8,7 @@ import { IsExist } from 'src/common/validators/is-exists.validator';
 export class Participant extends AbstractBaseEntity {
   @IsOptional()
   @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
-  @Validate(IsExist, ['User', 'id'], {
+  @Validate(IsExist, ['UserEntity', 'id'], {
     message: 'User not Found',
   })
   @Column({ nullable: true })

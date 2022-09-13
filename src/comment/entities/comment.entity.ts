@@ -7,7 +7,7 @@ import { Column, Entity } from 'typeorm';
 @Entity('gw_comments')
 export class Comment extends AbstractBaseEntity {
   @ApiProperty({ example: 'd0db6de5-c0b0-450c-a56a-492ee9ed3a7b' })
-  @Validate(IsExist, ['User', 'id'], {
+  @Validate(IsExist, ['UserEntity', 'id'], {
     message: 'User Not Found',
   })
   @Column({

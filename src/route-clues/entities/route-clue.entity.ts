@@ -1,12 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsOptional, Validate } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
-import { Column, Entity, ManyToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 import { Route } from '../../route/entities/route.entity';
 import { Geometry } from 'geojson';
 import { AppPoint } from '../../common/lat-lng.embedded';
 import { FileEntity } from '../../files/file.entity';
-import { JoinTable } from 'typeorm/browser';
 import { IsExist } from '../../common/validators/is-exists.validator';
 
 @Entity('gw_route_clues')

@@ -13,7 +13,7 @@ export class SocialAccount extends AbstractBaseEntity {
     nullable: false,
   })
   @Transform((value: null | string) => (value == null ? '' : value))
-  @Validate(IsExist, ['User', 'id'], {
+  @Validate(IsExist, ['UserEntity', 'id'], {
     message: 'User not Found',
   })
   @Column({ nullable: true })

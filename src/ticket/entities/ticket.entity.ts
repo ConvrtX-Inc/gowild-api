@@ -8,7 +8,7 @@ import { Status } from '../../statuses/status.entity';
 @Entity('gw_tickets')
 export class Ticket extends AbstractBaseEntity {
   @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
-  @Validate(IsExist, ['User', 'id'], {
+  @Validate(IsExist, ['UserEntity', 'id'], {
     message: 'User Id not Found',
   })
   @Column({

@@ -1,28 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, IsOptional, Validate } from 'class-validator';
+import { Allow, IsOptional } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
 import { Route } from '../../route/entities/route.entity';
 import { AppPoint } from '../../common/lat-lng.embedded';
 import { Geometry } from 'geojson';
 import { FileEntity } from '../../files/file.entity';
-import { JoinTable } from 'typeorm/browser';
-import { IsExist } from '../../common/validators/is-exists.validator';
 
 @Entity('gw_route_historical_events')
 export class RouteHistoricalEvent extends AbstractBaseEntity {
-  @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
-  @Validate(IsExist, ['Route', 'id'], {
-    message: 'Route Id not Found',
-  })
-  @Column({
-    type: 'uuid',
-    nullable: false,
-  })
-  route_id?: string;
+  @Allow()
+  @ApiProperty({ nullable: true, type: () => Route })
+  @ManyToOne(() => Route, { nullable: true, cascade: false, eager: false })
+  @JoinColumn({ name: 'route_id' })
+  route: Route;
 
   @IsOptional()
-  @ApiProperty({ example: '830759078-477' })
+  @ApiProperty({ example: '830759078-477', nullable: true })
   @Column({
     length: 50,
     nullable: true,
@@ -31,7 +25,7 @@ export class RouteHistoricalEvent extends AbstractBaseEntity {
 
   @IsOptional()
   @Allow()
-  @ApiProperty({ type: () => AppPoint })
+  @ApiProperty({ type: () => AppPoint, nullable: true })
   @Column({
     type: 'geometry',
     nullable: true,
@@ -39,7 +33,7 @@ export class RouteHistoricalEvent extends AbstractBaseEntity {
   point?: Geometry;
 
   @IsOptional()
-  @ApiProperty({ example: 'First On the List' })
+  @ApiProperty({ example: 'First On the List', nullable: true })
   @Column({
     length: 50,
     nullable: true,
@@ -47,7 +41,7 @@ export class RouteHistoricalEvent extends AbstractBaseEntity {
   title?: string;
 
   @IsOptional()
-  @ApiProperty({ example: 'Subtitle' })
+  @ApiProperty({ example: 'Subtitle', nullable: true })
   @Column({
     length: 50,
     nullable: true,
@@ -55,7 +49,7 @@ export class RouteHistoricalEvent extends AbstractBaseEntity {
   subtitle?: string;
 
   @IsOptional()
-  @ApiProperty({ example: 'description' })
+  @ApiProperty({ example: 'description', nullable: true })
   @Column({ nullable: true })
   description?: string;
 

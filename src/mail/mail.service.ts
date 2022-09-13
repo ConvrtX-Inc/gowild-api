@@ -70,13 +70,13 @@ export class MailService {
     await this.mailerService.sendMail({
       to: mailData.to,
       subject: await this.i18n.t('common.resetPassword'),
-      text: `${this.configService.get('app.frontendDomain')}/password-change/${
+      text: `${this.configService.get('app.frontendDomain')}/password-change?hash=${
         mailData.data.hash
       } ${await this.i18n.t('common.resetPassword')}`,
       template: process.cwd() + '/reset-password',
       context: {
         title: await this.i18n.t('common.resetPassword'),
-        url: `${this.configService.get('app.frontendDomain')}/password-change/${
+        url: `${this.configService.get('app.frontendDomain')}/password-change?hash=${
           mailData.data.hash
         }`,
         actionTitle: await this.i18n.t('common.resetPassword'),
