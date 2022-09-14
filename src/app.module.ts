@@ -52,7 +52,10 @@ import { TicketMessagesModule } from './ticket-messages/ticket-messages.module';
 import { GuidelineLogsModule } from './guideline-logs/guideline-logs.module';
 import { HealthModule } from './health/health.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { CookieSessionModule, NestCookieSessionOptions } from 'nestjs-cookie-session';
+import {
+  CookieSessionModule,
+  NestCookieSessionOptions,
+} from 'nestjs-cookie-session';
 
 @Module({
   imports: [

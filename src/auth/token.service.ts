@@ -1,6 +1,18 @@
-import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
-import { AccessToken, RefreshToken, SimpleUser, TokenResponse, TokenType } from './dtos/token';
+import {
+  AccessToken,
+  RefreshToken,
+  SimpleUser,
+  TokenResponse,
+  TokenType,
+} from './dtos/token';
 import { UserEntity } from '../users/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { AuthConfig } from './dtos/auth.config';

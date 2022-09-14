@@ -11,10 +11,18 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthEmailLoginDto } from './dtos/auth-email-login.dto';
 import { AuthForgotPasswordDto } from './dtos/auth-forgot-password.dto';
-import { AuthResetPasswordAdminDto, AuthResetPasswordDto } from './dtos/auth-reset-password.dto';
+import {
+  AuthResetPasswordAdminDto,
+  AuthResetPasswordDto,
+} from './dtos/auth-reset-password.dto';
 import { AuthRegisterLoginDto } from './dtos/auth-register-login.dto';
 import { TokenResponse } from './dtos/token';
 import { AuthRefreshTokenDto } from './dtos/auth-refresh-token.dto';

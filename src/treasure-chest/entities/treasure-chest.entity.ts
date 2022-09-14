@@ -58,5 +58,4 @@ export class TreasureChest extends AbstractBaseEntity {
   @ApiProperty({ example: 'augmented reality' })
   @Column({ nullable: true })
   a_r?: string;
-
 }
