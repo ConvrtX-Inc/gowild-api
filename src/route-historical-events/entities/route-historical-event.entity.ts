@@ -11,7 +11,13 @@ import { FileEntity } from '../../files/file.entity';
 export class RouteHistoricalEvent extends AbstractBaseEntity {
   @Allow()
   @ApiProperty({ nullable: true, type: () => Route })
-  @ManyToOne(() => Route, { nullable: true, cascade: false, eager: false })
+  @ManyToOne(() => Route, {
+    nullable: true,
+    cascade: false,
+    eager: false,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinColumn({ name: 'route_id' })
   route: Route;
 
@@ -57,7 +63,7 @@ export class RouteHistoricalEvent extends AbstractBaseEntity {
   @ApiProperty({ nullable: true, type: () => FileEntity })
   @ManyToOne(() => FileEntity, { nullable: true, cascade: false, eager: true })
   @JoinColumn({ name: 'picture_id' })
-  picture: FileEntity;
+  image: FileEntity;
 
   @Allow()
   @ApiProperty({ nullable: true, type: [FileEntity] })

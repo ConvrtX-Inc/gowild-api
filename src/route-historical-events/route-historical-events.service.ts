@@ -28,7 +28,7 @@ export class RouteHistoricalEventsService extends TypeOrmCrudService<RouteHistor
       });
     }
 
-    route.picture = await this.filesService.fileById(fileId);
+    route.image = await this.filesService.fileById(fileId);
     return await route.save();
   }
 

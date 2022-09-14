@@ -43,7 +43,7 @@ export class Route extends AbstractBaseEntity {
   @Allow()
   @ApiProperty({ type: () => [RouteHistoricalEvent], nullable: true })
   @OneToMany(() => RouteHistoricalEvent, (obj) => obj.route, {
-    cascade: true,
+    cascade: true, orphanedRowAction: 'delete',
   })
   historicalEvents?: RouteHistoricalEvent[];
 

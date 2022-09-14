@@ -28,6 +28,10 @@ import { ImageUpdateDto } from '../users/dtos/image-update.dto';
         eager: true,
         exclude: ['createdDate', 'updatedDate'],
       },
+      'historicalEvents.image': {
+        eager: true,
+        exclude: ['createdDate', 'updatedDate'],
+      },
     },
   },
   params: {
