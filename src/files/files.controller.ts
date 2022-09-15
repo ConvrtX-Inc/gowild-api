@@ -18,7 +18,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { FilesService } from './files.service';
-import { FilesDto } from './files.dto';
 import { FileEntity } from './file.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -47,7 +46,7 @@ export class FilesController {
     },
   })
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: FilesDto) {
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
     return this.filesService.uploadFile(file);
   }
 

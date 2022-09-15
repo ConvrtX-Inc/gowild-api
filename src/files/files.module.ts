@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { FileEntity } from './file.entity';
 import { FilesService } from './files.service';
 import { FilesController } from './files.controller';
+import * as path from 'path';
 
 @Module({
   imports: [
@@ -17,45 +18,68 @@ import { FilesController } from './files.controller';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        const storages = {
-          local: () =>
-            diskStorage({
-              destination: './files',
-              filename: (request, file, callback) => {
-                callback(
-                  null,
-                  `${randomStringGenerator()}.${file.originalname
-                    .split('.')
-                    .pop()
-                    .toLowerCase()}`,
-                );
-              },
-            }),
-          s3: () => {
-            const s3 = new AWS.S3();
-            AWS.config.update({
-              accessKeyId: configService.get('file.accessKeyId'),
-              secretAccessKey: configService.get('file.secretAccessKey'),
-              region: configService.get('file.awsS3Region'),
-            });
+        const storages: Record<files.FileType, files.VoidStorageEngineConfig> =
+          {
+            local: () =>
+              diskStorage({
+                destination: './files',
+                filename: (request, file, callback) => {
+                  callback(
+                    null,
+                    `${randomStringGenerator()}.${file.originalname
+                      .split('.')
+                      .pop()
+                      .toLowerCase()}`,
+                  );
+                },
+              }),
+            s3: () => {
+              const s3 = new AWS.S3();
+              AWS.config.update({
+                accessKeyId: configService.get('file.accessKeyId'),
+                secretAccessKey: configService.get('file.secretAccessKey'),
+                region: configService.get('file.awsS3Region'),
+              });
 
-            return multerS3({
-              s3: s3,
-              bucket: configService.get('file.awsDefaultS3Bucket'),
-              acl: 'public-read',
-              contentType: multerS3.AUTO_CONTENT_TYPE,
-              key: (request, file, callback) => {
-                callback(
-                  null,
-                  `${randomStringGenerator()}.${file.originalname
-                    .split('.')
-                    .pop()
-                    .toLowerCase()}`,
-                );
-              },
-            });
-          },
-        };
+              return multerS3({
+                s3: s3,
+                bucket: configService.get('file.awsDefaultS3Bucket'),
+                acl: 'public-read',
+                contentType: multerS3.AUTO_CONTENT_TYPE,
+                key: (request, file, callback) => {
+                  callback(
+                    null,
+                    `${randomStringGenerator()}.${file.originalname
+                      .split('.')
+                      .pop()
+                      .toLowerCase()}`,
+                  );
+                },
+              });
+            },
+            firebase: () => {
+              const FirebaseStorage = require('multer-firebase-storage');
+              const googleFileConfig = path.join(
+                process.cwd(),
+                configService.get('file.firebaseConfigFilePath'),
+              );
+              const googleConfigFile = require(googleFileConfig);
+
+              return FirebaseStorage({
+                bucketName: googleConfigFile.project_id + '.appspot.com',
+                credentials: {
+                  clientEmail: googleConfigFile.client_email,
+                  privateKey: googleConfigFile.private_key,
+                  projectId: googleConfigFile.project_id,
+                },
+                appName: 'convrtx-dev',
+                namePrefix: 'gw-',
+                nameSuffix: '-npi--',
+                unique: true,
+                public: true,
+              });
+            },
+          };
 
         return {
           fileFilter: (request, file, callback) => {

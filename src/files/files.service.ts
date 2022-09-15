@@ -7,7 +7,6 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FileEntity } from './file.entity';
 import { Repository } from 'typeorm';
-import { FilesDto } from './files.dto';
 
 @Injectable()
 export class FilesService {
@@ -17,7 +16,7 @@ export class FilesService {
     private readonly fileRepository: Repository<FileEntity>,
   ) {}
 
-  public async uploadFile(file: FilesDto): Promise<FileEntity> {
+  public async uploadFile(file: Express.Multer.File): Promise<FileEntity> {
     if (!file) {
       throw new BadRequestException({
         errors: [
@@ -28,15 +27,22 @@ export class FilesService {
       });
     }
 
-    const path = {
+    const path: Record<files.FileType, string> = {
       local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
       s3: file.location,
+      firebase: file.publicUrl,
+    };
+
+    const sizes: Record<files.FileType, number | undefined> = {
+      local: file.size,
+      s3: file.size,
+      firebase: file.fileRef?.metadata?.size,
     };
 
     return this.fileRepository.save(
       this.fileRepository.create({
         path: path[this.configService.get('file.driver')],
-        size: file.size,
+        size: sizes[this.configService.get('file.driver')],
         mimetype: file.mimetype,
         fileName: file.originalname,
       }),
