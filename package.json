@@ -12,7 +12,7 @@
     "seeds": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-seeding/dist/cli.js",
     "migration:generate": "npm run typeorm -- migration:generate -n convrtx",
     "migration:create": "npm run typeorm -- migration:create -n convrtx",
-    "migration:run": "npm run typeorm -- migration:run",
+    "migrate": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert",
     "schema:drop": "npm run typeorm -- schema:drop",
     "seed:config": "npm run seeds -- config",

@@ -9,9 +9,12 @@ export class Forgot extends AbstractBaseEntity {
   @ApiProperty({ nullable: true })
   @Allow()
   @Column()
-  @Index()
   hash: string;
 
+  @ApiProperty({ nullable: true })
+  @Allow()
+  @Column()
+  emailPhone: string;
   @Allow()
   @ApiProperty({ nullable: true })
   @ManyToOne(() => UserEntity, {

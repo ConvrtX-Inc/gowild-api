@@ -15,6 +15,7 @@ import { Status } from 'src/statuses/status.entity';
 import { Password } from './password.entity';
 import { FileEntity } from '../files/file.entity';
 import { GenderEnum } from './gender.enum';
+import {Role} from "../roles/role.entity";
 
 @Entity('gw_users')
 export class UserEntity extends AbstractBaseEntity {
@@ -84,6 +85,11 @@ export class UserEntity extends AbstractBaseEntity {
   @ManyToOne(() => Status, { nullable: false, cascade: false, eager: true })
   @JoinColumn({ name: 'status_id' })
   status: Status;
+
+  @ApiProperty({ nullable: true })
+  @ManyToOne(() => Role, { nullable: false, cascade: false, eager: true })
+  @JoinColumn({ name: 'role_id' })
+  role: Role;
 
   @ApiHideProperty()
   @Exclude()

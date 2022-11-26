@@ -33,7 +33,7 @@ export class MailService {
         ' ' +
         (await this.i18n.t('common.emailSubject')),
       text: '',
-      template: process.cwd() + '/user-update-status',
+      template: process.cwd() + '/mail-templates/user-update-status',
       context: {
         app_name: this.configService.get('app.name'),
         header: (await this.i18n.t('common.hello')) + ' ' + mailData.name,
@@ -75,7 +75,7 @@ export class MailService {
       )}/password-change?hash=${mailData.data.hash} ${await this.i18n.t(
         'common.resetPassword',
       )}`,
-      template: process.cwd() + '/reset-password',
+      template: process.cwd() + '/mail-templates/reset-password',
       context: {
         title: await this.i18n.t('common.resetPassword'),
         url: `${this.configService.get(
@@ -90,4 +90,5 @@ export class MailService {
       },
     });
   }
+
 }

@@ -11,14 +11,16 @@ export const validationOptions: ValidationPipeOptions = {
   errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
   exceptionFactory: (errors: ValidationError[]) =>
     new UnprocessableEntityException({
-      errors: errors.reduce(
-        (accumulator, currentValue) => ({
-          ...accumulator,
-          [currentValue.property]: Object.values(currentValue.constraints).join(
-            ', ',
-          ),
-        }),
-        {},
-      ),
+      errors: [
+          errors.reduce(
+              (accumulator, currentValue) => ({
+                  ...accumulator,
+                  [currentValue.property]: Object.values(currentValue.constraints).join(
+                      ', ',
+                  ),
+              }),
+              {},
+          )
+      ],
     }),
 };

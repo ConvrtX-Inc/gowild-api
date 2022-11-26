@@ -19,6 +19,7 @@ import { TokenResponse } from './dtos/token';
 import { SmsService } from '../sms/sms.service';
 import { StatusEnum } from './status.enum';
 import { StatusService } from '../statuses/status.service';
+import {randomInt} from "crypto";
 
 @Injectable()
 export class AuthService {
@@ -186,7 +187,7 @@ export class AuthService {
       });
     }
 
-    const hash = this.genHash();
+    const hash = randomInt(9999).toString();
     await this.forgotService.saveEntity({
       hash,
       user,

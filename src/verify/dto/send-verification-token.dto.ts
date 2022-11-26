@@ -9,6 +9,6 @@ export class SendVerificationTokenDto {
       ? '+' + value.toLowerCase().trim().charAt(1)
       : value.toLowerCase().trim().charAt(1),
   )
-  @IsPhoneNumber()
+  //@IsPhoneNumber()
   phone_number: string;
 }
