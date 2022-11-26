@@ -136,3 +136,4 @@ dist
 /files
 /ormconfig.json
 package-lock.json
+.env
