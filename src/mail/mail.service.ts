@@ -78,10 +78,7 @@ export class MailService {
       template: process.cwd() + '/mail-templates/reset-password',
       context: {
         title: await this.i18n.t('common.resetPassword'),
-        url: `${this.configService.get(
-          'app.frontendDomain',
-        )}/password-change?hash=${mailData.data.hash}`,
-        actionTitle: await this.i18n.t('common.resetPassword'),
+        code: mailData.data.hash,
         app_name: this.configService.get('app.name'),
         text1: await this.i18n.t('reset-password.text1'),
         text2: await this.i18n.t('reset-password.text2'),

@@ -20,6 +20,8 @@ import { SmsService } from '../sms/sms.service';
 import { StatusEnum } from './status.enum';
 import { StatusService } from '../statuses/status.service';
 import {randomInt} from "crypto";
+import {RoleService} from "../roles/role.service";
+import {RoleEnum} from "../roles/roles.enum";
 
 @Injectable()
 export class AuthService {
@@ -32,6 +34,7 @@ export class AuthService {
     private readonly socialAccountService: SocialAccountService,
     private readonly passwordService: PasswordService,
     private readonly statusService: StatusService,
+    private readonly roleService: RoleService,
   ) {}
 
   public async validateLogin(
@@ -136,6 +139,7 @@ export class AuthService {
     entity.hash = hash;
 
     entity.status = await this.statusService.findByEnum(StatusEnum.Active);
+    entity.role = await this.roleService.findByEnum(RoleEnum.USER);
     entity = await this.usersService.saveEntity(entity);
 
     await this.passwordService.createPassword(entity, dto.password);
@@ -158,6 +162,8 @@ export class AuthService {
       user.lastName = 'Family';
       user.username = 'admin';
       user.email = 'admin@convrtx.com';
+      user.status = await this.statusService.findByEnum(StatusEnum.Active);
+      user.role = await this.roleService.findByEnum(RoleEnum.SUPER_ADMIN);
       user = await this.usersService.saveEntity(user);
     }
 
@@ -167,13 +173,16 @@ export class AuthService {
 
   public async forgotPassword(dto: AuthForgotPasswordDto): Promise<void> {
     let user = null;
+    let emailPhone = null;
     if (dto.email) {
+      emailPhone = dto.email;
       user = await this.usersService.findOneEntity({
         where: {
           email: dto.email,
         },
       });
     } else {
+      emailPhone = dto.phone;
       user = await this.usersService.findOneEntity({
         where: {
           phoneNo: dto.phone,
@@ -190,6 +199,7 @@ export class AuthService {
     const hash = randomInt(9999).toString();
     await this.forgotService.saveEntity({
       hash,
+      emailPhone,
       user,
     });
     if (dto.email) {
@@ -200,20 +210,21 @@ export class AuthService {
         },
       });
     } else {
-      await this.smsService.send({
-        phone_number: user.phone_no.toString(),
-        message:
-          'You have requested reset password on Go Wild App. Please use this code to reset password:' +
-          hash,
-      });
+      // await this.smsService.send({
+      //   phone_number: user.phone_no.toString(),
+      //   message:
+      //     'You have requested reset password on Go Wild App. Please use this code to reset password:' +
+      //     hash,
+      // });
+      // Will uncomment when twilio account provided
     }
   }
 
-  public async resetPassword(hash: string, password: string): Promise<void> {
+  public async resetPassword(emailPhone:string, hash: string, password: string): Promise<void> {
     let user = null;
     const forgot = await this.forgotService.findOneEntity({
       where: {
-        hash,
+        hash
       },
     });
     if (!forgot) {
@@ -223,7 +234,7 @@ export class AuthService {
     }
     user = forgot.user;
     await this.forgotService.softDelete(forgot.id);
-    user.password = password;
+    await this.passwordService.createPassword(user, password);
     await user.save();
   }
 
