@@ -1,9 +1,11 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import {Body, Controller, Get, Param, Patch, Post, Request, UseGuards} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { PostFeed } from './entities/post-feed.entity';
 import { PostFeedService } from './post-feed.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import {CreatePostFeedDto} from "./dto/create-post-feed.dto";
+import {UpdatePostFeedDto} from "./dto/update-post-feed.dto";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -18,6 +20,10 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   query: {
     maxLimit: 50,
     alwaysPaginate: true,
+  },
+  dto: {
+    create: CreatePostFeedDto,
+    update: UpdatePostFeedDto
   },
   params: {
     id: {
@@ -43,6 +49,17 @@ export class PostFeedController implements CrudController<PostFeed> {
   public async getFriendsPost(@Param('user_id') user_id: string) {
     return this.service.friendsPosts(user_id);
   }
+  @ApiOperation({ summary: 'Create Post Feed' })
+  @Post()
+  public async create(@Request() request: Express.Request, @Body() createPostFeedDto: CreatePostFeedDto,) {
+    return this.service.create(request.user?.sub, createPostFeedDto);
+  }
+
+  // @ApiOperation({ summary: 'Create Post Feed' })
+  // @Patch(':id')
+  // public async update(@Body() createPostFeedDto: CreatePostFeedDto,) {
+  //   return this.service.update( createPostFeedDto);
+  // }
 
   @ApiOperation({ summary: 'Get posts from other users' })
   @Get('other-users-posts/:user_id')

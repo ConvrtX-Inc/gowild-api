@@ -8,6 +8,7 @@ import { PostFeed } from './entities/post-feed.entity';
 import { Comment } from 'src/comment/entities/comment.entity';
 import { Like } from 'src/like/entities/like.entity';
 import { Share } from 'src/share/entities/share.entity';
+import {CreatePostFeedDto} from "./dto/create-post-feed.dto";
 
 @Injectable()
 export class PostFeedService extends TypeOrmCrudService<PostFeed> {
@@ -18,6 +19,14 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
     private friendsRepository: Repository<Friends>,
   ) {
     super(postFeedRepository);
+  }
+
+  async create(userId: string, createPostFeedDto: CreatePostFeedDto) {
+    return this.postFeedRepository.save(this.postFeedRepository.create({user_id: userId, views: 0, ...createPostFeedDto}));
+  }
+
+  async update(createPostFeedDto: CreatePostFeedDto) {
+    return this.postFeedRepository.save(this.postFeedRepository.create({...createPostFeedDto}));
   }
 
   async friendsPosts(user_id: string) {

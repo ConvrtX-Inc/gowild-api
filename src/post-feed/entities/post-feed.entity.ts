@@ -8,9 +8,6 @@ import { Column, Entity } from 'typeorm';
 @Entity('gw_post_feeds')
 export class PostFeed extends AbstractBaseEntity {
   @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
-  @Validate(IsExist, ['UserEntity', 'id'], {
-    message: 'User Not Found',
-  })
   @Column({
     type: 'uuid',
     nullable: false,
@@ -53,7 +50,7 @@ export class PostFeed extends AbstractBaseEntity {
   @ApiProperty({ example: '23' })
   @Column({
     type: 'integer',
-    nullable: false,
+    nullable: false
   })
   views?: number;
 }
