@@ -35,6 +35,12 @@ export class AuthRegisterLoginDto {
   @Allow()
   gender: GenderEnum;
 
+  @ApiProperty({
+    nullable: true
+  })
+  @Allow()
+  userAddress: string[];
+
   @ApiProperty({ example: '+639506703401', nullable: true })
   @Allow()
   @Transform((value: string) => value.toLowerCase().trim())

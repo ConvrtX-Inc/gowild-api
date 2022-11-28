@@ -16,7 +16,8 @@ import { AuthConfig } from './dtos/auth.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RefreshTokenEntity } from './refresh-token.entity';
 import { StatusModule } from '../statuses/status.module';
-import {RoleModule} from "../roles/status.module";
+import {RoleModule} from "../roles/roles.module";
+import {UserAddressModule} from "../user-addresses/user-address.module";
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import {RoleModule} from "../roles/status.module";
     SocialAccountModule,
     StatusModule,
     RoleModule,
+    UserAddressModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

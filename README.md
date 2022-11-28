@@ -29,16 +29,12 @@ Install Dependencies
 ```bash
 yarn install
 ```
-Generate migration
+Sync schema
 
 ```bash
-yarn migration:generate 
+yarn schema:sync 
 ```
 
-Run migration
-
-```bash
-yarn migration:run
 ```
 
 Run seed

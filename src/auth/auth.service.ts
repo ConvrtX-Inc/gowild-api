@@ -22,6 +22,8 @@ import { StatusService } from '../statuses/status.service';
 import {randomInt} from "crypto";
 import {RoleService} from "../roles/role.service";
 import {RoleEnum} from "../roles/roles.enum";
+import {UserAddress} from "../user-addresses/user-address.entity";
+import {UserAddressService} from "../user-addresses/user-address.service";
 
 @Injectable()
 export class AuthService {
@@ -35,6 +37,7 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly statusService: StatusService,
     private readonly roleService: RoleService,
+    private readonly userAddressService: UserAddressService,
   ) {}
 
   public async validateLogin(
@@ -138,10 +141,17 @@ export class AuthService {
     entity.phoneNo = dto.phoneNo;
     entity.hash = hash;
 
+
     entity.status = await this.statusService.findByEnum(StatusEnum.Active);
     entity.role = await this.roleService.findByEnum(RoleEnum.USER);
     entity = await this.usersService.saveEntity(entity);
-
+    for(const address of dto.userAddress)
+    {
+      const userAddress = new UserAddress()
+      userAddress.address = address
+      userAddress.user = entity
+      await this.userAddressService.save(userAddress)
+    }
     await this.passwordService.createPassword(entity, dto.password);
     return entity;
   }
