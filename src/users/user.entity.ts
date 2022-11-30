@@ -109,6 +109,22 @@ export class UserEntity extends AbstractBaseEntity {
   hash: string;
 
   @ApiHideProperty()
+  @Exclude()
+  @Column({
+    nullable: true,
+  })
+  otp: string;
+
+  @ApiHideProperty()
+  @Exclude()
+  @Column({
+    nullable: true,
+    name: 'phone_verified',
+    default: false
+  })
+  phoneVerified: boolean;
+
+  @ApiHideProperty()
   @OneToMany(() => Password, (p) => p.user, { cascade: ['remove'] })
   @Exclude()
   passwords: Password[];
