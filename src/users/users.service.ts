@@ -27,7 +27,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
   ): Promise<UserEntity | null> {
     const user = await this.usersRepository.findOne({
       where: options.where,
-      relations: ['picture', 'userAddress'],
+      relations: ['picture'],
     });
     if (user) {
       return user;

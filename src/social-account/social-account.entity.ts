@@ -31,7 +31,7 @@ export class SocialAccount extends AbstractBaseEntity {
 
   @IsOptional()
   @ApiProperty({ nullable: true })
-  @Column({ length: 100, nullable: true })
+  @Column({ length: 100, nullable: true , name:'social_id'})
   socialId?: string;
 
   @IsOptional()

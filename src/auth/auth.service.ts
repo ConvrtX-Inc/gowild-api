@@ -79,9 +79,9 @@ export class AuthService {
 
     const socialAccount = await this.socialAccountService.findOne({
       where: {
-        social_id: socialData.id,
+        socialId: socialData.id,
         provider: authProvider,
-        account_email: socialEmail,
+        accountEmail: socialEmail,
       },
     });
 
@@ -101,27 +101,30 @@ export class AuthService {
     } else if (userByEmail) {
       user = userByEmail;
     } else {
-      user = await this.usersService.saveEntity({
-        email: socialEmail,
-        firstName: socialData.firstName,
-        lastName: socialData.lastName,
-        username: socialEmail,
-      });
+      let entity = new UserEntity();
+      entity.firstName = socialData.firstName;
+      entity.lastName = socialData.lastName;
+      entity.email = socialEmail;
+      entity.username = socialEmail;
+      entity.status = await this.statusService.findByEnum(StatusEnum.Active);
+      entity.role = await this.roleService.findByEnum(RoleEnum.USER);
+
+      entity = await this.usersService.saveEntity(entity);
       await this.socialAccountService.saveEntity({
-        userId: user.id,
+        userId: entity.id,
         socialId: socialData.id,
         provider: authProvider,
         accountEmail: socialEmail,
       });
       user = await this.usersService.findOneEntity({
         where: {
-          id: user.id,
+          id: entity.id,
         },
       });
     }
     const token = await this.tokenService.generateToken(user);
     const response = new UserAuthResponse();
-    response.user = user;
+    //response.user = user;
     response.token = token;
     return response;
   }
