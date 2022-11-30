@@ -17,7 +17,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RefreshTokenEntity } from './refresh-token.entity';
 import { StatusModule } from '../statuses/status.module';
 import {RoleModule} from "../roles/roles.module";
-import {UserAddressModule} from "../user-addresses/user-address.module";
 
 @Module({
   imports: [
@@ -30,7 +29,6 @@ import {UserAddressModule} from "../user-addresses/user-address.module";
     SocialAccountModule,
     StatusModule,
     RoleModule,
-    UserAddressModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

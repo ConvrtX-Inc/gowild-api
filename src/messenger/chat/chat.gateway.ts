@@ -14,7 +14,7 @@ import { ClientSocketInfo } from './clientSocketInfo';
 import { RoomInfo } from './roomInfo';
 import { MessageDetail, MessageStatus } from '../message/messageDetail';
 
-@WebSocketGateway({ namespace: '/messenger' })
+@WebSocketGateway({cors: true})
 export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
