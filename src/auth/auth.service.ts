@@ -136,6 +136,8 @@ export class AuthService {
     entity.email = dto.email;
     entity.username = dto.email;
     entity.phoneNo = dto.phoneNo;
+    entity.addressOne = dto.addressOne;
+    entity.addressTwo = dto.addressTwo;
     entity.hash = hash;
 
 
