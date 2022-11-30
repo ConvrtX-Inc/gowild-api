@@ -40,9 +40,12 @@ export class AuthService {
   public async validateLogin(
     loginDto: AuthEmailLoginDto,
   ): Promise<TokenResponse> {
+    const status = await this.statusService.findByEnum(StatusEnum.Active);
     const user = await this.usersService.findOneEntity({
       where: {
         email: loginDto.email,
+        status: status.id
+
       },
     });
 

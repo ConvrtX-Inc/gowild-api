@@ -16,10 +16,10 @@ export class VerifyService {
         .services(process.env.VERIFICATION_SID)
         .verifications.create({ to: request.phone_number, channel: 'sms' });
       const v = new Verify();
-      v.id = res.sid;
+      //v.id = res.sid;
       v.phone_number = res.to;
-      v.status = res.status;
-      v.expired_in = res.sendCodeAttempts[0]['time'];
+      //v.status = res.status;
+      //v.expired_in = res.sendCodeAttempts[0]['time'];
       return v;
     } catch (error) {
       throw new HttpException(
@@ -40,10 +40,10 @@ export class VerifyService {
           code: request.verify_code,
         });
       const v = new Verify();
-      v.id = res.sid;
+      //v.id = res.sid;
       v.phone_number = res.to;
-      v.status = res.status;
-      v.expired_in = null;
+      //v.status = res.status;
+      //v.expired_in = null;
       return v;
     } catch (error) {
       throw new HttpException(

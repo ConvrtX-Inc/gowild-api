@@ -17,6 +17,11 @@ export class VerifyController {
   async sendPhoneVerificationToken(
     @Body() request: SendVerificationTokenDto,
   ): Promise<Verify> {
+    return {
+      phone_number: request.phone_number,
+      code: '0000',
+      status: 'pending'
+    }
     return this.verifyService.sendPhoneVerificationToken(request);
   }
 
@@ -24,6 +29,11 @@ export class VerifyController {
   async checkMobileVerificationToken(
     @Body() request: CheckVerificationTokenDto,
   ): Promise<Verify> {
+    return {
+      phone_number: request.phone_number,
+      code: '0000',
+      status: 'verified'
+    }
     return this.verifyService.checkPhoneVerificationToken(request);
   }
 }
