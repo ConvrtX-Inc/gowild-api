@@ -66,8 +66,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Request forgot password' })
   async forgotPassword(
-    @Body() forgotPasswordDto: AuthForgotPasswordDto,
-  ): Promise<void> {
+    @Body() forgotPasswordDto: AuthForgotPasswordDto,) {
     return this.service.forgotPassword(forgotPasswordDto);
   }
 

@@ -1,4 +1,4 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException , HttpStatus } from '@nestjs/common';
 import { UserEntity } from '../users/user.entity';
 import { AuthEmailLoginDto } from './dtos/auth-email-login.dto';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
@@ -182,7 +182,7 @@ export class AuthService {
     return user;
   }
 
-  public async forgotPassword(dto: AuthForgotPasswordDto): Promise<void> {
+   async forgotPassword(dto: AuthForgotPasswordDto) {    
     let user = null;
     let emailPhone = null;
     if (dto.email) {
@@ -220,7 +220,7 @@ export class AuthService {
         data: {
           hash,
         },
-      });
+      });     
     } else {
       // await this.smsService.send({
       //   phone_number: user.phone_no.toString(),
@@ -229,6 +229,10 @@ export class AuthService {
       //     hash,
       // });
       // Will uncomment when twilio account provided
+    }
+    return {
+      status : HttpStatus.OK,
+      message: "OTP Sent Successfully"
     }
   }
 
