@@ -50,7 +50,17 @@ export class PostFeed extends AbstractBaseEntity {
   @ApiProperty({ example: '23' })
   @Column({
     type: 'integer',
-    nullable: false
+    nullable: false,
+    default: 0
   })
   views?: number;
+
+  @IsOptional()
+  @ApiProperty({ example: '23' })
+  @Column({
+    type: 'integer',
+    nullable: false,
+    default: 0
+  })
+  share?: number;
 }
