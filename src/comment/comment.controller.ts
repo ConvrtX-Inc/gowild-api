@@ -1,9 +1,10 @@
-import { Controller, UseGuards } from '@nestjs/common';
+import { Controller, UseGuards,Body,Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Crud, CrudController } from '@nestjsx/crud';
+import { Crud, CrudController,Override } from '@nestjsx/crud';
 import { Comment } from './entities/comment.entity';
 import { CommentService } from './comment.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CreateCommentDto } from './dto/create-comment.dto';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -37,4 +38,10 @@ export class CommentController implements CrudController<Comment> {
   get base(): CrudController<Comment> {
     return this;
   }
+
+  @Override('createOneBase')
+  async createOne(@Request() req,@Body() dto:CreateCommentDto){  
+    return await this.service.createOneComment(dto,req.user.sub);
+  }
+
 }
