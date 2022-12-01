@@ -29,6 +29,7 @@ import { AuthRefreshTokenDto } from './dtos/auth-refresh-token.dto';
 import { UserEntity } from '../users/user.entity';
 import { userTokenCookieKey } from '../common/constants/cookie.keys';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import {AuthVerifyUserDto} from "./dtos/auth-verify-user.dto";
 
 @ApiTags('Auth')
 @Controller({
@@ -82,6 +83,16 @@ export class AuthController {
       resetPasswordDto.password,
     );
   }
+
+  // @ApiResponse({ type: UserEntity })
+  // @Post('verify/mobile')
+  // @HttpCode(HttpStatus.CREATED)
+  // @ApiOperation({ summary: 'Register new account' })
+  // async verify(
+  //     @Body() verifyUserDto: AuthVerifyUserDto,
+  // ): Promise<UserEntity> {
+  //   return this.service.verifyOTP();
+  // }
 
   @ApiResponse({ type: UserEntity })
   @Get('generate-admin')

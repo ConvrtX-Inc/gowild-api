@@ -128,6 +128,7 @@ export class TokenService {
       birthDate: user.birthDate,
       fullName: user.fullName,
       picture: user.picture?.path,
+      status: user.status.statusName
     };
   }
 

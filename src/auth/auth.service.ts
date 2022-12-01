@@ -144,6 +144,8 @@ export class AuthService {
     entity.phoneNo = dto.phoneNo;
     entity.addressOne = dto.addressOne;
     entity.addressTwo = dto.addressTwo;
+    entity.otp = '0000';
+    entity.phoneVerified = false;
     entity.hash = hash;
 
 
@@ -246,6 +248,24 @@ export class AuthService {
     await user.save();
   }
 
+
+  public async verifyOTP(emailPhone:string, hash: string, password: string): Promise<void> {
+    let user = null;
+    const forgot = await this.forgotService.findOneEntity({
+      where: {
+        hash
+      },
+    });
+    if (!forgot) {
+      throw new NotFoundException({
+        hash: `notFound`,
+      });
+    }
+    user = forgot.user;
+    await this.forgotService.softDelete(forgot.id);
+    await this.passwordService.createPassword(user, password);
+    await user.save();
+  }
   public async me(userId: string): Promise<UserEntity> {
     return await this.usersService.findOneEntity({
       where: {

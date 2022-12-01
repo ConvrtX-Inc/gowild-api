@@ -26,6 +26,9 @@ export class SimpleUser {
   fullName: string | null;
 
   @ApiProperty({ nullable: true })
+  status: string | null;
+
+  @ApiProperty({ nullable: true })
   picture: string | null;
 }
 
