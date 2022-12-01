@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
 import { Like } from './entities/like.entity';
+import { DeepPartial } from 'src/common/types/deep-partial.type';
 
 @Injectable()
 export class LikeService extends TypeOrmCrudService<Like> {
@@ -13,12 +14,18 @@ export class LikeService extends TypeOrmCrudService<Like> {
     super(likeRepository);
   }
 
+  async saveEntity(data: DeepPartial<Like>) {
+    return this.likeRepository.save(this.likeRepository.create(data));
+  }
+
   async createOnelike(dto: any, req: any) {
+
+    const newlike = {
+     user_id : req,
+     postfeed_id : dto.postfeed_id,
+    }
+    await this.saveEntity(newlike);
     
-    var like = new Like();
-    like.user_id = req;
-    like.postfeed_id = dto.postfeed_id;
-    await like.save()
     return {
       status: HttpStatus.OK,
       response: {
