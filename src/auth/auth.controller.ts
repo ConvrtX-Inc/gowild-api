@@ -84,15 +84,14 @@ export class AuthController {
     );
   }
 
-  // @ApiResponse({ type: UserEntity })
-  // @Post('verify/mobile')
-  // @HttpCode(HttpStatus.CREATED)
-  // @ApiOperation({ summary: 'Register new account' })
-  // async verify(
-  //     @Body() verifyUserDto: AuthVerifyUserDto,
-  // ): Promise<UserEntity> {
-  //   return this.service.verifyOTP();
-  // }
+  @Post('verify/mobile')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verify Account' })
+  async verify(
+      @Body() verifyUserDto: AuthVerifyUserDto,
+  ): Promise<TokenResponse> {
+    return this.service.verifyOTP(verifyUserDto);
+  }
 
   @ApiResponse({ type: UserEntity })
   @Get('generate-admin')

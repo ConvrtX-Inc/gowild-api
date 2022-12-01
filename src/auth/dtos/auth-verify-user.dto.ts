@@ -10,7 +10,7 @@ export class AuthVerifyUserDto {
   @IsNotEmpty()
   phoneNo: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: '0000' })
   @IsNotEmpty()
   otp: string;
 }

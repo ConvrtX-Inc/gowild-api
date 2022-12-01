@@ -22,6 +22,7 @@ import { StatusService } from '../statuses/status.service';
 import {randomInt} from "crypto";
 import {RoleService} from "../roles/role.service";
 import {RoleEnum} from "../roles/roles.enum";
+import {AuthVerifyUserDto} from "./dtos/auth-verify-user.dto";
 
 @Injectable()
 export class AuthService {
@@ -206,7 +207,8 @@ export class AuthService {
       });
     }
 
-    const hash = randomInt(9999).toString();
+    //const hash = randomInt(9999).toString();
+    const hash = '0000';
     await this.forgotService.saveEntity({
       hash,
       emailPhone,
@@ -249,22 +251,26 @@ export class AuthService {
   }
 
 
-  public async verifyOTP(emailPhone:string, hash: string, password: string): Promise<void> {
-    let user = null;
-    const forgot = await this.forgotService.findOneEntity({
+  public async verifyOTP(dto: AuthVerifyUserDto): Promise<TokenResponse> {
+    const email = dto.email;
+    const phoneNo = dto.phoneNo;
+    const otp = dto.otp;
+    const user = await this.usersService.findOneEntity({
       where: {
-        hash
+        email,
+        phoneNo,
+        otp
       },
     });
-    if (!forgot) {
+    if (!user) {
       throw new NotFoundException({
-        hash: `notFound`,
+        otp: `notFound`,
       });
     }
-    user = forgot.user;
-    await this.forgotService.softDelete(forgot.id);
-    await this.passwordService.createPassword(user, password);
+    user.otp = null;
+    user.phoneVerified = true;
     await user.save();
+    return await this.tokenService.generateToken(user);
   }
   public async me(userId: string): Promise<UserEntity> {
     return await this.usersService.findOneEntity({
