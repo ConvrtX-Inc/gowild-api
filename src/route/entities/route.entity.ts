@@ -7,14 +7,31 @@ import { RouteHistoricalEvent } from '../../route-historical-events/entities/rou
 import { AppPoint } from '../../common/lat-lng.embedded';
 import { Geometry } from 'geojson';
 import { UserEntity } from '../../users/user.entity';
+import {RoleEnum} from "../../roles/roles.enum";
 
+export class Coordinates {
+  @ApiProperty({
+    format: 'double',
+    type: 'number',
+    nullable: false
+  })
+  latitude: number;
+
+  @ApiProperty({
+    format: 'double',
+    type: 'number',
+    nullable: false
+  })
+  longitude: number;
+}
 @Entity('gw_routes')
 export class Route extends AbstractBaseEntity {
-  @Allow()
-  @ApiProperty({ nullable: true, type: () => UserEntity })
-  @ManyToOne(() => UserEntity, { nullable: true, cascade: false, eager: true })
-  @JoinColumn({ name: 'user_id' })
-  user: UserEntity;
+  @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
+  @Column({
+    type: 'uuid',
+    nullable: false,
+  })
+  user_id?: string;
 
   @IsOptional()
   @ApiProperty({ example: 'First On the List', nullable: true })
@@ -25,20 +42,20 @@ export class Route extends AbstractBaseEntity {
   title?: string;
 
   @Allow()
-  @ApiProperty({ type: () => AppPoint, nullable: true })
+  @ApiProperty({ type: () => Coordinates, nullable: true })
   @Column({
-    type: 'geometry',
+    type: 'jsonb',
     nullable: true,
   })
-  start?: Geometry;
+  start?: Coordinates;
 
   @Allow()
-  @ApiProperty({ type: () => AppPoint, nullable: true })
+  @ApiProperty({ type: () => Coordinates, nullable: true })
   @Column({
-    type: 'geometry',
+    type: 'jsonb',
     nullable: true,
   })
-  end?: Geometry;
+  end?: Coordinates;
 
   @Allow()
   @ApiProperty({ type: () => [RouteHistoricalEvent], nullable: true })
@@ -58,4 +75,17 @@ export class Route extends AbstractBaseEntity {
   @ApiProperty({ example: 'description', nullable: true })
   @Column({ type: 'text' })
   description?: string;
+
+  @Column({
+    type: "enum",
+    enum: RoleEnum,
+    default: RoleEnum.USER
+  })
+  role: RoleEnum;
+
+  @Column({
+    type: 'boolean',
+    default: false
+  })
+  saved: boolean;
 }

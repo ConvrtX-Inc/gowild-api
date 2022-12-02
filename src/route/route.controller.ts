@@ -1,21 +1,17 @@
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
-import { RouteService } from './route.service';
-import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Crud, CrudController } from '@nestjsx/crud';
-import { Route } from './entities/route.entity';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { ImageUpdateDto } from '../users/dtos/image-update.dto';
+import {Body, Controller, HttpCode, HttpStatus, Param, Post, Request, UseGuards,} from '@nestjs/common';
+import {RouteService} from './route.service';
+import {ApiBearerAuth, ApiBody, ApiResponse, ApiTags} from '@nestjs/swagger';
+import {Crud, CrudController} from '@nestjsx/crud';
+import {Route} from './entities/route.entity';
+import {JwtAuthGuard} from '../auth/jwt-auth.guard';
+import {ImageUpdateDto} from '../users/dtos/image-update.dto';
+import {CreateRouteDto} from "./dto/create-route.dto";
+import {Roles} from "../roles/roles.decorator";
+import {RoleEnum} from "../roles/roles.enum";
+import {RolesGuard} from "../auth/roles.guard";
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('Route')
 @Crud({
   model: {
@@ -42,6 +38,9 @@ import { ImageUpdateDto } from '../users/dtos/image-update.dto';
       },
     },
   },
+  dto: {
+    create: CreateRouteDto
+  },
   params: {
     id: {
       type: 'uuid',
@@ -61,6 +60,16 @@ export class RouteController implements CrudController<Route> {
     return this;
   }
 
+  @ApiResponse({ type: Route })
+  @Post()
+  @HttpCode(HttpStatus.OK)
+  @Roles(RoleEnum.USER)
+  public async create(
+      @Request() request: Express.Request,
+      @Body() dto: CreateRouteDto,
+  ) {
+    return this.service.create(request.user.sub, dto);
+  }
   @ApiResponse({ type: Route })
   @ApiBody({ type: ImageUpdateDto })
   @Post(':id/update-picture')

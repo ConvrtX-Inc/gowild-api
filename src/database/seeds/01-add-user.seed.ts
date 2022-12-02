@@ -53,7 +53,7 @@ export default class AdminSeed implements Seeder {
                 .select('r')
                 .from(Role, 'r')
                 .where('r.name = :name', {
-                    name: RoleEnum.USER,
+                    name: RoleEnum.SUPER_ADMIN,
                 })
                 .getOne();
 

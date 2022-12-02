@@ -29,6 +29,9 @@ export class SimpleUser {
   status: string | null;
 
   @ApiProperty({ nullable: true })
+  role: string | null;
+
+  @ApiProperty({ nullable: true })
   picture: string | null;
 }
 
