@@ -26,7 +26,6 @@ export class FilesService {
         ],
       });
     }
-
     const path: Record<files.FileType, string> = {
       local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
       s3: file.location,
