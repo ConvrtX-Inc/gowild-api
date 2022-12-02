@@ -66,8 +66,8 @@ export class RouteService extends TypeOrmCrudService<Route> {
     return await route.save();
   }
 
-  public async create(userId: string, dto: CreateRouteDto) {
+  public async create(userId: string, role: RoleEnum, dto: CreateRouteDto) {
     // @ts-ignore
-    return this.routeRepository.save(this.routeRepository.create({user_id: userId, role: RoleEnum.USER, ...dto}));
+    return this.routeRepository.save(this.routeRepository.create({user_id: userId, role, ...dto}));
   }
 }

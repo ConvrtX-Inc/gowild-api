@@ -68,12 +68,13 @@ export class RouteController implements CrudController<Route> {
       @Request() request: Express.Request,
       @Body() dto: CreateRouteDto,
   ) {
-    return this.service.create(request.user.sub, dto);
+    return this.service.create(request.user.sub, RoleEnum.USER, dto);
   }
   @ApiResponse({ type: Route })
   @ApiBody({ type: ImageUpdateDto })
   @Post(':id/update-picture')
   @HttpCode(HttpStatus.OK)
+  @Roles(RoleEnum.USER)
   public async updatePicture(
     @Param('id') id: string,
     @Body() dto: ImageUpdateDto,
