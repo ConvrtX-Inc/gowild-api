@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, IsEmail, IsEnum, MinLength, Validate } from 'class-validator';
+import { Allow, IsEmail, IsEnum, IsOptional, MinLength, Validate } from 'class-validator';
 import { IsNotExist } from 'src/common/validators/is-not-exists.validator';
 import { Transform } from 'class-transformer';
 import { GenderEnum } from 'src/users/gender.enum';
@@ -32,6 +32,7 @@ export class AuthRegisterLoginDto {
     nullable: true,
     enumName: 'GenderEnum',
   })
+  @IsOptional()
   @Allow()
   gender: GenderEnum;
 

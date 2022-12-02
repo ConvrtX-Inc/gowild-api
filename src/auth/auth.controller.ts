@@ -22,6 +22,7 @@ import { AuthForgotPasswordDto } from './dtos/auth-forgot-password.dto';
 import {
   AuthResetPasswordAdminDto,
   AuthResetPasswordDto,
+  AuthVerifyOTPDto
 } from './dtos/auth-reset-password.dto';
 import { AuthRegisterLoginDto } from './dtos/auth-register-login.dto';
 import { TokenResponse } from './dtos/token';
@@ -30,6 +31,7 @@ import { UserEntity } from '../users/user.entity';
 import { userTokenCookieKey } from '../common/constants/cookie.keys';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import {AuthVerifyUserDto} from "./dtos/auth-verify-user.dto";
+import { SuccessResponse } from './dtos/auth-response'
 
 @ApiTags('Auth')
 @Controller({
@@ -70,16 +72,26 @@ export class AuthController {
     return this.service.forgotPassword(forgotPasswordDto);
   }
 
+  @Post('reset/verify/mobile')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verify OTP code ' })
+  async verifyMobile(
+    @Body() verifyOTPDto: AuthVerifyOTPDto,
+  ):Promise<SuccessResponse> {
+    return await this.service.verifyMobile(
+      verifyOTPDto.emailPhone,
+      verifyOTPDto.hash
+    );
+  }
+
   @Post('reset/password')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Reset user password' })
-  async resetPassword(
-    @Body() resetPasswordDto: AuthResetPasswordDto,
-  ): Promise<void> {
-    return this.service.resetPassword(
-      resetPasswordDto.emailPhone,
+  @ApiOperation({ summary: 'Reset user password'})
+  async resetPassword(@Body() resetPasswordDto: AuthResetPasswordDto ):Promise<SuccessResponse>{
+    return await this.service.resetPassword(
       resetPasswordDto.hash,
-      resetPasswordDto.password,
+      resetPasswordDto.emailPhone,
+      resetPasswordDto.password
     );
   }
 
