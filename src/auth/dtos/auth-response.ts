@@ -22,3 +22,8 @@ export class UserAuthResponse extends AuthResponse<UserEntity> {
     this.data = u;
   }
 }
+
+export class SuccessResponse  {
+  message?: string;
+  data?: {[key: string]: unknown}[];
+}

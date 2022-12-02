@@ -1,4 +1,4 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException , HttpStatus } from '@nestjs/common';
 import { UserEntity } from '../users/user.entity';
 import { AuthEmailLoginDto } from './dtos/auth-email-login.dto';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
@@ -13,7 +13,7 @@ import { PasswordService } from '../users/password.service';
 import { AuthForgotPasswordDto } from './dtos/auth-forgot-password.dto';
 import { NotFoundException } from '../exceptions/not-found.exception';
 import { AuthResetPasswordAdminDto } from './dtos/auth-reset-password.dto';
-import { UserAuthResponse } from './dtos/auth-response';
+import { UserAuthResponse,SuccessResponse } from './dtos/auth-response';
 import { TokenService } from './token.service';
 import { TokenResponse } from './dtos/token';
 import { SmsService } from '../sms/sms.service';
@@ -23,6 +23,7 @@ import {randomInt} from "crypto";
 import {RoleService} from "../roles/role.service";
 import {RoleEnum} from "../roles/roles.enum";
 import {AuthVerifyUserDto} from "./dtos/auth-verify-user.dto";
+import { use } from 'passport';
 
 @Injectable()
 export class AuthService {
@@ -141,7 +142,7 @@ export class AuthService {
     entity.lastName = dto.lastName;
     entity.gender = dto.gender;
     entity.email = dto.email;
-    entity.username = dto.email;
+    entity.username = null;
     entity.phoneNo = dto.phoneNo;
     entity.addressOne = dto.addressOne;
     entity.addressTwo = dto.addressTwo;
@@ -182,7 +183,7 @@ export class AuthService {
     return user;
   }
 
-  public async forgotPassword(dto: AuthForgotPasswordDto): Promise<void> {
+   async forgotPassword(dto: AuthForgotPasswordDto) {    
     let user = null;
     let emailPhone = null;
     if (dto.email) {
@@ -220,7 +221,7 @@ export class AuthService {
         data: {
           hash,
         },
-      });
+      });     
     } else {
       // await this.smsService.send({
       //   phone_number: user.phone_no.toString(),
@@ -230,26 +231,51 @@ export class AuthService {
       // });
       // Will uncomment when twilio account provided
     }
+    return {
+      status : HttpStatus.OK,
+      message: "Success"
+    }
   }
 
-  public async resetPassword(emailPhone:string, hash: string, password: string): Promise<void> {
+  public async verifyMobile(emailPhone:string, hash: string):Promise<SuccessResponse> {
     let user = null;
     const forgot = await this.forgotService.findOneEntity({
       where: {
-        hash
+        emailPhone,
+        hash        
       },
     });
     if (!forgot) {
       throw new NotFoundException({
         hash: `notFound`,
       });
-    }
+    }    
+    return{      
+      message : "OTP Varified Successfully"
+    }   
+  }
+
+  public async resetPassword(hash:string,emailPhone:string,password:string):Promise<SuccessResponse>{
+    let user = null;
+    const forgot = await this.forgotService.findOneEntity({
+      where: {
+        hash,
+        emailPhone
+      },
+    });
+    if (!forgot) {
+      throw new NotFoundException({
+        hash: `notFound`,
+      });
+    }    
     user = forgot.user;
     await this.forgotService.softDelete(forgot.id);
     await this.passwordService.createPassword(user, password);
     await user.save();
+    return{      
+      message : "Password Reset Successfull"
+    }
   }
-
 
   public async verifyOTP(dto: AuthVerifyUserDto): Promise<TokenResponse> {
     const email = dto.email;

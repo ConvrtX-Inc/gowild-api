@@ -1,6 +1,6 @@
 import {Body, Controller, Get, Param, Patch, Post, Request, UseGuards} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Crud, CrudController } from '@nestjsx/crud';
+import { Crud, CrudController, Override } from '@nestjsx/crud';
 import { PostFeed } from './entities/post-feed.entity';
 import { PostFeedService } from './post-feed.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -43,6 +43,19 @@ export class PostFeedController implements CrudController<PostFeed> {
   get base(): CrudController<PostFeed> {
     return this;
   }
+
+  // To get one Post-Feed and Increment its views
+@Override('getOneBase')
+async getOnePost(@Param('id') id){
+  return this.service.getOnePost(id);
+}
+
+// To Increment in share 
+@Get('share/:id')
+async share(@Param('id') id ){
+  return await this.service.sharePost(id);
+
+}
 
   @ApiOperation({ summary: 'Get friends post' })
   @Get('friends-post/:user_id')

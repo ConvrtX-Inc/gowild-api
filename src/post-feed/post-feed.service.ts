@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable , HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Friends } from 'src/friends/entities/friend.entity';
@@ -8,7 +8,8 @@ import { PostFeed } from './entities/post-feed.entity';
 import { Comment } from 'src/comment/entities/comment.entity';
 import { Like } from 'src/like/entities/like.entity';
 import { Share } from 'src/share/entities/share.entity';
-import {CreatePostFeedDto} from "./dto/create-post-feed.dto";
+import { CreatePostFeedDto } from "./dto/create-post-feed.dto";
+import { View } from 'typeorm/schema-builder/view/View';
 
 @Injectable()
 export class PostFeedService extends TypeOrmCrudService<PostFeed> {
@@ -22,12 +23,56 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
   }
 
   async create(userId: string, createPostFeedDto: CreatePostFeedDto) {
-    return this.postFeedRepository.save(this.postFeedRepository.create({user_id: userId, views: 0, ...createPostFeedDto}));
+    return this.postFeedRepository.save(this.postFeedRepository.create({ user_id: userId, views: 0, ...createPostFeedDto }));
   }
 
   async update(createPostFeedDto: CreatePostFeedDto) {
-    return this.postFeedRepository.save(this.postFeedRepository.create({...createPostFeedDto}));
+    return this.postFeedRepository.save(this.postFeedRepository.create({ ...createPostFeedDto }));
   }
+
+  /*
+    Get One Post-feed and increamenting its view 
+    */
+   async getOnePost(id:string){
+    const post = await this.postFeedRepository.findOne({
+      id:id,
+    });
+    post.views++;
+    await post.save();
+    if(!post){
+      return{
+        "errors" : [
+          {
+            message : "Post-Feed Does not exist",
+            status : HttpStatus.BAD_REQUEST,
+          }
+        ]
+      }
+    }    
+    return post;
+   }
+
+   /*
+    Increament In Share Count
+    */
+   async sharePost(id:string){
+    const post = await this.postFeedRepository.findOne({
+      id:id,
+    });
+    post.share++;
+    await post.save();
+    if(!post){
+      return{
+        "errors" : [
+          {
+            message : "Post-Feed Does not exist",
+            status : HttpStatus.BAD_REQUEST,
+          }
+        ]
+      }
+    }    
+    return post;
+   }
 
   async friendsPosts(user_id: string) {
     let aggregatedFriendsPost: Array<PostFeed[]> = [];
