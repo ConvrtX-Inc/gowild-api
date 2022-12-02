@@ -50,6 +50,12 @@ async getOnePost(@Param('id') id){
   return this.service.getOnePost(id);
 }
 
+  // To get Many Post-Feed and Increment its views
+  @Override('getManyBase')
+  async getManyPost(){
+     return this.service.getManyPost();
+  }
+
 // To Increment in share 
 @Get('share/:id')
 async share(@Param('id') id ){

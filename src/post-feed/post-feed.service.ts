@@ -39,6 +39,15 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
     });
     post.views++;
     await post.save();
+
+    const likes = await Like.count({
+      postfeed_id:id
+    });
+    const comments = await Comment.count({
+      postfeed_id:id
+    })    
+    post['likes'] = likes;
+    post['comments'] = comments;
     if(!post){
       return{
         "errors" : [
@@ -50,6 +59,28 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
       }
     }    
     return post;
+   }
+
+   /*
+    Get Mant Post-feed 
+    */
+   async getManyPost(){
+
+    const allPosts = await this.postFeedRepository.find({});
+
+    var data = [];
+    for(let i = 0 ; i < allPosts.length ; i++ ){
+      const likes = await Like.count({
+        postfeed_id: allPosts[i].id
+      });
+      const comments = await Comment.count({
+        postfeed_id: allPosts[i].id
+      })
+      allPosts[i]['likes'] = likes;
+      allPosts[i]['comments'] = comments;
+      data.push(allPosts[i]);
+    }
+    return data;
    }
 
    /*
