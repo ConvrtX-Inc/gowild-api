@@ -39,23 +39,32 @@ export class Route extends AbstractBaseEntity {
     length: 50,
     nullable: true,
   })
-  title?: string;
+  title: string;
+
+  @IsOptional()
+  @ApiProperty({ example: 'Second On the List', nullable: true })
+  @Column({
+    length: 50,
+    nullable: true,
+    name: 'sub_title'
+  })
+  subTitle?: string;
 
   @Allow()
-  @ApiProperty({ type: () => Coordinates, nullable: true })
+  @ApiProperty({ type: () => Coordinates, nullable: false })
   @Column({
     type: 'jsonb',
-    nullable: true,
+    nullable: false,
   })
-  start?: Coordinates;
+  start: Coordinates;
 
   @Allow()
-  @ApiProperty({ type: () => Coordinates, nullable: true })
+  @ApiProperty({ type: () => Coordinates, nullable: false })
   @Column({
     type: 'jsonb',
-    nullable: true,
+    nullable: false,
   })
-  end?: Coordinates;
+  end: Coordinates;
 
   @Allow()
   @ApiProperty({ type: () => [RouteHistoricalEvent], nullable: true })
