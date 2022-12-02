@@ -1,4 +1,4 @@
-import { Injectable, UnprocessableEntityException , HttpStatus } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException, HttpStatus } from '@nestjs/common';
 import { UserEntity } from '../users/user.entity';
 import { AuthEmailLoginDto } from './dtos/auth-email-login.dto';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
@@ -13,16 +13,16 @@ import { PasswordService } from '../users/password.service';
 import { AuthForgotPasswordDto } from './dtos/auth-forgot-password.dto';
 import { NotFoundException } from '../exceptions/not-found.exception';
 import { AuthResetPasswordAdminDto } from './dtos/auth-reset-password.dto';
-import { UserAuthResponse,SuccessResponse } from './dtos/auth-response';
+import { UserAuthResponse, SuccessResponse } from './dtos/auth-response';
 import { TokenService } from './token.service';
 import { TokenResponse } from './dtos/token';
 import { SmsService } from '../sms/sms.service';
 import { StatusEnum } from './status.enum';
 import { StatusService } from '../statuses/status.service';
-import {randomInt} from "crypto";
-import {RoleService} from "../roles/role.service";
-import {RoleEnum} from "../roles/roles.enum";
-import {AuthVerifyUserDto} from "./dtos/auth-verify-user.dto";
+import { randomInt } from "crypto";
+import { RoleService } from "../roles/role.service";
+import { RoleEnum } from "../roles/roles.enum";
+import { AuthVerifyUserDto } from "./dtos/auth-verify-user.dto";
 import { use } from 'passport';
 
 @Injectable()
@@ -37,7 +37,7 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly statusService: StatusService,
     private readonly roleService: RoleService,
-  ) {}
+  ) { }
 
   public async validateLogin(
     loginDto: AuthEmailLoginDto,
@@ -183,21 +183,21 @@ export class AuthService {
     return user;
   }
 
-   async forgotPassword(dto: AuthForgotPasswordDto) {    
+  async forgotPassword(dto: AuthForgotPasswordDto) {
     let user = null;
     let emailPhone = null;
-    if (dto.email) {
-      emailPhone = dto.email;
-      user = await this.usersService.findOneEntity({
-        where: {
-          email: dto.email,
-        },
-      });
-    } else {
+    if (dto.phone) {
       emailPhone = dto.phone;
       user = await this.usersService.findOneEntity({
         where: {
           phoneNo: dto.phone,
+        },
+      });
+    } else {
+      emailPhone = dto.email;
+      user = await this.usersService.findOneEntity({
+        where: {
+          email: dto.email,
         },
       });
     }
@@ -221,7 +221,7 @@ export class AuthService {
         data: {
           hash,
         },
-      });     
+      });
     } else {
       // await this.smsService.send({
       //   phone_number: user.phone_no.toString(),
@@ -232,30 +232,30 @@ export class AuthService {
       // Will uncomment when twilio account provided
     }
     return {
-      status : HttpStatus.OK,
+      status: HttpStatus.OK,
       message: "Success"
     }
   }
 
-  public async verifyMobile(emailPhone:string, hash: string):Promise<SuccessResponse> {
+  public async verifyMobile(emailPhone: string, hash: string): Promise<SuccessResponse> {
     let user = null;
     const forgot = await this.forgotService.findOneEntity({
       where: {
         emailPhone,
-        hash        
+        hash
       },
     });
     if (!forgot) {
       throw new NotFoundException({
         hash: `notFound`,
       });
-    }    
-    return{      
-      message : "OTP Varified Successfully"
-    }   
+    }
+    return {
+      message: "OTP Varified Successfully"
+    }
   }
 
-  public async resetPassword(hash:string,emailPhone:string,password:string):Promise<SuccessResponse>{
+  public async resetPassword(hash: string, emailPhone: string, password: string): Promise<SuccessResponse> {
     let user = null;
     const forgot = await this.forgotService.findOneEntity({
       where: {
@@ -267,13 +267,13 @@ export class AuthService {
       throw new NotFoundException({
         hash: `notFound`,
       });
-    }    
+    }
     user = forgot.user;
     await this.forgotService.softDelete(forgot.id);
     await this.passwordService.createPassword(user, password);
     await user.save();
-    return{      
-      message : "Password Reset Successfull"
+    return {
+      message: "Password Reset Successfull"
     }
   }
 
