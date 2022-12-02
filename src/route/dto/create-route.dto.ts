@@ -12,7 +12,7 @@ export class CreateRouteDto {
     @IsNotEmpty()
     description?: string;
 
-    @ApiProperty({ type: 'array', nullable: false })
+    @ApiProperty({ nullable: false })
     @IsNotEmpty()
     start: Coordinates;
 
@@ -20,7 +20,7 @@ export class CreateRouteDto {
     @IsNotEmpty()
     saved: boolean;
 
-    @ApiProperty({ type: 'array', nullable: false })
+    @ApiProperty({ nullable: false })
     @IsNotEmpty()
     end: Coordinates;
 

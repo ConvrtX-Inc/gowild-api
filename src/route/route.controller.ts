@@ -1,7 +1,17 @@
-import {Body, Controller, HttpCode, HttpStatus, Param, Post, Request, UseGuards,} from '@nestjs/common';
+import {
+  Body, ClassSerializerInterceptor,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Request,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import {RouteService} from './route.service';
-import {ApiBearerAuth, ApiBody, ApiResponse, ApiTags} from '@nestjs/swagger';
-import {Crud, CrudController} from '@nestjsx/crud';
+import {ApiBearerAuth, ApiBody, ApiConsumes, ApiResponse, ApiTags} from '@nestjs/swagger';
+import {Crud, CrudController, CrudRequestInterceptor} from '@nestjsx/crud';
 import {Route} from './entities/route.entity';
 import {JwtAuthGuard} from '../auth/jwt-auth.guard';
 import {ImageUpdateDto} from '../users/dtos/image-update.dto';
@@ -9,6 +19,7 @@ import {CreateRouteDto} from "./dto/create-route.dto";
 import {Roles} from "../roles/roles.decorator";
 import {RoleEnum} from "../roles/roles.enum";
 import {RolesGuard} from "../auth/roles.guard";
+import {FileInterceptor} from "@nestjs/platform-express";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -61,6 +72,7 @@ export class RouteController implements CrudController<Route> {
   }
 
   @ApiResponse({ type: Route })
+  @ApiConsumes('multipart/form-data')
   @Post()
   @HttpCode(HttpStatus.OK)
   @Roles(RoleEnum.USER)
