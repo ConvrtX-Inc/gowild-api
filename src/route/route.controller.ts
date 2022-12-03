@@ -8,10 +8,12 @@ import {
   Request,
   UseGuards,
   UseInterceptors,
+  Query,
+  Get
 } from '@nestjs/common';
 import {RouteService} from './route.service';
-import {ApiBearerAuth, ApiBody, ApiConsumes, ApiResponse, ApiTags} from '@nestjs/swagger';
-import {Crud, CrudController, CrudRequestInterceptor} from '@nestjsx/crud';
+import {ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
+import {Crud, CrudController, CrudRequestInterceptor, Override} from '@nestjsx/crud';
 import {Route} from './entities/route.entity';
 import {JwtAuthGuard} from '../auth/jwt-auth.guard';
 import {ImageUpdateDto} from '../users/dtos/image-update.dto';
@@ -20,6 +22,8 @@ import {Roles} from "../roles/roles.decorator";
 import {RoleEnum} from "../roles/roles.enum";
 import {RolesGuard} from "../auth/roles.guard";
 import {FileInterceptor} from "@nestjs/platform-express";
+// import { Query } from 'typeorm/driver/Query';
+import { query } from 'express';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -82,6 +86,8 @@ export class RouteController implements CrudController<Route> {
   ) {
     return this.service.create(request.user.sub, RoleEnum.USER, dto);
   }
+
+
   @ApiResponse({ type: Route })
   @ApiBody({ type: ImageUpdateDto })
   @Post(':id/update-picture')
@@ -92,5 +98,18 @@ export class RouteController implements CrudController<Route> {
     @Body() dto: ImageUpdateDto,
   ) {
     return this.service.updatePicture(id, dto.fileId);
+  }
+
+  @ApiOperation({ summary: 'saved = true/false'})
+  @Override('getManyBase')
+  async getManyRoute(@Request() req,@Query() query ){   
+    const id = req.user.sub;
+    return await this.service.getManyRoute(id,query.saved)        
+  }
+
+  @Get('admin')
+  @ApiOperation({ summary : 'Get All Admin Routes'})
+  async getAdminRoutes(){
+    return await this.service.getAdminRoutes();
   }
 }

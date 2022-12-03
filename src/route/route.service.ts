@@ -47,6 +47,39 @@ export class RouteService extends TypeOrmCrudService<Route> {
     await this.routeRepository.delete(id);
   }
 
+  // To Get Many Routes with user_id and saved = true/false 
+  async getManyRoute(id:string, saved:any){
+    console.log(typeof(saved));
+    if(saved == "true"){
+      const saved = await this.routeRepository.find({
+        user_id: id,
+        saved: true
+      })
+      return saved;
+
+    }else if ( saved == "false"){
+
+      const notSaved = await this.routeRepository.find({
+        user_id: id,
+        saved: false
+      })
+      return notSaved;
+    }else{
+      const allRoutes = await this.routeRepository.find({
+        user_id: id
+      });
+      return allRoutes      
+    }
+  }
+
+  // Get All Admin Routes 
+  public async getAdminRoutes(){
+    const routes = await this.routeRepository.find({
+      role: RoleEnum.ADMIN
+    })        
+    return routes;
+  }
+
   public async updatePicture(id: string, fileId: string) {
     const route = await this.routeRepository.findOne({
       where: { id: id },
