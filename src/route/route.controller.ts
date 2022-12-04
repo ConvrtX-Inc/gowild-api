@@ -18,7 +18,7 @@ import {ImageUpdateDto} from '../users/dtos/image-update.dto';
 import {CreateRouteDto} from "./dto/create-route.dto";
 import {Roles} from "../roles/roles.decorator";
 import {RoleEnum} from "../roles/roles.enum";
-import {RolesGuard} from "../auth/roles.guard";
+import {RolesGuard} from "../roles/roles.guard";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {FilesService} from "../files/files.service";
 
