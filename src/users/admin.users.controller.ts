@@ -5,15 +5,15 @@ import {
   HttpStatus,
   Param,
   Post,
-  Request,
-  UseGuards,
+  Request, UploadedFiles,
+  UseGuards, UseInterceptors,
 } from '@nestjs/common';
 import { Crud, CrudController, Override } from '@nestjsx/crud';
 import { UserEntity } from './user.entity';
 import { UsersService } from './users.service';
 import {
   ApiBearerAuth,
-  ApiBody,
+  ApiBody, ApiConsumes,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -22,10 +22,12 @@ import { StatusEnum } from 'src/auth/status.enum';
 import { validationOptions } from '../common/validation-options';
 import { ImageUpdateDto } from './dtos/image-update.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import {FileFieldsInterceptor} from "@nestjs/platform-express";
+import {FilesService} from "../files/files.service";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@ApiTags('Users')
+@ApiTags('Admin-Users')
 @Crud({
   validation: validationOptions,
   model: {
@@ -57,11 +59,11 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   },
 })
 @Controller({
-  path: 'users',
+  path: 'admin/users',
   version: '1',
 })
-export class UsersController implements CrudController<UserEntity> {
-  constructor(public service: UsersService) {}
+export class AdminUsersController implements CrudController<UserEntity> {
+  constructor(public service: UsersService, private readonly filesService: FilesService) {}
 
   get base(): CrudController<UserEntity> {
     return this;
@@ -89,14 +91,44 @@ export class UsersController implements CrudController<UserEntity> {
   }
 
   @ApiResponse({ type: UserEntity })
-  @ApiBody({ type: ImageUpdateDto })
-  @ApiOperation({ summary: "Update user's profile picture" })
-  @Post(':id/update-avatar')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiOperation({ summary: "Update user images" })
+  @Post(':id/update-pictures')
+  @UseInterceptors(FileFieldsInterceptor([
+    { name: 'picture', maxCount: 1 },
+    { name: 'frontImage', maxCount: 1 },
+    { name: 'backImage', maxCount: 1 },
+  ]))
   @HttpCode(HttpStatus.OK)
   public async updateAvatar(
     @Param('id') id: string,
-    @Body() dto: ImageUpdateDto,
+    @UploadedFiles() files: { picture?: Express.Multer.File, frontImage?: Express.Multer.File , backImage?: Express.Multer.File },
   ) {
-    return this.service.updateAvatar(id, dto.fileId);
+    const images = {
+      picture: null,
+      frontImage: null,
+      backImage: null,
+
+    };
+    const keys = ['picture', 'frontImage', 'backImage'];
+    for (const key of keys)
+    {
+      if(key in files){
+        images[key] = await this.filesService.uploadFile(files[key][0]);
+      }
+    }
+
+     return this.service.updatePictures(id, images.picture, images.frontImage, images.backImage);
   }
 }

@@ -41,15 +41,6 @@ export class Route extends AbstractBaseEntity {
   })
   title: string;
 
-  @IsOptional()
-  @ApiProperty({ example: 'Second On the List', nullable: true })
-  @Column({
-    length: 50,
-    nullable: true,
-    name: 'sub_title'
-  })
-  subTitle?: string;
-
   @Allow()
   @ApiProperty({ type: () => Coordinates, nullable: false })
   @Column({

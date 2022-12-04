@@ -9,6 +9,7 @@ import { StatusEnum } from 'src/auth/status.enum';
 import { MailService } from 'src/mail/mail.service';
 import { StatusService } from '../statuses/status.service';
 import { FilesService } from '../files/files.service';
+import {FileEntity} from "../files/file.entity";
 
 @Injectable()
 export class UsersService extends TypeOrmCrudService<UserEntity> {
@@ -99,6 +100,33 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
     }
 
     user.picture = await this.filesService.fileById(fileId);
+    return await user.save();
+  }
+
+  public async updatePictures(id: string, picture: FileEntity , frontImage: FileEntity , backImage: FileEntity) {
+    const user = await this.usersRepository.findOne({
+      where: { id: id },
+    });
+
+    if (!user) {
+      throw new NotFoundException({
+        errors: [
+          {
+            user: 'user do not exist',
+          },
+        ],
+      });
+    }
+
+    if(picture){
+      user.picture = picture;
+    }
+    if(frontImage){
+      user.frontImage = frontImage;
+    }
+    if(backImage){
+      user.backImage = picture;
+    }
     return await user.save();
   }
 }

@@ -104,6 +104,7 @@ export class RouteController implements CrudController<Route> {
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    console.log(file);
     const fileId = await this.filesService.uploadFile(file);
     return this.service.updatePicture(id, fileId);
   }
