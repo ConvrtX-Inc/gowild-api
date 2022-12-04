@@ -15,6 +15,7 @@ import {randomStringGenerator} from "@nestjs/common/utils/random-string-generato
 import * as AWS from "aws-sdk";
 import * as multerS3 from 'multer-s3';
 import path from "path";
+import {UsersController} from "./users.controller";
 
 @Module({
   imports: [
@@ -113,7 +114,7 @@ import path from "path";
       },
     })
   ],
-  controllers: [AdminUsersController],
+  controllers: [AdminUsersController, UsersController],
   providers: [UsersService, MailService, PasswordService],
   exports: [UsersService, PasswordService],
 })

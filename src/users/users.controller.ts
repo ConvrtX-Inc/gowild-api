@@ -20,21 +20,20 @@ import {
 } from '@nestjs/swagger';
 import { StatusEnum } from 'src/auth/status.enum';
 import { validationOptions } from '../common/validation-options';
-import { ImageUpdateDto } from './dtos/image-update.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {FileFieldsInterceptor} from "@nestjs/platform-express";
 import {FilesService} from "../files/files.service";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@ApiTags('Admin-Users')
+@ApiTags('Users')
 @Crud({
   validation: validationOptions,
   model: {
     type: UserEntity,
   },
   routes: {
-    exclude: ['replaceOneBase', 'createManyBase'],
+    exclude: ['replaceOneBase', 'createManyBase', 'createOneBase', 'getManyBase', 'deleteOneBase'],
   },
   query: {
     maxLimit: 50,
@@ -59,36 +58,16 @@ import {FilesService} from "../files/files.service";
   },
 })
 @Controller({
-  path: 'admin/users',
+  path: 'users',
   version: '1',
 })
-export class AdminUsersController implements CrudController<UserEntity> {
+export class UsersController implements CrudController<UserEntity> {
   constructor(public service: UsersService, private readonly filesService: FilesService) {}
 
   get base(): CrudController<UserEntity> {
     return this;
   }
 
-  @Override()
-  async deleteOne(@Request() request) {
-    return this.service.softDelete(request.params.id);
-  }
-
-  @ApiResponse({ type: UserEntity })
-  @ApiOperation({ summary: 'Approved an user.' })
-  @Post(':id/approve')
-  @HttpCode(HttpStatus.OK)
-  public async approveUser(@Param('id') id: string) {
-    return this.service.updateUserStatus(id, StatusEnum.Approved);
-  }
-
-  @ApiResponse({ type: UserEntity })
-  @ApiOperation({ summary: 'Reject an user.' })
-  @Post(':id/reject')
-  @HttpCode(HttpStatus.OK)
-  public async rejectUser(@Param('id') id: string) {
-    return this.service.updateUserStatus(id, StatusEnum.Rejected);
-  }
 
   @ApiResponse({ type: UserEntity })
   @ApiConsumes('multipart/form-data')
