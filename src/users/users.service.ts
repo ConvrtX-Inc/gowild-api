@@ -9,6 +9,8 @@ import { StatusEnum } from 'src/auth/status.enum';
 import { MailService } from 'src/mail/mail.service';
 import { StatusService } from '../statuses/status.service';
 import { FilesService } from '../files/files.service';
+import {FileEntity} from "../files/file.entity";
+import {UpdateUserDto} from "./dtos/update-user.dto";
 
 @Injectable()
 export class UsersService extends TypeOrmCrudService<UserEntity> {
@@ -17,7 +19,6 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
     @InjectRepository(UserEntity)
     private readonly usersRepository: Repository<UserEntity>,
     private readonly statusService: StatusService,
-    private readonly filesService: FilesService,
   ) {
     super(usersRepository);
   }
@@ -83,7 +84,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
     return user;
   }
 
-  public async updateAvatar(id: string, fileId: string) {
+  public async updatePictures(id: string, picture: FileEntity , frontImage: FileEntity , backImage: FileEntity) {
     const user = await this.usersRepository.findOne({
       where: { id: id },
     });
@@ -98,7 +99,27 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
       });
     }
 
-    user.picture = await this.filesService.fileById(fileId);
+    if(picture){
+      user.picture = picture;
+    }
+    if(frontImage){
+      user.frontImage = frontImage;
+    }
+    if(backImage){
+      user.backImage = picture;
+    }
     return await user.save();
+  }
+
+  public async updateProfile(id: string, dto: UpdateUserDto) {
+   await this.usersRepository.createQueryBuilder()
+        .update()
+        .set(dto)
+        .where('id = :id', { id })
+        .execute()
+
+    return await this.usersRepository.findOne({
+      where: { id: id },
+    });
   }
 }

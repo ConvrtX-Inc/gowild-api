@@ -8,6 +8,7 @@ import {Route} from './entities/route.entity';
 import {FilesService} from '../files/files.service';
 import {CreateRouteDto} from "./dto/create-route.dto";
 import {RoleEnum} from "../roles/roles.enum";
+import {FileEntity} from "../files/file.entity";
 
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
@@ -80,7 +81,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     return routes;
   }
 
-  public async updatePicture(id: string, fileId: string) {
+  public async updatePicture(id: string, file: FileEntity) {
     const route = await this.routeRepository.findOne({
       where: { id: id },
     });
@@ -95,7 +96,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
       });
     }
 
-    route.picture = await this.filesService.fileById(fileId);
+    route.picture = file;
     return await route.save();
   }
 

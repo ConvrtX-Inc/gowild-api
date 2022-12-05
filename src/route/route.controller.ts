@@ -5,7 +5,7 @@ import {
   HttpStatus,
   Param,
   Post,
-  Request,
+  Request, UploadedFile,
   UseGuards,
   UseInterceptors,
   Query,
@@ -20,10 +20,11 @@ import {ImageUpdateDto} from '../users/dtos/image-update.dto';
 import {CreateRouteDto} from "./dto/create-route.dto";
 import {Roles} from "../roles/roles.decorator";
 import {RoleEnum} from "../roles/roles.enum";
-import {RolesGuard} from "../auth/roles.guard";
+import {RolesGuard} from "../roles/roles.guard";
 import {FileInterceptor} from "@nestjs/platform-express";
 // import { Query } from 'typeorm/driver/Query';
 import { query } from 'express';
+import {FilesService} from "../files/files.service";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -69,7 +70,7 @@ import { query } from 'express';
   version: '1',
 })
 export class RouteController implements CrudController<Route> {
-  constructor(readonly service: RouteService) {}
+  constructor(readonly service: RouteService, private readonly filesService: FilesService) {}
 
   get base(): CrudController<Route> {
     return this;
@@ -89,15 +90,29 @@ export class RouteController implements CrudController<Route> {
 
 
   @ApiResponse({ type: Route })
-  @ApiBody({ type: ImageUpdateDto })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @Post(':id/update-picture')
   @HttpCode(HttpStatus.OK)
   @Roles(RoleEnum.USER)
+  @UseInterceptors(FileInterceptor('file'))
   public async updatePicture(
     @Param('id') id: string,
-    @Body() dto: ImageUpdateDto,
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.service.updatePicture(id, dto.fileId);
+    console.log(file);
+    const fileId = await this.filesService.uploadFile(file);
+    return this.service.updatePicture(id, fileId);
   }
 
   @ApiOperation({ summary: 'saved = true/false'})

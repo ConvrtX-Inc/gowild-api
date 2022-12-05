@@ -91,6 +91,18 @@ export class UserEntity extends AbstractBaseEntity {
   @JoinColumn({ name: 'picture_id' })
   picture: FileEntity;
 
+  @Allow()
+  @ApiProperty({ nullable: true })
+  @ManyToOne(() => FileEntity, { nullable: true, cascade: false, eager: true })
+  @JoinColumn({ name: 'front_image_id' })
+  frontImage: FileEntity;
+
+  @Allow()
+  @ApiProperty({ nullable: true })
+  @ManyToOne(() => FileEntity, { nullable: true, cascade: false, eager: true })
+  @JoinColumn({ name: 'back_image_id' })
+  backImage: FileEntity;
+
   @ApiProperty({ nullable: true })
   @ManyToOne(() => Status, { nullable: false, cascade: false, eager: true })
   @JoinColumn({ name: 'status_id' })
