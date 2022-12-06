@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -19,6 +20,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { StatusEnum } from 'src/auth/status.enum';
+import {RolesGuard} from "../roles/roles.guard";
+import {Roles} from "../roles/roles.decorator";
+import {RoleEnum} from "../roles/roles.enum";
 import { validationOptions } from '../common/validation-options';
 import { ImageUpdateDto } from './dtos/image-update.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -131,4 +135,15 @@ export class AdminUsersController implements CrudController<UserEntity> {
 
      return this.service.updatePictures(id, images.picture, images.frontImage, images.backImage);
   }
+
+  @Override('getManyBase')
+  async findManyEntities() {
+    return this.service.findAllUsers();
+  }
+
+  @Override('getOneBase')
+  async findOneEntity(@Request() request){
+    return this.service.findOneUser(request.params.id)
+  }
+ 
 }
