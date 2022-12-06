@@ -1,36 +1,42 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, Validate } from 'class-validator';
+import { Allow, Validate , IsOptional} from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { IsExist } from 'src/common/validators/is-exists.validator';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn , CreateDateColumn , UpdateDateColumn , DeleteDateColumn} from 'typeorm';
 
 @Entity('gw_friends')
 export class Friends extends AbstractBaseEntity {
-  @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
-  @Validate(IsExist, ['UserEntity', 'id'], {
-    message: 'User not Found',
-  })
-  @Column({
-    type: 'uuid',
-    nullable: false,
-  })
-  user_id?: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
-  @Validate(IsExist, ['UserEntity', 'id'], {
-    message: 'User not Found',
+  @IsOptional()
+  @ApiProperty({ example: '9d8e6d30-7b9a-44a1-8f96-a6be1dcd6f9d' })
+  @Validate(IsExist, ['User', 'id'], {
+    message: 'from_user_id User not Found',
   })
-  @Column({
-    type: 'uuid',
-    nullable: false,
-  })
-  friend_id?: string;
+  @Column({ nullable: true })
+  from_user_id?: string | null;
 
-  @Allow()
-  @ApiProperty({ example: false })
-  @Column({
-    type: 'boolean',
-    nullable: false,
+  from_user: any;
+
+  to_user: any;
+
+  @IsOptional()
+  @ApiProperty({ example: '9d8e6d30-7b9a-44a1-8f96-a6be1dcd6f9d' })
+  @Validate(IsExist, ['User', 'id'], {
+    message: 'to_user_id User not Found',
   })
-  is_approved?: boolean;
+  @Column({ nullable: true })
+  to_user_id?: string | null;
+
+  @IsOptional()
+  @ApiProperty({ example: true })
+  @Column({ type: 'boolean', nullable: true, default: 'FALSE' })
+  is_accepted: boolean | null;
+
+  @CreateDateColumn()
+  created_date: Date;
+
+  @DeleteDateColumn()
+  deleted_date: Date;
 }

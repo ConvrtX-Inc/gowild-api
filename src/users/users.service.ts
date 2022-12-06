@@ -63,7 +63,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
       throw new NotFoundException({
         errors: [
           {
-            user: 'user do not exist',
+            user: 'user does not exist',
           },
         ],
       });
@@ -93,7 +93,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
       throw new NotFoundException({
         errors: [
           {
-            user: 'user do not exist',
+            user: 'user does not exist',
           },
         ],
       });
