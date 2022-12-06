@@ -1,8 +1,9 @@
-import { Column, Entity } from 'typeorm';
+import {Column, Entity, JoinColumn, ManyToOne} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, Validate } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { IsExist } from 'src/common/validators/is-exists.validator';
+import {UserEntity} from "../users/user.entity";
 
 @Entity('gw_guideline_logs')
 export class GuidelineLog extends AbstractBaseEntity {
@@ -10,6 +11,7 @@ export class GuidelineLog extends AbstractBaseEntity {
   @Validate(IsExist, ['UserEntity', 'id'], {
     message: 'User Not Found',
   })
+
   @Column({
     type: 'uuid',
     nullable: false,

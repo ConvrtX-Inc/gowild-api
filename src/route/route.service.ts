@@ -1,4 +1,4 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import {HttpStatus, Injectable, NotFoundException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
 import {DeepPartial} from 'src/common/types/deep-partial.type';
@@ -77,8 +77,17 @@ export class RouteService extends TypeOrmCrudService<Route> {
   public async getAdminRoutes(){
     const routes = await this.routeRepository.find({
       role: RoleEnum.ADMIN
-    })        
-    return routes;
+    })
+    if(!routes){
+      return{
+        error : [{ message : "Something went wrong!"}]
+      };
+    }
+    return {
+
+          message : "Admin routes successfully fetched!",
+          data: routes
+    };
   }
 
   public async updatePicture(id: string, file: FileEntity) {
