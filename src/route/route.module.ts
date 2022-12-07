@@ -11,9 +11,10 @@ import {randomStringGenerator} from "@nestjs/common/utils/random-string-generato
 import * as AWS from 'aws-sdk';
 import * as multerS3 from 'multer-s3';
 import path from "path";
+import {AdminRouteController} from "./admin.route.controller";
 
 @Module({
-  controllers: [RouteController],
+  controllers: [RouteController, AdminRouteController],
   providers: [RouteService, ConfigModule, ConfigService,],
   imports: [TypeOrmModule.forFeature([Route]), FilesModule,
     MulterModule.registerAsync({

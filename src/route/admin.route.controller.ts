@@ -28,64 +28,24 @@ import {FilesService} from "../files/files.service";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
-@ApiTags('Route')
-@Crud({
-  model: {
-    type: Route,
-  },
-  routes: {
-    exclude: ['replaceOneBase', 'createManyBase'],
-  },
-  query: {
-    maxLimit: 50,
-    alwaysPaginate: true,
-    join: {
-      picture: {
-        eager: true,
-        exclude: ['createdDate', 'updatedDate'],
-      },
-      historicalEvents: {
-        eager: true,
-        exclude: ['createdDate', 'updatedDate'],
-      },
-      'historicalEvents.image': {
-        eager: true,
-        exclude: ['createdDate', 'updatedDate'],
-      },
-    },
-  },
-  dto: {
-    create: CreateRouteDto
-  },
-  params: {
-    id: {
-      type: 'uuid',
-      primary: true,
-      field: 'id',
-    },
-  },
-})
+@ApiTags('Admin Routes')
 @Controller({
-  path: 'route',
+  path: 'admin/route',
   version: '1',
 })
-export class RouteController implements CrudController<Route> {
+export class AdminRouteController {
   constructor(readonly service: RouteService, private readonly filesService: FilesService) {}
 
-  get base(): CrudController<Route> {
-    return this;
-  }
 
   @ApiResponse({ type: Route })
-  @ApiConsumes('multipart/form-data')
   @Post()
   @HttpCode(HttpStatus.OK)
-  @Roles(RoleEnum.USER)
+  @Roles(RoleEnum.ADMIN)
   public async create(
       @Request() request: Express.Request,
       @Body() dto: CreateRouteDto,
   ) {
-    return this.service.create(request.user.sub, RoleEnum.USER, dto);
+    return this.service.create(request.user.sub, request.user.user.role as RoleEnum, dto);
   }
 
 
@@ -104,7 +64,7 @@ export class RouteController implements CrudController<Route> {
   })
   @Post(':id/update-picture')
   @HttpCode(HttpStatus.OK)
-  @Roles(RoleEnum.USER)
+  @Roles(RoleEnum.ADMIN)
   @UseInterceptors(FileInterceptor('file'))
   public async updatePicture(
     @Param('id') id: string,
@@ -114,15 +74,9 @@ export class RouteController implements CrudController<Route> {
     return this.service.updatePicture(id, fileId);
   }
 
-  @ApiOperation({ summary: 'saved = true/false'})
-  @Override('getManyBase')
-  async getManyRoute(@Request() req,@Query() query ){
-    const id = req.user.sub;
-    return await this.service.getManyRoute(id,query.saved)
-  }
-
-  @Get('admin')
-  @ApiOperation({ summary : 'Get All Admin Routes'})
+  @Get()
+  @ApiOperation({ summary : 'Get All Routes'})
+  @Roles(RoleEnum.ADMIN)
   async getAdminRoutes(){
     return await this.service.getAdminRoutes();
   }
