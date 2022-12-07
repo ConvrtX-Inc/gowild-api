@@ -11,10 +11,6 @@ export class UpdatePostFeedDto {
     @IsString()
     description: string;
 
-    @ApiProperty({ example: 'byte64image', nullable: true })
-    @Transform((value: Buffer | null | string) => (value == null ? '' : value))
-    img: Buffer | null | string;
-
     @ApiProperty({ example: false, nullable: true })
     @IsBoolean()
     is_published: boolean;

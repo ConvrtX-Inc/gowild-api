@@ -3,7 +3,8 @@ import { Transform } from 'class-transformer';
 import { Allow, IsOptional, Validate } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { IsExist } from 'src/common/validators/is-exists.validator';
-import { Column, Entity } from 'typeorm';
+import {Column, Entity, JoinColumn, ManyToOne} from 'typeorm';
+import {FileEntity} from "../../files/file.entity";
 
 @Entity('gw_post_feeds')
 export class PostFeed extends AbstractBaseEntity {
@@ -28,15 +29,10 @@ export class PostFeed extends AbstractBaseEntity {
   description?: string;
 
   @Allow()
-  @IsOptional()
-  @ApiProperty({ example: 'byte64image' })
-  @Transform((value: Buffer | null | string) => (value == null ? '' : value))
-  @Column({
-    name: 'img',
-    type: 'bytea',
-    nullable: true,
-  })
-  img?: Buffer | null | string;
+  @ApiProperty({ nullable: true, type: () => FileEntity })
+  @ManyToOne(() => FileEntity, { nullable: true, cascade: false, eager: true })
+  @JoinColumn({ name: 'picture_id' })
+  picture: FileEntity;
 
   @IsOptional()
   @ApiProperty({ example: 'false' })

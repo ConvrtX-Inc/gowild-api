@@ -1,4 +1,4 @@
-import { Injectable , HttpStatus } from '@nestjs/common';
+import {Injectable, HttpStatus, NotFoundException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Friends } from 'src/friends/entities/friend.entity';
@@ -10,6 +10,7 @@ import { Like } from 'src/like/entities/like.entity';
 import { Share } from 'src/share/entities/share.entity';
 import { CreatePostFeedDto } from "./dto/create-post-feed.dto";
 import { View } from 'typeorm/schema-builder/view/View';
+import {FileEntity} from "../files/file.entity";
 
 @Injectable()
 export class PostFeedService extends TypeOrmCrudService<PostFeed> {
@@ -38,6 +39,25 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
       return { message : "Post-Feed created successfully!", data: feedData };
   }
 
+    public async updatePicture(id: string, file: FileEntity) {
+        const postFeed = await this.postFeedRepository.findOne({
+            where: { id: id },
+        });
+
+        if (!postFeed) {
+            throw new NotFoundException({
+                errors: [
+                    {
+                        user: 'post feed does not exist',
+                    },
+                ],
+            });
+        }
+
+        postFeed.picture = file;
+        return await postFeed.save();
+    }
+
   async update(createPostFeedDto: CreatePostFeedDto) {
     return this.postFeedRepository.save(this.postFeedRepository.create({ ...createPostFeedDto }));
   }
@@ -57,7 +77,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
     });
     const comments = await Comment.count({
       postfeed_id:id
-    })    
+    })
     post['likes'] = likes;
     post['comments'] = comments;
     if(!post){
@@ -69,7 +89,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
           }
         ]
       }
-    }    
+    }
     return post;
    }
 
@@ -123,7 +143,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
           }
         ]
       }
-    }    
+    }
     return post;
    }
 

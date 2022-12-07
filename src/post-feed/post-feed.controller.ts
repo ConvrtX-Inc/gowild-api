@@ -1,11 +1,28 @@
-import {Body, Controller, Get, Param, Patch, Post, Request, UseGuards} from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Request, UploadedFile,
+  UseGuards,
+  UseInterceptors
+} from '@nestjs/common';
+import {ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
 import { Crud, CrudController, Override } from '@nestjsx/crud';
 import { PostFeed } from './entities/post-feed.entity';
 import { PostFeedService } from './post-feed.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {CreatePostFeedDto} from "./dto/create-post-feed.dto";
 import {UpdatePostFeedDto} from "./dto/update-post-feed.dto";
+import {Route} from "../route/entities/route.entity";
+import {Roles} from "../roles/roles.decorator";
+import {RoleEnum} from "../roles/roles.enum";
+import {FileInterceptor} from "@nestjs/platform-express";
+import {FilesService} from "../files/files.service";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -38,7 +55,7 @@ import {UpdatePostFeedDto} from "./dto/update-post-feed.dto";
   version: '1',
 })
 export class PostFeedController implements CrudController<PostFeed> {
-  constructor(readonly service: PostFeedService) {}
+  constructor(readonly service: PostFeedService, private readonly filesService: FilesService) {}
 
   get base(): CrudController<PostFeed> {
     return this;
@@ -56,7 +73,7 @@ async getOnePost(@Param('id') id){
      return this.service.getManyPost();
   }
 
-// To Increment in share 
+// To Increment in share
 @Get('share/:id')
 async share(@Param('id') id ){
   return await this.service.sharePost(id);
@@ -72,6 +89,31 @@ async share(@Param('id') id ){
   @Post()
   public async create(@Request() request: Express.Request, @Body() createPostFeedDto: CreatePostFeedDto,) {
     return this.service.create(request.user?.sub, createPostFeedDto);
+  }
+
+  @ApiResponse({ type: Route })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @Post(':id/update-picture')
+  @HttpCode(HttpStatus.OK)
+  @Roles(RoleEnum.ADMIN)
+  @UseInterceptors(FileInterceptor('file'))
+  public async updatePicture(
+      @Param('id') id: string,
+      @UploadedFile() file: Express.Multer.File,
+  ) {
+    const fileId = await this.filesService.uploadFile(file);
+    return this.service.updatePicture(id, fileId);
   }
 
   // @ApiOperation({ summary: 'Create Post Feed' })
