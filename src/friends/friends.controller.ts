@@ -42,9 +42,9 @@ export class FriendsController implements CrudController<Friends> {
   }
 
   @ApiOperation({ summary: 'Get suggested friends list' })
-  @Get('suggested-friends/:user_id')
-  public async getSuggestedFriends(@Param('user_id') user_id: string) {
-    return this.service.suggestedFriends(user_id);
+  @Get('suggested-friends')
+  public async getSuggestedFriends() {
+    return this.service.suggestedFriends();
   }
 
   @Post('send-friend-request')
@@ -68,6 +68,7 @@ export class FriendsController implements CrudController<Friends> {
     return this.service.confirm( request.user,confirmDto);
   }
 
+  // To get All Friends of logged in User
   @Get('my')
   async getFriends(@Param('id') id: string,@Request() request) {
     const returnResponse = [];   
