@@ -13,10 +13,11 @@ import { Guideline } from './guideline.entity';
 import { GuidelineLogsService } from 'src/guideline-logs/guideline-logs.service';
 import { GuidelineLog } from 'src/guideline-logs/guideline-log.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import {selectFields} from "./dtos/show-selected-fields.dto";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@ApiTags('Guidelines')
+@ApiTags('Admin Guidelines')
 @Crud({
   model: {
     type: Guideline,
@@ -51,8 +52,8 @@ export class GuidelinesController implements CrudController<Guideline> {
   }
 
   @Override()
-  createOne(@ParsedBody() req: Guideline) {
-    return this.service.saveOne(req);
+  createOne(@ParsedBody() dto: selectFields) {
+    return this.service.saveOne(dto);
   }
 
   @Override('updateOneBase')

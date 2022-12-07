@@ -23,7 +23,19 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
   }
 
   async create(userId: string, createPostFeedDto: CreatePostFeedDto) {
-    return this.postFeedRepository.save(this.postFeedRepository.create({ user_id: userId, views: 0, ...createPostFeedDto }));
+      const feedData = await this.postFeedRepository.create({ user_id: userId, views: 0, ...createPostFeedDto });
+      await this.postFeedRepository.save(feedData)
+      if(!feedData){
+          return{
+              "errors" : [
+                  {
+                      message : "Could not create Post-Feed!",
+                      status : HttpStatus.BAD_REQUEST,
+                  }
+              ]
+          }
+      }
+      return { message : "Post-Feed created successfully!", data: feedData };
   }
 
   async update(createPostFeedDto: CreatePostFeedDto) {
@@ -31,7 +43,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
   }
 
   /*
-    Get One Post-feed and increamenting its view 
+    Get One Post-feed and incrementing its view
     */
    async getOnePost(id:string){
     const post = await this.postFeedRepository.findOne({
@@ -62,13 +74,13 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
    }
 
    /*
-    Get Mant Post-feed 
+    Get Many Post-feed
     */
    async getManyPost(){
 
     const allPosts = await this.postFeedRepository.find({});
 
-    var data = [];
+    let data = [];
     for(let i = 0 ; i < allPosts.length ; i++ ){
       const likes = await Like.count({
         postfeed_id: allPosts[i].id
@@ -80,11 +92,21 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
       allPosts[i]['comments'] = comments;
       data.push(allPosts[i]);
     }
-    return data;
+    if(!data){
+        return{
+               "errors" : [
+                   {
+                       message : "All Post-Feeds not fetched!",
+                       status : HttpStatus.BAD_REQUEST,
+                   }
+                   ]
+        }
+    }
+       return { message : "Post_Feeds successfully fetched!", data: data };
    }
 
    /*
-    Increament In Share Count
+    Increment In Share Count
     */
    async sharePost(id:string){
     const post = await this.postFeedRepository.findOne({
