@@ -1,29 +1,26 @@
 import {
-  Body, ClassSerializerInterceptor,
+  Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
   Post,
-  Request, UploadedFile,
+  Request,
+  UploadedFile,
   UseGuards,
-  UseInterceptors,
-  Query,
-  Get
+  UseInterceptors
 } from '@nestjs/common';
 import {RouteService} from './route.service';
 import {ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
-import {Crud, CrudController, CrudRequestInterceptor, Override} from '@nestjsx/crud';
 import {Route} from './entities/route.entity';
 import {JwtAuthGuard} from '../auth/jwt-auth.guard';
-import {ImageUpdateDto} from '../users/dtos/image-update.dto';
 import {CreateRouteDto} from "./dto/create-route.dto";
 import {Roles} from "../roles/roles.decorator";
 import {RoleEnum} from "../roles/roles.enum";
 import {RolesGuard} from "../roles/roles.guard";
 import {FileInterceptor} from "@nestjs/platform-express";
 // import { Query } from 'typeorm/driver/Query';
-import { query } from 'express';
 import {FilesService} from "../files/files.service";
 
 @ApiBearerAuth()
@@ -40,7 +37,7 @@ export class AdminRouteController {
   @ApiResponse({ type: Route })
   @Post()
   @HttpCode(HttpStatus.OK)
-  @Roles(RoleEnum.ADMIN)
+  @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN)
   public async create(
       @Request() request: Express.Request,
       @Body() dto: CreateRouteDto,
@@ -64,7 +61,7 @@ export class AdminRouteController {
   })
   @Post(':id/update-picture')
   @HttpCode(HttpStatus.OK)
-  @Roles(RoleEnum.ADMIN)
+  @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN)
   @UseInterceptors(FileInterceptor('file'))
   public async updatePicture(
     @Param('id') id: string,
@@ -76,7 +73,7 @@ export class AdminRouteController {
 
   @Get()
   @ApiOperation({ summary : 'Get All Routes'})
-  @Roles(RoleEnum.ADMIN)
+  @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN)
   async getAdminRoutes(){
     return await this.service.getAdminRoutes();
   }

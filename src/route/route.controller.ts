@@ -113,7 +113,7 @@ export class RouteController implements CrudController<Route> {
     const fileId = await this.filesService.uploadFile(file);
     return this.service.updatePicture(id, fileId);
   }
-
+  @Roles(RoleEnum.USER)
   @ApiOperation({ summary: 'saved = true/false'})
   @Override('getManyBase')
   async getManyRoute(@Request() req,@Query() query ){
@@ -121,6 +121,7 @@ export class RouteController implements CrudController<Route> {
     return await this.service.getManyRoute(id,query.saved)
   }
 
+  @Roles(RoleEnum.USER)
   @Get('admin')
   @ApiOperation({ summary : 'Get All Admin Routes'})
   async getAdminRoutes(){

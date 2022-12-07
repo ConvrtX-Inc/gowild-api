@@ -23,9 +23,10 @@ import {Roles} from "../roles/roles.decorator";
 import {RoleEnum} from "../roles/roles.enum";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {FilesService} from "../files/files.service";
+import {RolesGuard} from "../roles/roles.guard";
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('Post Feed')
 @Crud({
   model: {
@@ -106,7 +107,7 @@ async share(@Param('id') id ){
   })
   @Post(':id/update-picture')
   @HttpCode(HttpStatus.OK)
-  @Roles(RoleEnum.ADMIN)
+  @Roles(RoleEnum.USER)
   @UseInterceptors(FileInterceptor('file'))
   public async updatePicture(
       @Param('id') id: string,
