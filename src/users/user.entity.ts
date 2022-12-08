@@ -128,6 +128,12 @@ export class UserEntity extends AbstractBaseEntity {
   otp: string;
 
   @ApiHideProperty()
+  @Column({
+    nullable: true,
+  })
+  temporaryPassword: string;
+
+  @ApiHideProperty()
   @Exclude()
   @Column({
     nullable: true,
@@ -145,6 +151,13 @@ export class UserEntity extends AbstractBaseEntity {
   get fullName(): string {
     return (
       `${this.firstName ?? ''} ${this.lastName ?? ''}`.trim() ?? this.username
+    );
+  }
+
+  @Exclude()
+  get getTemporaryPassword(): string {
+    return (
+      `gowild@${Math.floor(Math.random() * (9999 - 1000) )}`
     );
   }
 }

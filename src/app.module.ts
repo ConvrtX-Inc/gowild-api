@@ -56,6 +56,7 @@ import {
   CookieSessionModule,
   NestCookieSessionOptions,
 } from 'nestjs-cookie-session';
+import { SubAdminModule } from './sub-admin/sub-admin.module';
 
 @Module({
   imports: [
@@ -145,6 +146,7 @@ import {
     TicketMessagesModule,
     GuidelineLogsModule,
     HealthModule,
+    SubAdminModule,
   ],
   providers: [
     {
