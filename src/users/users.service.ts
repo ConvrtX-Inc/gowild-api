@@ -120,9 +120,13 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
       .where('id = :id', { id })
       .execute()
 
-    return await this.usersRepository.findOne({
+   const user = await this.usersRepository.findOne({
       where: { id: id },
     });
+
+    return {
+      user : user
+    }
   }
 
 

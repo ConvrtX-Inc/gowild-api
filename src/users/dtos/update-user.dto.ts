@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {Allow, IsEmail, IsOptional, Validate} from 'class-validator';
 import {Transform} from "class-transformer";
 import {IsNotExist} from "../../common/validators/is-not-exists.validator";
+import { GenderEnum } from '../gender.enum';
 
 export class UpdateUserDto {
 
@@ -39,4 +40,16 @@ export class UpdateUserDto {
   @ApiProperty({ example: 'Doe', nullable: true })
   @Allow()
   lastName: string | null;
+
+  @ApiProperty({ example: '1999-12-12 11:11:11', nullable: true })
+  @Allow()
+  birthDate: Date;
+
+  @ApiProperty({ example: 'Doe', nullable: true })
+  @Allow()
+  gender: GenderEnum;
+
+  @ApiProperty({ example: '+923228066081', nullable: true })
+  @Allow()
+  phoneNo: string | null;
 }

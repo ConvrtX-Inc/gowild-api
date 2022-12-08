@@ -52,6 +52,8 @@ export class UsersController implements CrudController<UserEntity> {
   ) {
     return this.service.updateProfile(request.user?.sub, dto);
   }
+
+
   @ApiResponse({ type: UserEntity })
   @ApiConsumes('multipart/form-data')
   @ApiBody({

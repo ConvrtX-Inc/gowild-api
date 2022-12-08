@@ -69,6 +69,7 @@ export class FriendsController implements CrudController<Friends> {
   }
 
   // To get All Friends of logged in User
+  @ApiOperation({ summary : "Get All Of My Friends"})
   @Get('my')
   async getFriends(@Param('id') id: string,@Request() request) {
     const returnResponse = [];   
@@ -99,5 +100,10 @@ export class FriendsController implements CrudController<Friends> {
       }
       return returnResponse;
     }    
+  }
+
+  @Get('/friends/received/:id')
+  async getReceivedRequest(@Param('id') id: string,@Request() request) {
+    return this.service.getReceivedRequests(request.user);
   }
 }
