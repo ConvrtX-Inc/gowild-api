@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {AfterInsert, AfterLoad, AfterUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany} from 'typeorm';
 import { Exclude, Transform } from 'class-transformer';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import {
@@ -16,6 +16,7 @@ import { Password } from './password.entity';
 import { FileEntity } from '../files/file.entity';
 import { GenderEnum } from './gender.enum';
 import {Role} from "../roles/role.entity";
+import appConfig from "../config/app.config";
 
 @Entity('gw_users')
 export class UserEntity extends AbstractBaseEntity {
@@ -86,22 +87,22 @@ export class UserEntity extends AbstractBaseEntity {
   addressTwo: string | null;
 
   @Allow()
+  @IsOptional()
   @ApiProperty({ nullable: true })
-  @ManyToOne(() => FileEntity, { nullable: true, cascade: false, eager: true })
-  @JoinColumn({ name: 'picture_id' })
-  picture: FileEntity;
+  @Column({ nullable: true })
+  picture: string | null;
 
   @Allow()
+  @IsOptional()
   @ApiProperty({ nullable: true })
-  @ManyToOne(() => FileEntity, { nullable: true, cascade: false, eager: true })
-  @JoinColumn({ name: 'front_image_id' })
-  frontImage: FileEntity;
+  @Column({ nullable: true })
+  frontImage: string| null;
 
   @Allow()
+  @IsOptional()
   @ApiProperty({ nullable: true })
-  @ManyToOne(() => FileEntity, { nullable: true, cascade: false, eager: true })
-  @JoinColumn({ name: 'back_image_id' })
-  backImage: FileEntity;
+  @Column({ nullable: true })
+  backImage: string| null;
 
   @ApiProperty({ nullable: true })
   @ManyToOne(() => Status, { nullable: false, cascade: false, eager: true })
@@ -141,10 +142,33 @@ export class UserEntity extends AbstractBaseEntity {
   @Exclude()
   passwords: Password[];
 
+
   @Exclude()
   get fullName(): string {
     return (
       `${this.firstName ?? ''} ${this.lastName ?? ''}`.trim() ?? this.username
     );
+  }
+
+  @AfterLoad()
+  @AfterUpdate()
+  updatePicture() {
+    if (this.picture && this.picture.indexOf('/') === 0) {
+      this.picture = appConfig().backendDomain + this.picture;
+    }
+  }
+  @AfterLoad()
+  @AfterUpdate()
+  updateFrontImage() {
+    if (this.frontImage && this.frontImage.indexOf('/') === 0) {
+      this.frontImage = appConfig().backendDomain + this.frontImage;
+    }
+  }
+  @AfterLoad()
+  @AfterUpdate()
+  updateBackImage() {
+    if (this.backImage && this.backImage.indexOf('/') === 0) {
+      this.backImage = appConfig().backendDomain + this.backImage;
+    }
   }
 }
