@@ -5,7 +5,7 @@ import {UsersModule} from "../users/users.module"
 
 @Module({
   controllers:[DashboardController],
-  providers: [DashboardService,UsersModule],
+  providers: [DashboardService],
   exports: [DashboardService],
   imports: [ UsersModule ]
 })

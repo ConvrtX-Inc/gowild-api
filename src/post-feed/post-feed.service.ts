@@ -43,6 +43,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
             where: { id: id },
         });
 
+
         if (!postFeed) {
             throw new NotFoundException({
                 errors: [
@@ -54,7 +55,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
         }
 
         postFeed.picture = file;
-        return await postFeed.save();
+        return{ message: "Post-Feed created successfully!", data: await postFeed.save()} ;
     }
 
   async update(createPostFeedDto: CreatePostFeedDto) {

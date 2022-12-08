@@ -107,7 +107,9 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
     if (backImage) {
       user.backImage = picture;
     }
-    return await user.save();
+
+    return { message: "User Updated Successfully!", user : await user.save() };
+
   }
 
   public async updateProfile(id: string, dto: UpdateUserDto) {
@@ -189,8 +191,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
   async getUserCount(){
     const allUsers = await this.usersRepository.find({});
     return{
-      'Signup Users': await this.usersRepository.count({}),
-      'Active Users': await this.usersRepository.count({
+      'signup_users': await this.usersRepository.count({}),
+      'active_users': await this.usersRepository.count({
         relations:['status'],
         where:{
           status:{
@@ -198,7 +200,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
           }
         }
       }),
-      'InActive Users': await this.usersRepository.count({
+      'inactive_users': await this.usersRepository.count({
         relations:['status'],
         where:{
           status:{
