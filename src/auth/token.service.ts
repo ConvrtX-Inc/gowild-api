@@ -127,7 +127,7 @@ export class TokenService {
       username: user.username,
       birthDate: user.birthDate,
       fullName: user.fullName,
-      picture: user.picture?.path,
+      picture: user.picture,
       status: user.status.statusName,
       role: user.role.name
     };

@@ -1,36 +1,29 @@
 import {
-  Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
   Param,
   Post,
-  Request, UploadedFiles,
-  UseGuards, UseInterceptors,
+  Request,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { Crud, CrudController, Override } from '@nestjsx/crud';
-import { UserEntity } from './user.entity';
-import { UsersService } from './users.service';
-import {
-  ApiBearerAuth,
-  ApiBody, ApiConsumes,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { StatusEnum } from 'src/auth/status.enum';
+import {Crud, CrudController, Override} from '@nestjsx/crud';
+import {UserEntity} from './user.entity';
+import {UsersService} from './users.service';
+import {ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags,} from '@nestjs/swagger';
+import {StatusEnum} from 'src/auth/status.enum';
 import {RolesGuard} from "../roles/roles.guard";
 import {Roles} from "../roles/roles.decorator";
 import {RoleEnum} from "../roles/roles.enum";
-import { validationOptions } from '../common/validation-options';
-import { ImageUpdateDto } from './dtos/image-update.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import {validationOptions} from '../common/validation-options';
+import {JwtAuthGuard} from '../auth/jwt-auth.guard';
 import {FileFieldsInterceptor} from "@nestjs/platform-express";
-import {FilesService} from "../files/files.service";
+import {ConfigService} from "@nestjs/config";
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('Admin-Users')
 @Crud({
   validation: validationOptions,
@@ -67,7 +60,7 @@ import {FilesService} from "../files/files.service";
   version: '1',
 })
 export class AdminUsersController implements CrudController<UserEntity> {
-  constructor(public service: UsersService, private readonly filesService: FilesService) {}
+  constructor(public service: UsersService, private readonly configService: ConfigService) {}
 
   get base(): CrudController<UserEntity> {
     return this;
@@ -82,6 +75,7 @@ export class AdminUsersController implements CrudController<UserEntity> {
   @ApiOperation({ summary: 'Approved an user.' })
   @Post(':id/approve')
   @HttpCode(HttpStatus.OK)
+  @Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
   public async approveUser(@Param('id') id: string) {
     return this.service.updateUserStatus(id, StatusEnum.Approved);
   }
@@ -90,6 +84,7 @@ export class AdminUsersController implements CrudController<UserEntity> {
   @ApiOperation({ summary: 'Reject an user.' })
   @Post(':id/reject')
   @HttpCode(HttpStatus.OK)
+  @Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
   public async rejectUser(@Param('id') id: string) {
     return this.service.updateUserStatus(id, StatusEnum.Rejected);
   }
@@ -115,6 +110,7 @@ export class AdminUsersController implements CrudController<UserEntity> {
     { name: 'backImage', maxCount: 1 },
   ]))
   @HttpCode(HttpStatus.OK)
+  @Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
   public async updatePictures(
     @Param('id') id: string,
     @UploadedFiles() files: { picture?: Express.Multer.File, frontImage?: Express.Multer.File , backImage?: Express.Multer.File },
@@ -126,14 +122,18 @@ export class AdminUsersController implements CrudController<UserEntity> {
 
     };
     const keys = ['picture', 'frontImage', 'backImage'];
+    const driver = this.configService.get('file.driver');
     for (const key of keys)
     {
       if(key in files){
-        images[key] = await this.filesService.uploadFile(files[key][0]);
+        images[key] = {
+          local: `/${this.configService.get('app.apiPrefix')}/v1/${files[key][0].path}`,
+          s3: files[key][0].location,
+          firebase: files[key][0].publicUrl,
+        };
       }
     }
-
-     return this.service.updatePictures(id, images.picture, images.frontImage, images.backImage);
+     return this.service.updatePictures(id, images.picture?images.picture[driver]: null, images.frontImage?images.frontImage[driver]: null, images.backImage?images.backImage[driver]: null);
   }
 
   @Override('getManyBase')
@@ -145,5 +145,5 @@ export class AdminUsersController implements CrudController<UserEntity> {
   async findOneEntity(@Request() request){
     return this.service.findOneUser(request.params.id)
   }
- 
+
 }

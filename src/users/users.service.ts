@@ -30,7 +30,6 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
   ): Promise<UserEntity | null> {
     const user = await this.usersRepository.findOne({
       where: options.where,
-      relations: ['picture'],
     });
     if (user) {
       return user;
@@ -41,7 +40,6 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
   async findManyEntities(options: FindOptions<UserEntity>) {
     return this.usersRepository.find({
       where: options.where,
-      relations: ['picture'],
     });
   }
 
@@ -59,7 +57,6 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
   ): Promise<UserEntity> {
     const user = await this.usersRepository.findOne({
       where: { id: id },
-      relations: ['picture'],
     });
     if (!user) {
       throw new NotFoundException({
@@ -86,7 +83,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
     return user;
   }
 
-  public async updatePictures(id: string, picture: FileEntity, frontImage: FileEntity, backImage: FileEntity) {
+  public async updatePictures(id: string, picture: string, frontImage: string, backImage: string) {
     const user = await this.usersRepository.findOne({
       where: { id: id },
     });
@@ -150,13 +147,13 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
       location: `${user.addressOne}, ${user.addressTwo}`,
       accountStatus: user.status.statusName
     };
-    
+
     return container;
 
 
   }
 
-  // get all users 
+  // get all users
   async findAllUsers(){
     const users = await this.usersRepository.find({
       relations: ['role'],
@@ -169,7 +166,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
     });
     let tenMinutesBefore = new Date();
     tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
-  
+
     const data = users.map((obj)=>{
       let container : {
         fullName : string;
