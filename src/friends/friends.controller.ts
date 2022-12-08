@@ -98,7 +98,10 @@ export class FriendsController implements CrudController<Friends> {
         data['from_user'] = from_user;
         returnResponse.push(data);
       }
-      return returnResponse;
+      return {
+        status : HttpStatus.OK,
+        data: returnResponse
+      };
     }    
   }
 

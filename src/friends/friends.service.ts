@@ -170,10 +170,8 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
         { from_user_id: user.sub, is_accepted: true }
       ]
     });
-
-    return {
-      data: query
-    };
+   
+      return query;
   };
 
   async getReceivedRequests(user:any){
