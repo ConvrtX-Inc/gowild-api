@@ -96,4 +96,6 @@ export class UsersController implements CrudController<UserEntity> {
 
      return this.service.updatePictures(request.user?.sub, images.picture, images.frontImage, images.backImage);
   }
+
+
 }

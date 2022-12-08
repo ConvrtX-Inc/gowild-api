@@ -38,7 +38,7 @@ import {selectFields} from "./dtos/show-selected-fields.dto";
   },
 })
 @Controller({
-  path: 'guidelines',
+  path: 'admin-guidelines',
   version: '1',
 })
 export class GuidelinesController implements CrudController<Guideline> {

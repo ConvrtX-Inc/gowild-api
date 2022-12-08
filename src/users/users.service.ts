@@ -189,4 +189,28 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
     return data;
   }
 
+  async getUserCount(){
+    const allUsers = await this.usersRepository.find({});
+    return{
+      'Signup Users': await this.usersRepository.count({}),
+      'Active Users': await this.usersRepository.count({
+        relations:['status'],
+        where:{
+          status:{
+            statusName:StatusEnum.Active
+          }
+        }
+      }),
+      'InActive Users': await this.usersRepository.count({
+        relations:['status'],
+        where:{
+          status:{
+            statusName:StatusEnum.Inactive
+          }
+        }
+      })
+    }
+  }
 }
+
+

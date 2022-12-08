@@ -56,6 +56,8 @@ import {
   CookieSessionModule,
   NestCookieSessionOptions,
 } from 'nestjs-cookie-session';
+import { DashboardController } from './dashboard/dashboard.controller';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -145,6 +147,7 @@ import {
     TicketMessagesModule,
     GuidelineLogsModule,
     HealthModule,
+    DashboardModule,
   ],
   providers: [
     {
@@ -152,5 +155,6 @@ import {
       useClass: ClassSerializerInterceptor,
     },
   ],
+  controllers: [DashboardController],
 })
 export class AppModule {}
