@@ -2,7 +2,16 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, Validate } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { IsExist } from 'src/common/validators/is-exists.validator';
-import { Column, Entity, PrimaryGeneratedColumn , CreateDateColumn, UpdateDateColumn} from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToOne,
+  JoinColumn
+} from 'typeorm';
+import {UserEntity} from "../../users/user.entity";
 
 @Entity('gw_comments')
 export class Comment extends AbstractBaseEntity {
@@ -14,11 +23,14 @@ export class Comment extends AbstractBaseEntity {
   @Validate(IsExist, ['UserEntity', 'id'], {
     message: 'User Not Found',
   })
-  @Column({
+ /* @Column({
     type: 'uuid',
     nullable: false,
   })
-  user_id?: string;
+  user_id?: string;*/
+  @OneToOne(() => UserEntity, { nullable: false, cascade: false, eager: true })
+  @JoinColumn({ name: 'user_id' })
+  user: UserEntity;
 
   @ApiProperty({ example: '56320f5c-9236-424c-9eb2-339fa9dbb3cb' })
   @Validate(IsExist, ['PostFeed', 'id'], {

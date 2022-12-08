@@ -4,12 +4,14 @@ import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
 import { Comment } from './entities/comment.entity';
 import { DeepPartial } from 'src/common/types/deep-partial.type';
+import {RoleEnum} from "../roles/roles.enum";
+import {UserEntity} from "../users/user.entity";
 
 @Injectable()
 export class CommentService extends TypeOrmCrudService<Comment> {
   constructor(
-    @InjectRepository(Comment)
-    private commentRepository: Repository<Comment>,
+      @InjectRepository(Comment)
+      private commentRepository: Repository<Comment>,
   ) {
     super(commentRepository);
   }
@@ -21,17 +23,38 @@ export class CommentService extends TypeOrmCrudService<Comment> {
   async createOneComment(dto: any, req: any) {
 
     const newComment = {
-      user_id : req,
-      postfeed_id : dto.postfeed_id,
-      message : dto.message,
+      user_id: req,
+      postfeed_id: dto.postfeed_id,
+      message: dto.message,
     }
-    await this.saveEntity(newComment);
+   const addComment =  await this.saveEntity(newComment);
     return {
       status: HttpStatus.OK,
       response: {
-        message: 'Successful',
+        message: 'Successful', data: addComment
       },
     }
 
+  }
+
+  async getPostComments(id) {
+    const users = await this.commentRepository.find({
+      relations: ['user'],
+      where: {
+        postfeed_id: id
+      },
+    });
+    if(!users){
+      return{
+        "errors" : [
+          {
+            message : "All comments for Post-Feeds not fetched!",
+            status : HttpStatus.BAD_REQUEST,
+          }
+        ]
+      }
+
+    }
+    return {data: users};
   }
 }

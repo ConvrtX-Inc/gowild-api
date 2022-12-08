@@ -1,4 +1,4 @@
-import { Controller, UseGuards,Body,Request } from '@nestjs/common';
+import {Controller, UseGuards, Body, Request, Get, Param} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController,Override } from '@nestjsx/crud';
 import { Comment } from './entities/comment.entity';
@@ -43,5 +43,8 @@ export class CommentController implements CrudController<Comment> {
   async createOne(@Request() req,@Body() dto:CreateCommentDto){  
     return await this.service.createOneComment(dto,req.user.sub);
   }
-
+  @Get('/:postfeed_id')
+  public async getPostsFromOtherUsers(@Param('postfeed_id') user_id: string) {
+    return this.service.getPostComments(user_id);
+  }
 }
