@@ -180,8 +180,11 @@ async saveEntity(data: DeepPartial<Friends>[]) {
     // }
   }
 
-  async suggestedFriends(user_id: string) {
-    return 1;
+  async suggestedFriends() {
+    const users = await UserEntity.find({});    
+    return {      
+      data:users
+    };
     // let aggregatedFriends: Array<Friends[]> = [];
     // const suggestedFriendsRepo = await this.friendsRepository
     //   .createQueryBuilder('friendsList')
