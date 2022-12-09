@@ -16,7 +16,7 @@ import { RepositoryOwner } from 'aws-sdk/clients/codestar';
 export class FriendsService extends TypeOrmCrudService<Friends> {
   constructor(
     @InjectRepository(Friends)
-    private friendsRepository: Repository<Friends>,    
+    private friendsRepository: Repository<Friends>,
   ) {
     super(friendsRepository);
   }
@@ -108,10 +108,10 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
         to_user_id: req.id,
         from_user_id: user.sub,
       };
-     const request = await this.saveOne(data);
+      const request = await this.saveOne(data);
       return {
-        messsage :  "Friend Request Sent Successfully",
-        data : request
+        messsage: "Friend Request Sent Successfully",
+        data: request
       }
     }
 
@@ -142,10 +142,10 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
       }
 
       requested.is_accepted = true;
-      const accepted =  await requested.save();
+      const accepted = await requested.save();
       return {
-        message : "Friend Request Accepted Successfully",
-        data :accepted
+        message: "Friend Request Accepted Successfully",
+        data: accepted
       }
 
     } else {
@@ -170,44 +170,54 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
         { from_user_id: user.sub, is_accepted: true }
       ]
     });
-   
-      return query;
+
+    return query;
   };
 
-  async getReceivedRequests(user:any){
-    return 1;
-  //   const query = await this.friendsRepository.find({
-  //     where:[
-  //         {to_user_id:user.id,is_accepted:false}
-  //     ]
-  
-  //   });
-  //   console.log(query);
-  
-  //   var friends=[];
-  //   var retunArr=[];
-    
-  // for(const i in query){
-  
-  //   console.log("1Get FRIENDS:"+query[i].from_user_id);
-  //   console.log("2Get FRIENDS:"+query[i].to_user_id);
-  //   var u = await this.userRepository.findOne({
-  //     where:{
-  //       id : query[i].from_user_id == user.id?query[i].to_user_id:query[i].from_user_id 
-  //     }
-  //   });    
-    // friends[i] = { 
-    //   user:u,
-    //   connection:query[i]
-    // };
-  //   retunArr[i]= u;
-  //   retunArr[i]['connection']=query[i];
-  // }
-  //   return retunArr;
-  // //  return {
-  // //   friends:friends
-  // //  }
-  
+  async getReceivedRequests(user: any) {
+
+    const query = await this.friendsRepository.find({
+      where: [
+        { to_user_id: user.sub, is_accepted: false }
+      ]
+
+    });
+    console.log(query);
+
+    var friends = [];
+    var retunArr = [];
+
+    for (const i in query) {
+
+      console.log("1Get FRIENDS:" + query[i].from_user_id);
+      console.log("2Get FRIENDS:" + query[i].to_user_id);
+      var u = await UserEntity.findOne({
+        where: {
+          id: query[i].from_user_id == user.sub ? query[i].to_user_id : query[i].from_user_id
+        }
+      });
+      friends[i] = {
+        user: u,
+        connection: query[i]
+      };
+      retunArr[i] = u;
+      retunArr[i]['connection'] = query[i];
+    }
+    return {
+      recieved: retunArr
+    };
+    //  return {
+    //   friends:friends
+    //  }
+
+  }
+
+  async delete(id: string) {
+    const deletedfriend  = await this.friendsRepository.delete(id)
+    console.log(deletedfriend);
+    return {
+      message : "Friend Deleted Successfully"
+    }
   }
 
 
