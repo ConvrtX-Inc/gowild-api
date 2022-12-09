@@ -26,18 +26,17 @@ export class CommentService extends TypeOrmCrudService<Comment> {
       user: req,
       postfeed_id: dto.postfeed_id,
       message: dto.message,
-    }
+    }  
     const user = await UserEntity.findOne({
-      id:req.sub
+      id:req
     });  
-   const addComment =  await this.saveEntity(newComment);
-   const returnResponse = {
-    addComment,
-    user,
-   }
+
+   const comment =  await this.saveEntity(newComment);
+   comment['user'] = user;
+
     return {
       status: HttpStatus.OK,
-      data: returnResponse,      
+      data: comment,      
     }
 
   }
