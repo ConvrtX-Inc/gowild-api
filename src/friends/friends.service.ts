@@ -105,9 +105,14 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
 
       }
       const data = {
-        to_user_id: req.id,
         from_user_id: user.sub,
+        to_user_id: req.id,
       };
+      const data2 = {
+        from_user_id: req.id,
+        to_user_id: user.sub,
+      };
+      await this.saveOne(data2);
       const request = await this.saveOne(data);
       return {
         messsage: "Friend Request Sent Successfully",
@@ -165,10 +170,8 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
   async getFriends(user: any) {
     console.log("Getting friends for :" + user.sub);
     const query = await this.friendsRepository.find({
-      where: [
-        { to_user_id: user.sub, is_accepted: true },
-        { from_user_id: user.sub, is_accepted: true }
-      ]
+      where:
+        { from_user_id: user.sub, is_accepted: true },
     });
 
     return query;
@@ -213,10 +216,10 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
   }
 
   async delete(id: string) {
-    const deletedfriend  = await this.friendsRepository.delete(id)
+    const deletedfriend = await this.friendsRepository.delete(id)
     console.log(deletedfriend);
     return {
-      message : "Friend Deleted Successfully"
+      message: "Friend Deleted Successfully"
     }
   }
 
