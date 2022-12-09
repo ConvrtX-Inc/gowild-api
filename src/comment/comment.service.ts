@@ -23,16 +23,14 @@ export class CommentService extends TypeOrmCrudService<Comment> {
   async createOneComment(dto: any, req: any) {
 
     const newComment = {
-      user_id: req,
+      user: req,
       postfeed_id: dto.postfeed_id,
       message: dto.message,
     }
    const addComment =  await this.saveEntity(newComment);
     return {
       status: HttpStatus.OK,
-      response: {
-        message: 'Successful', data: addComment
-      },
+      data: addComment
     }
 
   }
