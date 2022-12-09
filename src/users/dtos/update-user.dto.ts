@@ -19,23 +19,29 @@ export class UpdateUserDto {
   @Validate(IsNotExist, ['UserEntity'], {
     message: 'usernameAlreadyExists',
   })
+  @IsOptional()
   username: string;
+
+  @IsOptional()
   @ApiProperty({
     nullable: true
   })
   @Allow()
   addressOne: string;
 
+  @IsOptional()
   @ApiProperty({
     nullable: true
   })
   @Allow()
   addressTwo: string;
 
+  @IsOptional()
   @ApiProperty({ example: 'John', nullable: true })
   @Allow()
   firstName: string | null;
 
+  @IsOptional()
   @ApiProperty({ example: 'Doe', nullable: true })
   @Allow()
   lastName: string | null;
