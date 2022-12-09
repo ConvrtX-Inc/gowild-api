@@ -13,7 +13,7 @@ define(UserEntity, () => {
   user.birthDate = faker.date.birthdate();
   user.gender = gender;
   user.username = `${firstName}${lastName}${faker.random.alphaNumeric()}`;
-  user.email = faker.internet.email();
+  user.email = faker.internet.email().toLowerCase();
   user.phoneNo = faker.phone.number();
   return user;
 });
