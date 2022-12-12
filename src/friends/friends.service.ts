@@ -152,6 +152,12 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
       }
 
       requested.is_accepted = true;
+      const childFriend = await this.friendsRepository.findOne({
+        where : { parent_id : requested.id }
+      });
+      console.log(childFriend)
+      childFriend.is_accepted = true;
+      await childFriend.save();
       const accepted = await requested.save();
       return {
         message: "Friend Request Accepted Successfully",
