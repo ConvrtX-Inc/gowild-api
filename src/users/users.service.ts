@@ -124,6 +124,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
     });
 
     return {
+      message : "User Updated Successfully",
       user : user
     }
   }
