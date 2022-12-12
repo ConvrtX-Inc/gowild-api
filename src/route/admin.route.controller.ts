@@ -16,15 +16,13 @@ import {ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags}
 import {Route} from './entities/route.entity';
 import {JwtAuthGuard} from '../auth/jwt-auth.guard';
 import {CreateRouteDto} from "./dto/create-route.dto";
-import {Roles} from "../roles/roles.decorator";
 import {RoleEnum} from "../roles/roles.enum";
-import {RolesGuard} from "../roles/roles.guard";
 import {FileInterceptor} from "@nestjs/platform-express";
-// import { Query } from 'typeorm/driver/Query';
 import {FilesService} from "../files/files.service";
+import {AdminRolesGuard} from "../roles/admin.roles.guard";
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, AdminRolesGuard)
 @ApiTags('Admin Routes')
 @Controller({
   path: 'admin/route',
@@ -37,7 +35,6 @@ export class AdminRouteController {
   @ApiResponse({ type: Route })
   @Post()
   @HttpCode(HttpStatus.OK)
-  @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN)
   public async create(
       @Request() request: Express.Request,
       @Body() dto: CreateRouteDto,
@@ -61,7 +58,6 @@ export class AdminRouteController {
   })
   @Post(':id/update-picture')
   @HttpCode(HttpStatus.OK)
-  @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN)
   @UseInterceptors(FileInterceptor('file'))
   public async updatePicture(
     @Param('id') id: string,
@@ -72,9 +68,18 @@ export class AdminRouteController {
   }
 
   @Get()
-  @ApiOperation({ summary : 'Get All Routes'})
-  @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN)
+  @ApiOperation({ summary : 'Get Routes'})
   async getAdminRoutes(){
     return await this.service.getAdminRoutes();
+  }
+  @Get(':id')
+  @ApiOperation({ summary : 'Get Single Route'})
+  async findOneRoute(@Param('id') id: string,){
+    return await this.service.findOneEntity({ where: {id:id}});
+  }
+  @Get('users')
+  @ApiOperation({ summary : 'Get User Routes'})
+  async getUserRoutes(){
+    return await this.service.getUserRoutes();
   }
 }
