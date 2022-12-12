@@ -13,10 +13,11 @@ import { RouteHistoricalEvent } from './entities/route-historical-event.entity';
 import { RouteHistoricalEventsService } from './route-historical-events.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ImageUpdateDto } from '../users/dtos/image-update.dto';
+import {AdminRolesGuard} from "../roles/admin.roles.guard";
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
-@ApiTags('Route Historical Event')
+@UseGuards(JwtAuthGuard, AdminRolesGuard)
+@ApiTags('Admin Route Historical Event')
 @Crud({
   model: {
     type: RouteHistoricalEvent,
@@ -37,7 +38,7 @@ import { ImageUpdateDto } from '../users/dtos/image-update.dto';
   },
 })
 @Controller({
-  path: 'route-historical-events',
+  path: 'admin/route-historical-events',
   version: '1',
 })
 export class RouteHistoricalEventsController
