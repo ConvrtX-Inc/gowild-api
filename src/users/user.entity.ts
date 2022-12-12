@@ -86,6 +86,11 @@ export class UserEntity extends AbstractBaseEntity {
   @Column({ nullable: true, name: 'address_two' })
   addressTwo: string | null;
 
+  @ApiProperty({ example: 'About', nullable: true })
+  @IsOptional()
+  @Column({ nullable: true, name: 'About' })
+  about_me: string | null;
+
   @Allow()
   @IsOptional()
   @ApiProperty({ nullable: true })
