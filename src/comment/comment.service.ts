@@ -33,7 +33,6 @@ export class CommentService extends TypeOrmCrudService<Comment> {
 
     const comment = await this.saveEntity(newComment);
     comment['user'] = user;
-
     return {
       status: HttpStatus.OK,
       data: comment,
