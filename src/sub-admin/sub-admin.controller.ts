@@ -19,7 +19,7 @@ import { request } from 'http';
     type: UserEntity,
   },
   routes: {
-    exclude: ['replaceOneBase', 'createManyBase','deleteOneBase', 'createManyBase', 'updateOneBase', 'createOneBase'],
+    exclude: ['replaceOneBase', 'createManyBase'],
   },
   query: {
     maxLimit: 50,
@@ -41,40 +41,24 @@ export class SubAdminController implements CrudController<UserEntity> {
   constructor(private readonly subAdminService: SubAdminService) {}
   service: CrudService<UserEntity>;
   
-
-  @ApiResponse({ type: UserEntity })
-  @Post('register')
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Register new sub admin' })
-  async register(
-    @Body() createSubAdminDto: CreateSubAdminDto,
-  ) {
-    return this.subAdminService.registerSubAdmin(createSubAdminDto);
-  }
-
  
-  
-  @ApiResponse({ type: UserEntity })
-  @Post('update/sub-admin/:id')
-  @ApiOperation({ summary: "Update admin profile" })
-  @HttpCode(HttpStatus.OK)
-  @Roles(RoleEnum.ADMIN)
-  public async updateSubAdmin(
-     @Param('id') id: string,
-      @Body() dto:UpdateUserDto,
-  ):Promise<UserEntity> {
-    return this.subAdminService.updateSubAdmin(id, dto);
-  }
 
-  @ApiResponse({ type: UserEntity })
-  @Delete('delete/:id')
-  @ApiOperation({ summary: "Delete Sub admin" })
-  @HttpCode(HttpStatus.OK)
-  @Roles(RoleEnum.ADMIN)
-  async deleteSubAdmin(@Param('id') id: string,){
-    return this.subAdminService.deleteSubAdmin(id);
-  }
 
+@Override('createOneBase')
+async createOneEntity(@Body() dto:CreateSubAdminDto){
+  return this.subAdminService.registerSubAdmin(dto)
+}
+ 
+
+@Override('updateOneBase')
+async updateOneEntity(@Param('id') id: string, @Body() dto: UpdateUserDto){
+  return this.subAdminService.updateSubAdmin(id, dto)
+}
+
+@Override('deleteOneBase')
+async deleteOneEntity(@Request() request){
+  return this.subAdminService.deleteSubAdmin(request.params.id)
+}
 
 @Override('getOneBase')
 async findOneEntity(@Request() request){
@@ -86,7 +70,14 @@ async findManyEntities() {
   return this.subAdminService.findAllSubAdmin();
 }
 
-
+@ApiResponse({ type: UserEntity })
+@Get('filter/:keyword')
+@ApiOperation({ summary: "Delete Sub admin" })
+@HttpCode(HttpStatus.OK)
+@Roles(RoleEnum.ADMIN)
+async filter(@Param('keyword') keyword: string,){
+  return this.subAdminService.fiterSubAdmin(keyword)
+}
 
  
   
