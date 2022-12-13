@@ -144,4 +144,45 @@ export class SubAdminService {
     message: "User deleted"
     }
   }
+
+  async fiterSubAdmin(filter: string){
+   
+    let admins = await this.usersRepository.createQueryBuilder("user")
+   
+    .select(['user.email', 'user.username', 'user.updatedDate', 'user.firstName', 'user.lastName', 'user.addressOne', 'user.addressTwo'])
+    .innerJoin('user.role', 'role', 'role.name = :name', {
+      name: RoleEnum.ADMIN
+    })
+    .leftJoinAndSelect('user.status', 'status')
+    .orWhere("user.firstName like '%' || :filter || '%'", {filter: filter })
+    .orWhere("user.lastName like '%' || :filter || '%'", {filter: filter })
+    .orWhere("user.email like '%' || :filter || '%'", {filter: filter})
+    .getMany();
+
+
+    let tenMinutesBefore = new Date();
+    tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
+  
+    const data = admins.map((obj)=>{
+      let container : {
+        username : string;
+        name: string;
+        email: string;
+        onlineStatus: boolean;
+        location: string;
+        accountStatus: string;
+      }={
+        name: `${obj.firstName} ${obj.lastName}`,
+        username:obj.username,
+        email: obj.email,
+        onlineStatus: obj.updatedDate>tenMinutesBefore ? true : false,
+        location: `${obj.addressOne}, ${obj.addressTwo}`,
+        accountStatus: obj.status.statusName
+      };
+
+      return container;
+    });
+    return data;
+  }
+
 }
