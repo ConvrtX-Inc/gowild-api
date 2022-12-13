@@ -23,7 +23,7 @@ export class CommentService extends TypeOrmCrudService<Comment> {
   async createOneComment(dto: any, req: any) {
 
     const newComment = {
-      user: req,
+      user_id: req,
       postfeed_id: dto.postfeed_id,
       message: dto.message,
     }  
