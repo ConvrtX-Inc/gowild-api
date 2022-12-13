@@ -112,11 +112,11 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
       const saved = await this.friendsRepository.save(
         this.friendsRepository.create(data));
 
-    
-        const saved2 = {      
+
+      const saved2 = {
         from_user_id: req.id,
-        to_user_id: user.sub,  
-        parent_id : saved.id,      
+        to_user_id: user.sub,
+        parent_id: saved.id,
       };
       await this.saveOne(saved2);
       return {
@@ -153,7 +153,7 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
 
       requested.is_accepted = true;
       const childFriend = await this.friendsRepository.findOne({
-        where : { parent_id : requested.id }
+        where: { parent_id: requested.id }
       });
       console.log(childFriend)
       childFriend.is_accepted = true;
@@ -179,7 +179,7 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
 
 
   async getFriends(user: any) {
-    
+
     const query = await this.friendsRepository.find({
       where:
         { from_user_id: user.sub, is_accepted: true },
@@ -192,7 +192,7 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
 
     const query = await this.friendsRepository.find({
       where: [
-        { to_user_id: user.sub, is_accepted: false,parent_id: null }
+        { to_user_id: user.sub, is_accepted: false, parent_id: null }
       ]
 
     });
@@ -227,19 +227,22 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
   }
 
   async delete(id: string) {
-       
     const childFriend = await this.friendsRepository.findOne({
-      where : { parent_id : id },
-    });    
+      where: { parent_id: id },
+    });
     const deletedfriend = await this.friendsRepository.delete(id)
-    await this.friendsRepository.delete(childFriend.id);    
-    if(deletedfriend.affected == 0){
+
+    if (childFriend) {
+      await this.friendsRepository.delete(childFriend.id);
+    }
+
+    if (deletedfriend.affected == 0) {
       return {
-        error : [
-         { message : "No Friend Found"}
-        ]      
+        error: [
+          { message: "No Friend Found" }
+        ]
       }
-    }    
+    }
     return {
       message: "Friend Deleted Successfully"
     }
