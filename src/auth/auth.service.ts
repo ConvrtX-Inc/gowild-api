@@ -62,7 +62,7 @@ export class AuthService {
       throw new UnprocessableEntityException({
         errors: [
           {
-            password: 'incorrectCredentials',
+            password: 'Email or Password is incorrect',
           },
         ],
       });
