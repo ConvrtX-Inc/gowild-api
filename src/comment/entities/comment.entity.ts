@@ -23,15 +23,13 @@ export class Comment extends AbstractBaseEntity {
   @Validate(IsExist, ['UserEntity', 'id'], {
     message: 'User Not Found',
   })
+
   @Column({
     type: 'uuid',
     nullable: false,
   })
   user_id?: string;
- /* @OneToOne(() => UserEntity, { nullable: false, cascade: false, eager: true })
-  @JoinColumn({ name: 'user_id' })
-  user: UserEntity;*/
-
+ 
   @ApiProperty({ example: '56320f5c-9236-424c-9eb2-339fa9dbb3cb' })
   @Validate(IsExist, ['PostFeed', 'id'], {
     message: 'Post Feed id not Found',
