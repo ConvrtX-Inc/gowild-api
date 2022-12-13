@@ -1,7 +1,7 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Friends } from './entities/friend.entity';
 import { UserEntity } from 'src/users/user.entity';
 import { SendFriendRequestDto } from './dto/create-friend.dto';
@@ -108,15 +108,20 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
         from_user_id: user.sub,
         to_user_id: req.id,
       };
-      const data2 = {
+
+      const saved = await this.friendsRepository.save(
+        this.friendsRepository.create(data));
+
+
+      const saved2 = {
         from_user_id: req.id,
         to_user_id: user.sub,
+        parent_id: saved.id,
       };
-      await this.saveOne(data2);
-      const request = await this.saveOne(data);
+      await this.saveOne(saved2);
       return {
         messsage: "Friend Request Sent Successfully",
-        data: request
+        data: saved
       }
     }
 
@@ -147,6 +152,12 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
       }
 
       requested.is_accepted = true;
+      const childFriend = await this.friendsRepository.findOne({
+        where: { parent_id: requested.id }
+      });
+      console.log(childFriend)
+      childFriend.is_accepted = true;
+      await childFriend.save();
       const accepted = await requested.save();
       return {
         message: "Friend Request Accepted Successfully",
@@ -168,7 +179,7 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
 
 
   async getFriends(user: any) {
-    console.log("Getting friends for :" + user.sub);
+
     const query = await this.friendsRepository.find({
       where:
         { from_user_id: user.sub, is_accepted: true },
@@ -181,7 +192,7 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
 
     const query = await this.friendsRepository.find({
       where: [
-        { to_user_id: user.sub, is_accepted: false }
+        { to_user_id: user.sub, is_accepted: false, parent_id: null }
       ]
 
     });
@@ -216,8 +227,22 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
   }
 
   async delete(id: string) {
+    const childFriend = await this.friendsRepository.findOne({
+      where: { parent_id: id },
+    });
     const deletedfriend = await this.friendsRepository.delete(id)
-    console.log(deletedfriend);
+
+    if (childFriend) {
+      await this.friendsRepository.delete(childFriend.id);
+    }
+
+    if (deletedfriend.affected == 0) {
+      return {
+        error: [
+          { message: "No Friend Found" }
+        ]
+      }
+    }
     return {
       message: "Friend Deleted Successfully"
     }

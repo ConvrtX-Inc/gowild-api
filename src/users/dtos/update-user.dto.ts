@@ -17,9 +17,7 @@ export class UpdateUserDto {
 
   @ApiProperty({ example: 'username', nullable: true })
   @Transform((value: string) => value.toLowerCase().trim())
-  @Validate(IsNotExist, ['UserEntity'], {
-    message: 'usernameAlreadyExists',
-  })
+  @IsOptional()
   username: string;
   @ApiProperty({
     nullable: true
@@ -32,6 +30,12 @@ export class UpdateUserDto {
   })
   @Allow()
   addressTwo: string;
+
+  @ApiProperty({
+    nullable: true
+  })
+  @Allow()
+  about_me: string
 
   @ApiProperty({ example: 'John', nullable: true })
   @Allow()

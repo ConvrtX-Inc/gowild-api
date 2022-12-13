@@ -110,7 +110,7 @@ export class FriendsController implements CrudController<Friends> {
   }
 
   @Override('deleteOneBase')
-  async deleteOne(@Param() id:string){
+  async deleteOne(@Param('id') id:string){   
     return this.service.delete(id);
   }
 }
