@@ -58,6 +58,8 @@ import {
 } from 'nestjs-cookie-session';
 import { DashboardController } from './dashboard/dashboard.controller';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { SubAdminModule } from './sub-admin/sub-admin.module';
+
 
 @Module({
   imports: [
@@ -148,6 +150,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     GuidelineLogsModule,
     HealthModule,
     DashboardModule,
+    SubAdminModule,
   ],
   providers: [
     {
