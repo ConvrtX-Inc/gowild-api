@@ -43,8 +43,10 @@ export class CommentController implements CrudController<Comment> {
   async createOne(@Request() req,@Body() dto:CreateCommentDto){  
     return await this.service.createOneComment(dto,req.user.sub);
   }
+
+
   @Get('/:postfeed_id')
-  public async getPostsFromOtherUsers(@Param('postfeed_id') user_id: string) {
-    return this.service.getPostComments(user_id);
+  public async getComments(@Param('postfeed_id') postfeedId: string) {
+    return this.service.getPostFeedComments(postfeedId);
   }
 }

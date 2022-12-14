@@ -40,23 +40,13 @@ export class CommentService extends TypeOrmCrudService<Comment> {
 
   }
 
-  async getPostComments(id) {
-    const users = await this.commentRepository.find({
-      where: {
-        postfeed_id: id
-      },
-    });
-    if (!users) {
-      return {
-        "errors": [
-          {
-            message: "All comments for Post-Feeds not fetched!",
-            status: HttpStatus.BAD_REQUEST,
-          }
-        ]
-      }
+  async getPostFeedComments(id: string) {
 
-    }
-    return { data: users };
+    const comments = await this.commentRepository.createQueryBuilder('comments')
+    .where("comments.postfeed_id = :id", { id: id })
+    .innerJoinAndSelect('comments.user_id', 'comment')
+    .getMany()
+
+    return comments;
   }
 }

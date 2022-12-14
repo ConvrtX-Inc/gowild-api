@@ -9,7 +9,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
-  JoinColumn
+  JoinColumn,
+  ManyToOne
 } from 'typeorm';
 import {UserEntity} from "../../users/user.entity";
 
@@ -24,11 +25,11 @@ export class Comment extends AbstractBaseEntity {
     message: 'User Not Found',
   })
 
-  @Column({
-    type: 'uuid',
-    nullable: false,
-  })
-  user_id?: string;
+
+  @ApiProperty({ nullable: true })
+  @ManyToOne(() => UserEntity, { nullable: false, cascade: false, eager: true })
+  @JoinColumn({ name: 'user_id' })
+  user_id: UserEntity;
  
   @ApiProperty({ example: '56320f5c-9236-424c-9eb2-339fa9dbb3cb' })
   @Validate(IsExist, ['PostFeed', 'id'], {
