@@ -7,6 +7,11 @@ import { AppPoint } from '../../common/lat-lng.embedded';
 import { Geometry } from 'geojson';
 import { FileEntity } from '../../files/file.entity';
 
+export enum TreasureChestStatusEnum {
+  CANCELLED= 'cancelled',
+  PENDING = 'pending',
+  COMPLETED= 'completed'
+}
 @Entity('gw_treasure_chests')
 export class TreasureChest extends AbstractBaseEntity {
   @IsOptional()
@@ -32,13 +37,18 @@ export class TreasureChest extends AbstractBaseEntity {
 
   @IsOptional()
   @ApiProperty({ example: '2021/12/31' })
-  @Column({ nullable: false })
-  event_date: Date;
+  @Column({ nullable: false, name: 'event_date' })
+  eventDate: Date;
 
   @IsOptional()
   @ApiProperty({ example: '07:04' })
-  @Column({ nullable: false })
-  event_time: time;
+  @Column({ nullable: false, name: 'event_time' })
+  eventTime: time;
+
+  @IsOptional()
+  @ApiProperty({ example: 'pending' })
+  @Column({ type : "enum", enum: TreasureChestStatusEnum, default: TreasureChestStatusEnum.PENDING })
+  status: TreasureChestStatusEnum;
 
   @IsOptional()
   @ApiProperty({ example: 200 })
@@ -47,6 +57,11 @@ export class TreasureChest extends AbstractBaseEntity {
     nullable: false,
   })
   no_of_participants?: number;
+
+  @IsOptional()
+  @ApiProperty({ example: 'uuid' })
+  @Column({ nullable: false ,type: 'uuid',name: 'winner_id' })
+  winnerId?: string;
 
   @Allow()
   @ApiProperty({ nullable: true, type: () => FileEntity })
