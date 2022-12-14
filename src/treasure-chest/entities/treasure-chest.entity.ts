@@ -59,7 +59,7 @@ export class TreasureChest extends AbstractBaseEntity {
 
   @IsOptional()
   @ApiProperty({ example: 'uuid' })
-  @Column({ nullable: false ,type: 'uuid',name: 'winner_id' })
+  @Column({ nullable: true ,type: 'uuid',name: 'winner_id' })
   winnerId?: string;
 
   @Allow()

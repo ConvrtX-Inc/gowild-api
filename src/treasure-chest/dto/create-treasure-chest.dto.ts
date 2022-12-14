@@ -15,7 +15,7 @@ export class CreateTreasureChestDto {
 
     @ApiProperty({ nullable: false })
     @IsNotEmpty()
-    start: Coordinates;
+    location: Coordinates;
 
     @ApiProperty({ nullable: false })
     @IsNotEmpty()
