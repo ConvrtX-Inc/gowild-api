@@ -1,11 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { time } from 'aws-sdk/clients/frauddetector';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import {AfterLoad, AfterUpdate, Column, Entity} from 'typeorm';
 import { Allow, IsOptional } from 'class-validator';
-import { AppPoint } from '../../common/lat-lng.embedded';
-import { Geometry } from 'geojson';
-import { FileEntity } from '../../files/file.entity';
+import appConfig from "../../config/app.config";
+import {Coordinates} from "../../common/coordinates";
 
 export enum TreasureChestStatusEnum {
   CANCELLED= 'cancelled',
@@ -28,12 +27,12 @@ export class TreasureChest extends AbstractBaseEntity {
   description?: string;
 
   @Allow()
-  @ApiProperty({ type: () => AppPoint })
+  @ApiProperty({ type: () => Coordinates, nullable: false })
   @Column({
-    type: 'geometry',
-    nullable: true,
+    type: 'jsonb',
+    nullable: false,
   })
-  location?: Geometry;
+  location?: Coordinates;
 
   @IsOptional()
   @ApiProperty({ example: '2021/12/31' })
@@ -64,13 +63,19 @@ export class TreasureChest extends AbstractBaseEntity {
   winnerId?: string;
 
   @Allow()
-  @ApiProperty({ nullable: true, type: () => FileEntity })
-  @ManyToOne(() => FileEntity, { nullable: true, cascade: false, eager: true })
-  @JoinColumn({ name: 'picture_id' })
-  picture: FileEntity;
+  @ApiProperty({ nullable: true })
+  picture: string;
 
   @IsOptional()
   @ApiProperty({ example: 'augmented reality' })
   @Column({ nullable: true })
   a_r?: string;
+
+  @AfterLoad()
+  @AfterUpdate()
+  updatePicture() {
+    if (this.picture && this.picture.indexOf('/') === 0) {
+      this.picture = appConfig().backendDomain + this.picture;
+    }
+  }
 }
