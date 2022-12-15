@@ -47,6 +47,6 @@ export class CommentService extends TypeOrmCrudService<Comment> {
     .innerJoinAndSelect('comments.user_id', 'comment')
     .getMany()
 
-    return comments;
+    return { data : comments};
   }
 }
