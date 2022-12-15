@@ -7,6 +7,9 @@ import { DeepPartial } from '../common/types/deep-partial.type';
 import { Guideline } from './guideline.entity';
 import { GuidelineLogsService } from 'src/guideline-logs/guideline-logs.service';
 import { GuidelineLog } from 'src/guideline-logs/guideline-log.entity';
+import { CreateGuidelineDto } from './dtos/Create.dto';
+import { GuidelineTypesEnum } from './guideline.enum';
+import { UserEntity } from 'src/users/user.entity';
 
 @Injectable()
 export class GuidelineService extends TypeOrmCrudService<Guideline> {
@@ -18,6 +21,16 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
     super(guidelinesRepository);
   }
 
+  async createOneGuideline(body:CreateGuidelineDto, req:UserEntity){
+    
+    const isExist = await this.guidelinesRepository.findOne({
+      where : { type : body.type }
+    })
+    if(isExist){
+        
+    }
+
+  }
   async findOneEntity(options: FindOptions<Guideline>) {
     return this.guidelinesRepository.findOne({
       where: options.where,
