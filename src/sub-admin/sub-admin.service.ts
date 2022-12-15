@@ -30,17 +30,21 @@ export class SubAdminService {
 
     const data = dataArray.map((obj) => {
       let container: {
+        id: string;
         username: string;
         name: string;
         email: string;
         onlineStatus: boolean;
+        picture: string;
         location: string;
         accountStatus: string;
       } = {
+        id: obj.id,
         name: `${obj.firstName} ${obj.lastName}`,
         username: obj.username,
         email: obj.email,
         onlineStatus: obj.updatedDate > tenMinutesBefore ? true : false,
+        picture: obj.picture,
         location: `${obj.addressOne}, ${obj.addressTwo}`,
         accountStatus: obj.status.statusName
       };
