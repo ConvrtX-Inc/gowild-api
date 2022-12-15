@@ -10,9 +10,13 @@ import { Roles } from 'src/roles/roles.decorator';
 import { RoleEnum } from 'src/roles/roles.enum';
 import { Crud, CrudController, CrudService, Override } from '@nestjsx/crud';
 import { request } from 'http';
+import { bool } from 'aws-sdk/clients/signer';
+import { Role } from 'src/roles/role.entity';
+import { RolesGuard } from 'src/roles/roles.guard';
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(RoleEnum.ADMIN)
 @ApiTags('Sub-Admin')
 @Crud({
   model: {
@@ -72,11 +76,20 @@ async findManyEntities() {
 
 @ApiResponse({ type: UserEntity })
 @Get('filter/:keyword')
-@ApiOperation({ summary: "Delete Sub admin" })
+@ApiOperation({ summary: "Filter by name or email" })
 @HttpCode(HttpStatus.OK)
 @Roles(RoleEnum.ADMIN)
 async filter(@Param('keyword') keyword: string,){
   return this.subAdminService.fiterSubAdmin(keyword)
+}
+
+@ApiResponse({ type: UserEntity })
+@Get('active-inActive/:keyword')
+@ApiOperation({ summary: "Active or inActive Sub admin" })
+@HttpCode(HttpStatus.OK)
+@Roles(RoleEnum.ADMIN)
+async activeInactive(@Param('keyword') keyword: boolean,){
+  return this.subAdminService.activeInactive(keyword)
 }
 
  

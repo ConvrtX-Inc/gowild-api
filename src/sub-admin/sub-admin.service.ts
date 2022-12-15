@@ -23,20 +23,46 @@ export class SubAdminService {
     private readonly statusService: StatusService,
     private readonly roleService: RoleService,
   ) { }
-  public async registerSubAdmin(dto: CreateSubAdminDto){
+
+  async mapListingsData(dataArray) {
+    let tenMinutesBefore = new Date();
+    tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
+
+    const data = dataArray.map((obj) => {
+      let container: {
+        username: string;
+        name: string;
+        email: string;
+        onlineStatus: boolean;
+        location: string;
+        accountStatus: string;
+      } = {
+        name: `${obj.firstName} ${obj.lastName}`,
+        username: obj.username,
+        email: obj.email,
+        onlineStatus: obj.updatedDate > tenMinutesBefore ? true : false,
+        location: `${obj.addressOne}, ${obj.addressTwo}`,
+        accountStatus: obj.status.statusName
+      };
+      return container;
+    });
+    return data;
+  }
+
+  public async registerSubAdmin(dto: CreateSubAdminDto) {
 
     let entity = new UserEntity();
     entity.firstName = dto.firstName,
-    entity.lastName = dto.lastName,
-    entity.gender = dto.gender;
+      entity.lastName = dto.lastName,
+      entity.gender = dto.gender;
     entity.email = dto.email;
     entity.username = entity.fullName;
     entity.phoneNo = dto.phoneNo;
     entity.addressOne = dto.addressOne;
     entity.addressTwo = dto.addressTwo;
     entity.phoneVerified = false;
-  
-   
+
+
     entity.status = await this.statusService.findByEnum(StatusEnum.Active);
     entity.role = await this.roleService.findByEnum(RoleEnum.ADMIN);
     entity = await this.usersService.saveEntity(entity);
@@ -45,11 +71,11 @@ export class SubAdminService {
     await this.passwordService.createPassword(entity, temporaryPassword);
 
     return {
-      temporaryPassword:temporaryPassword, userData:entity
+      temporaryPassword: temporaryPassword, userData: entity
     };
   }
 
-  public async updateSubAdmin(id: string, dto: UpdateUserDto): Promise<UserEntity>{
+  public async updateSubAdmin(id: string, dto: UpdateUserDto): Promise<UserEntity> {
     const admin = await this.usersRepository.findOne({
       where: { id: id },
     });
@@ -65,13 +91,13 @@ export class SubAdminService {
     }
 
     admin.firstName = dto.firstName,
-    admin.lastName = dto.lastName,
-    admin.addressOne = dto.addressOne;
+      admin.lastName = dto.lastName,
+      admin.addressOne = dto.addressOne;
     admin.addressTwo = dto.addressTwo;
     admin.username = dto.username;
     admin.email = dto.email;
-  
-    
+
+
     await admin.save();
     return admin;
 
@@ -79,32 +105,32 @@ export class SubAdminService {
 
   async findOneSubAdmin(id: string) {
     const admin = await this.usersRepository.findOne({
-      where: {id: id}
+      where: { id: id }
     });
     let tenMinutesBefore = new Date();
     tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
-    let container : {
+    let container: {
       name: string;
-      username : string;
+      username: string;
       email: string;
       onlineStatus: boolean;
       location: string;
       accountStatus: string;
-    }={
+    } = {
       name: `${admin.firstName} ${admin.lastName}`,
-      username:admin.username,
+      username: admin.username,
       email: admin.email,
-      onlineStatus: admin.updatedDate>tenMinutesBefore ? true : false,
+      onlineStatus: admin.updatedDate > tenMinutesBefore ? true : false,
       location: `${admin.addressOne}, ${admin.addressTwo}`,
       accountStatus: admin.status.statusName
     };
-    
+
     return container;
 
 
   }
 
-  async findAllSubAdmin(){
+  async findAllSubAdmin() {
     const admins = await this.usersRepository.find({
       relations: ['role'],
       where: {
@@ -114,75 +140,51 @@ export class SubAdminService {
 
       }
     });
-    let tenMinutesBefore = new Date();
-    tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
-  
-    const data = admins.map((obj)=>{
-      let container : {
-        username : string;
-        name: string;
-        email: string;
-        onlineStatus: boolean;
-        location: string;
-        accountStatus: string;
-      }={
-        name: `${obj.firstName} ${obj.lastName}`,
-        username:obj.username,
-        email: obj.email,
-        onlineStatus: obj.updatedDate>tenMinutesBefore ? true : false,
-        location: `${obj.addressOne}, ${obj.addressTwo}`,
-        accountStatus: obj.status.statusName
-      };
-      return container;
-    });
-    return data;
+    return await this.mapListingsData(admins);
+
   }
 
-  async deleteSubAdmin(id: string){
+  async deleteSubAdmin(id: string) {
     await this.usersRepository.softDelete(id);
     return {
-    message: "User deleted"
+      message: "User deleted"
     }
   }
 
-  async fiterSubAdmin(filter: string){
-   
+  async fiterSubAdmin(filter: string) {
+
     let admins = await this.usersRepository.createQueryBuilder("user")
-   
-    .select(['user.email', 'user.username', 'user.updatedDate', 'user.firstName', 'user.lastName', 'user.addressOne', 'user.addressTwo'])
-    .innerJoin('user.role', 'role', 'role.name = :name', {
-      name: RoleEnum.ADMIN
-    })
-    .leftJoinAndSelect('user.status', 'status')
-    .orWhere("user.firstName like '%' || :filter || '%'", {filter: filter })
-    .orWhere("user.lastName like '%' || :filter || '%'", {filter: filter })
-    .orWhere("user.email like '%' || :filter || '%'", {filter: filter})
-    .getMany();
+
+      .select(['user.email', 'user.username', 'user.updatedDate', 'user.firstName', 'user.lastName', 'user.addressOne', 'user.addressTwo'])
+      .innerJoin('user.role', 'role', 'role.name = :name', {
+        name: RoleEnum.ADMIN
+      })
+      .leftJoinAndSelect('user.status', 'status')
+      .orWhere("user.firstName like '%' || :filter || '%'", { filter: filter })
+      .orWhere("user.lastName like '%' || :filter || '%'", { filter: filter })
+      .orWhere("user.email like '%' || :filter || '%'", { filter: filter })
+      .getMany();
 
 
-    let tenMinutesBefore = new Date();
-    tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
-  
-    const data = admins.map((obj)=>{
-      let container : {
-        username : string;
-        name: string;
-        email: string;
-        onlineStatus: boolean;
-        location: string;
-        accountStatus: string;
-      }={
-        name: `${obj.firstName} ${obj.lastName}`,
-        username:obj.username,
-        email: obj.email,
-        onlineStatus: obj.updatedDate>tenMinutesBefore ? true : false,
-        location: `${obj.addressOne}, ${obj.addressTwo}`,
-        accountStatus: obj.status.statusName
-      };
+    return await this.mapListingsData(admins);
+  }
 
-      return container;
+  async activeInactive(key: boolean) {
+    const admins = await this.usersRepository.find({
+      relations: ['role', 'status'],
+      where: {
+        role: {
+          name: RoleEnum.ADMIN,
+        },
+        status: {
+          statusName: key === true ? StatusEnum.Active : StatusEnum.Inactive
+        }
+
+
+      }
     });
-    return data;
+
+    return await this.mapListingsData(admins);
   }
 
 }
