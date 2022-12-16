@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { UserEntity } from './user.entity';
+import {FindOptions} from "../common/types/find-options.type";
 
 @Injectable()
 export class PasswordService extends TypeOrmCrudService<Password> {
@@ -58,6 +59,7 @@ export class PasswordService extends TypeOrmCrudService<Password> {
     }
 
     const entity = await this.generatePassword(user, password);
+
     await this.repository.save(entity);
   }
 
@@ -71,4 +73,6 @@ export class PasswordService extends TypeOrmCrudService<Password> {
     }
     return null;
   }
+
+
 }
