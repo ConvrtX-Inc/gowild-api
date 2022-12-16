@@ -90,7 +90,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
         ]
       }
     }
-    return post;
+    return { data : post };
    }
 
    /*
