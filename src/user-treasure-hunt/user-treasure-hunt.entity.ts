@@ -6,6 +6,7 @@ import {Exclude} from "class-transformer";
 
 export enum UserTreasureHuntStatusEnum {
   APPROVED= 'approved',
+  PROCESSING = 'processing',
   PENDING = 'pending',
   DISAPPROVE= 'disapprove'
 }

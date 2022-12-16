@@ -114,6 +114,8 @@ async share(@Param('id') id ){
       @UploadedFile() file: Express.Multer.File,
   ) {
     const fileId = await this.filesService.uploadFile(file);
+    console.log("POstfeed Controller ")
+    console.log(fileId);
     return this.service.updatePicture(id, fileId);
   }
 
