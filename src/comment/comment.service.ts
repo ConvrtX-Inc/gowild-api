@@ -32,7 +32,7 @@ export class CommentService extends TypeOrmCrudService<Comment> {
     });
 
     const comment = await this.saveEntity(newComment);
-    comment['user'] = user;
+    comment['user_id'] = user;
     return {
       status: HttpStatus.OK,
       data: comment,
@@ -46,6 +46,7 @@ export class CommentService extends TypeOrmCrudService<Comment> {
     .where("comments.postfeed_id = :id", { id: id })
     .innerJoinAndSelect('comments.user_id', 'comment')
     .getMany()
+    console.log(comments);
 
     return { data : comments};
   }
