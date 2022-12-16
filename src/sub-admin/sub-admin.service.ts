@@ -83,7 +83,7 @@ export class SubAdminService {
     const admin = await this.usersRepository.findOne({
       where: { id: id },
     });
-    console.log(id);
+    
     if (!admin) {
       throw new NotFoundException({
         errors: [

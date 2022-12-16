@@ -18,12 +18,16 @@ export class SponsorService extends TypeOrmCrudService<Sponsor> {
     super(sponsorRepository);
   }
 
+  async saveOne(data) {
+    return await this.sponsorRepository.save(this.sponsorRepository.create(data))
+  }
+
   async createSponsor(dto: CreateSponsorDto){
     return await this.saveOne(dto);
 
   }
 
-  public async updateImage(id: string, file: FileEntity) {
+  public async updateImage(id: string, image: string) {
     const sponser = await this.sponsorRepository.findOne({
         where: { id: id },
     });
@@ -39,20 +43,14 @@ export class SponsorService extends TypeOrmCrudService<Sponsor> {
         });
     }
 
-    sponser.img= file;
-    return{ message: "Sponser created successfully!", data: await sponser.save()} ;
+    sponser.img= image;
+    return{ message: "Sponser Image Updated Successfully!", data: await sponser.save()};
 }
 
 
 
-  async saveOne(data) {
-    return await this.sponsorRepository.save(this.sponsorRepository.create(data))
-  }
+ 
 
-  // async saveEntity(data: DeepPartial<Sponsor>[]) {
-  //   return this.sponsorRepository.save(
-  //     this.sponsorRepository.create(data),
-  //   );
-  // }
+ 
 
 }

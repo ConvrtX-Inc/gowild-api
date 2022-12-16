@@ -14,10 +14,10 @@ import {ConfigService} from "@nestjs/config";
 import { Route } from 'src/route/entities/route.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FilesService } from 'src/files/files.service';
+import { AdminRolesGuard } from 'src/roles/admin.roles.guard';
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(RoleEnum.ADMIN)
+@UseGuards(JwtAuthGuard, AdminRolesGuard)
 @ApiTags('Admin Sponsor')
 @Crud({
   model: {
@@ -71,14 +71,18 @@ export class SponsorController implements CrudController<Sponsor> {
   })
   @Post(':id/update-image')
   @HttpCode(HttpStatus.OK)
-  @Roles(RoleEnum.ADMIN)
   @UseInterceptors(FileInterceptor('file'))
-  public async updatePicture(
+  public async updateImage(
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const driver = this.configService.get('file.driver');
-    // const fileId = await this.filesService.uploadFile(file);
-    return this.service.updateImage(id, file);
+    
+    const path: Record<files.FileType, string> = {
+      local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
+      s3: file.location,
+      firebase: file.publicUrl,
+    };
+    
+    return this.service.updateImage(id, path.local);
   }
 }
