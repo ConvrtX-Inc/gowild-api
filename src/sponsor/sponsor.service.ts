@@ -48,6 +48,22 @@ export class SponsorService extends TypeOrmCrudService<Sponsor> {
 }
 
 
+async getmanySponsors(treasure_chest_id: string){
+  const allSponsors = await this.sponsorRepository.find({
+    where: {
+      treasure_chest_id : treasure_chest_id
+    }
+  });
+  return allSponsors;
+}
+
+
+async softDelete(id: string){
+  await this.sponsorRepository.softDelete(id)
+  return {
+    message: "Sponsor deleted"
+  }
+}
 
  
 

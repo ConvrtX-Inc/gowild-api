@@ -55,6 +55,18 @@ export class SponsorController implements CrudController<Sponsor> {
     return this.service.createSponsor(dto);
   }
 
+@Override('deleteOneBase')
+async deleteOneEntityy(@Request() request){
+  return this.service.softDelete(request.params.id)
+}
+
+@ApiResponse({ type: Sponsor })
+@Get(':treasure_chest_id')
+@ApiOperation({ summary: "Sponsors by treasureChestId" })
+@HttpCode(HttpStatus.OK)
+async getManySponsers(@Param('treasure_chest_id') treasure_chest_id: string){
+    return this.service.getmanySponsors(treasure_chest_id);
+  }
 
   @ApiResponse({ type: Route })
   @ApiConsumes('multipart/form-data')
@@ -85,4 +97,6 @@ export class SponsorController implements CrudController<Sponsor> {
     
     return this.service.updateImage(id, path.local);
   }
+
+  
 }
