@@ -36,6 +36,8 @@ export class Sponsor extends AbstractBaseEntity {
     nullable: true,
   })
   img?: Buffer | null | string;
+
+  
   @IsOptional()
   @ApiProperty({ example: 'www.redbull.com' })
   @Column({
