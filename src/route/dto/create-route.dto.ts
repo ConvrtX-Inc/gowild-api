@@ -1,6 +1,6 @@
 import {ApiProperty} from "@nestjs/swagger";
 import {IsNotEmpty, IsOptional} from "class-validator";
-import {Coordinates} from "../entities/route.entity";
+import {Coordinates} from "../../common/coordinates";
 
 export class CreateRouteDto {
     @ApiProperty({ example: 'John' })

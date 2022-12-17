@@ -48,6 +48,8 @@ export class UsersController implements CrudController<UserEntity> {
   ) {
     return this.service.updateProfile(request.user?.sub, dto);
   }
+
+
   @ApiResponse({ type: UserEntity })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -94,4 +96,6 @@ export class UsersController implements CrudController<UserEntity> {
     }
      return this.service.updatePictures(request.user?.sub, images.picture?images.picture[driver]: null, images.frontImage?images.frontImage[driver]: null, images.backImage?images.backImage[driver]: null);
   }
+
+
 }

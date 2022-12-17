@@ -2,7 +2,6 @@ import {Injectable, HttpStatus, NotFoundException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Friends } from 'src/friends/entities/friend.entity';
-import { UserEntity } from 'src/users/user.entity';
 import { Repository } from 'typeorm';
 import { PostFeed } from './entities/post-feed.entity';
 import { Comment } from 'src/comment/entities/comment.entity';
@@ -44,6 +43,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
             where: { id: id },
         });
 
+
         if (!postFeed) {
             throw new NotFoundException({
                 errors: [
@@ -55,7 +55,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
         }
 
         postFeed.picture = file;
-        return await postFeed.save();
+        return{ message: "Post-Feed created successfully!", data: await postFeed.save()} ;
     }
 
   async update(createPostFeedDto: CreatePostFeedDto) {
@@ -90,7 +90,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
         ]
       }
     }
-    return post;
+    return { data : post };
    }
 
    /*
@@ -98,7 +98,9 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
     */
    async getManyPost(){
 
-    const allPosts = await this.postFeedRepository.find({});
+    const allPosts = await this.postFeedRepository.find({
+        order:{ createdDate: 'DESC' }
+    });
 
     let data = [];
     for(let i = 0 ; i < allPosts.length ; i++ ){
@@ -122,6 +124,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
                    ]
         }
     }
+
        return { message : "Post_Feeds successfully fetched!", data: data };
    }
 

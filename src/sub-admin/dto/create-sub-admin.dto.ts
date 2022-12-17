@@ -4,18 +4,16 @@ import { IsNotExist } from 'src/common/validators/is-not-exists.validator';
 import { Transform } from 'class-transformer';
 import { GenderEnum } from 'src/users/gender.enum';
 
-export class AuthRegisterLoginDto {
+export class CreateSubAdminDto {
   @ApiProperty({ example: 'test1@example.com' })
   @Transform((value: string) => value.toLowerCase().trim())
   @Validate(IsNotExist, ['UserEntity'], {
-    message: 'Email is already registered',
+    message: 'emailAlreadyExists',
   })
   @IsEmail()
   email: string;
 
-  @ApiProperty()
-  @MinLength(6)
-  password: string;
+
 
   @ApiProperty({ example: 'John' })
   @Allow()

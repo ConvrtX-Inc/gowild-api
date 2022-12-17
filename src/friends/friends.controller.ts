@@ -1,7 +1,7 @@
 import { Controller, Get, Param, UseGuards, Post, HttpCode, Request, Body, HttpStatus } from '@nestjs/common';
 import { FriendsService } from './friends.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Crud, CrudController } from '@nestjsx/crud';
+import { Crud, CrudController, Override } from '@nestjsx/crud';
 import { Friends } from './entities/friend.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { SendFriendRequestDto } from './dto/create-friend.dto'
@@ -69,6 +69,7 @@ export class FriendsController implements CrudController<Friends> {
   }
 
   // To get All Friends of logged in User
+  @ApiOperation({ summary : "Get All Of My Friends"})
   @Get('my')
   async getFriends(@Param('id') id: string,@Request() request) {
     const returnResponse = [];   
@@ -97,7 +98,19 @@ export class FriendsController implements CrudController<Friends> {
         data['from_user'] = from_user;
         returnResponse.push(data);
       }
-      return returnResponse;
+      return {       
+        data: returnResponse
+      };
     }    
+  }
+
+  @Get('/received')
+  async getReceivedRequest(@Request() request) {
+    return this.service.getReceivedRequests(request.user);
+  }
+
+  @Override('deleteOneBase')
+  async deleteOne(@Param('id') id:string){   
+    return this.service.delete(id);
   }
 }

@@ -1,9 +1,9 @@
-import {HttpStatus, Injectable, NotFoundException} from '@nestjs/common';
+import {Injectable, NotFoundException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
 import {DeepPartial} from 'src/common/types/deep-partial.type';
 import {FindOptions} from 'src/common/types/find-options.type';
-import {Repository} from 'typeorm';
+import {Not, Repository} from 'typeorm';
 import {Route} from './entities/route.entity';
 import {FilesService} from '../files/files.service';
 import {CreateRouteDto} from "./dto/create-route.dto";
@@ -48,45 +48,58 @@ export class RouteService extends TypeOrmCrudService<Route> {
     await this.routeRepository.delete(id);
   }
 
-  // To Get Many Routes with user_id and saved = true/false 
+  // To Get Many Routes with user_id and saved = true/false
   async getManyRoute(id:string, saved:any){
     console.log(typeof(saved));
     if(saved == "true"){
-      const saved = await this.routeRepository.find({
+      return await this.routeRepository.find({
         user_id: id,
         saved: true
-      })
-      return saved;
+      });
 
     }else if ( saved == "false"){
 
-      const notSaved = await this.routeRepository.find({
+      return await this.routeRepository.find({
         user_id: id,
         saved: false
-      })
-      return notSaved;
-    }else{
-      const allRoutes = await this.routeRepository.find({
-        user_id: id
       });
-      return allRoutes      
+    }else{
+      return await this.routeRepository.find({
+        user_id: id
+      })
     }
   }
 
-  // Get All Admin Routes 
+  // Get All Admin Routes
   public async getAdminRoutes(){
     const routes = await this.routeRepository.find({
-      role: RoleEnum.ADMIN
+      role: Not(RoleEnum.USER)
     })
     if(!routes){
       return{
-        error : [{ message : "Something went wrong!"}]
+        error : [{ message : "No routes found"}]
       };
     }
     return {
 
           message : "Admin routes successfully fetched!",
           data: routes
+    };
+  }
+
+  public async getUserRoutes(){
+    const routes = await this.routeRepository.find({
+      role: RoleEnum.USER
+    })
+    if(!routes){
+      return{
+        error : [{ message : "No routes found"}]
+      };
+    }
+    return {
+
+      message : "Admin routes successfully fetched!",
+      data: routes
     };
   }
 

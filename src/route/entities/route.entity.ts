@@ -8,22 +8,8 @@ import { AppPoint } from '../../common/lat-lng.embedded';
 import { Geometry } from 'geojson';
 import { UserEntity } from '../../users/user.entity';
 import {RoleEnum} from "../../roles/roles.enum";
+import {Coordinates} from "../../common/coordinates";
 
-export class Coordinates {
-  @ApiProperty({
-    format: 'double',
-    type: 'number',
-    nullable: false
-  })
-  latitude: number;
-
-  @ApiProperty({
-    format: 'double',
-    type: 'number',
-    nullable: false
-  })
-  longitude: number;
-}
 @Entity('gw_routes')
 export class Route extends AbstractBaseEntity {
   @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })

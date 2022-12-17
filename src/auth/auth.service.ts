@@ -3,6 +3,7 @@ import { UserEntity } from '../users/user.entity';
 import { AuthEmailLoginDto } from './dtos/auth-email-login.dto';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import * as crypto from 'crypto';
+import * as bcrypt from 'bcryptjs';
 import { SocialInterface } from 'src/social/interfaces/social.interface';
 import { AuthRegisterLoginDto } from './dtos/auth-register-login.dto';
 import { UsersService } from 'src/users/users.service';
@@ -62,7 +63,7 @@ export class AuthService {
       throw new UnprocessableEntityException({
         errors: [
           {
-            password: 'incorrectCredentials',
+            password: 'Email or Password is incorrect',
           },
         ],
       });
@@ -251,12 +252,12 @@ export class AuthService {
       });
     }
     return {
-      message: "OTP Varified Successfully"
+      message: "OTP Verified Successfully"
     }
   }
 
   public async resetPassword(hash: string, emailPhone: string, password: string): Promise<SuccessResponse> {
-    let user = null;
+    /*let user = null;
     const forgot = await this.forgotService.findOneEntity({
       where: {
         hash,
@@ -267,13 +268,26 @@ export class AuthService {
       throw new NotFoundException({
         hash: `notFound`,
       });
+    }*/
+    const user = await this.usersService.findOneEntity({
+      where:{
+        email: emailPhone
+      }
+    });
+
+    const passwordCheck = await this.passwordService.verifyPassword(user, password)
+
+    if (passwordCheck){
+      throw new NotFoundException({
+        message: `Cannot set your Previous Password`,
+      });
     }
-    user = forgot.user;
-    await this.forgotService.softDelete(forgot.id);
+
+    //await this.forgotService.softDelete(forgot.id);
     await this.passwordService.createPassword(user, password);
     await user.save();
     return {
-      message: "Password Reset Successfull"
+      message: "Password Reset Successfully"
     }
   }
 

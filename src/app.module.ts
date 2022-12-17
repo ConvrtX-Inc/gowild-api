@@ -56,6 +56,11 @@ import {
   CookieSessionModule,
   NestCookieSessionOptions,
 } from 'nestjs-cookie-session';
+import { DashboardController } from './dashboard/dashboard.controller';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { SubAdminModule } from './sub-admin/sub-admin.module';
+import {UserTreasureHuntModule} from "./user-treasure-hunt/user-treasure-hunt.module";
+
 
 @Module({
   imports: [
@@ -145,6 +150,9 @@ import {
     TicketMessagesModule,
     GuidelineLogsModule,
     HealthModule,
+    DashboardModule,
+    SubAdminModule,
+    UserTreasureHuntModule
   ],
   providers: [
     {
@@ -152,5 +160,6 @@ import {
       useClass: ClassSerializerInterceptor,
     },
   ],
+  controllers: [DashboardController],
 })
 export class AppModule {}

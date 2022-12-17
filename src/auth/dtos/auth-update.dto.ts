@@ -7,18 +7,18 @@ export class AuthUpdateDto {
   @ApiProperty({ type: () => FileEntity })
   @IsOptional()
   @Validate(IsExist, ['FileEntity', 'id'], {
-    message: 'imageNotExists',
+    message: 'Image does not Exist!',
   })
   photo?: FileEntity;
 
   @ApiProperty({ example: 'John' })
   @IsOptional()
-  @IsNotEmpty({ message: 'mustBeNotEmpty' })
+  @IsNotEmpty({ message: 'This field must not be Empty!' })
   firstName?: string;
 
   @ApiProperty({ example: 'Doe' })
   @IsOptional()
-  @IsNotEmpty({ message: 'mustBeNotEmpty' })
+  @IsNotEmpty({ message: 'This field must not be Empty!' })
   lastName?: string;
 
   @ApiProperty()
@@ -29,6 +29,6 @@ export class AuthUpdateDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsNotEmpty({ message: 'mustBeNotEmpty' })
+  @IsNotEmpty({ message: 'This field must not be Empty!' })
   oldPassword: string;
 }
