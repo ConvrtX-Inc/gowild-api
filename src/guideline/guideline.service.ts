@@ -23,8 +23,8 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
   async createOneGuideline(dto:CreateGuidelineDto, req: any){
 
     let entity = new Guideline()
-    entity.type = dto.type,
-        entity.description = dto.description,
+    entity.type = dto.type
+        entity.description = dto.description
         entity.last_updated_user = req
 
     if( dto.type === GuidelineTypesEnum.FAQ ||
@@ -90,13 +90,13 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
 
 
   async getTermsByType(type: string) {
-    const result = await this.guidelinesRepository.find({
-      where: {
-        type: type,
-      },
-    });
-    return{
-      data: result
+    /*const result = */
+    return {
+      data: await this.guidelinesRepository.findOne({
+        where: {
+          type: type,
+        },
+      })
     }
   }
   public async findByEnum(guidelineEnum: GuidelineTypesEnum) {
