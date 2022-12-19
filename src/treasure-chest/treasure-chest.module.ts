@@ -11,11 +11,15 @@ import * as AWS from "aws-sdk";
 import * as multerS3 from 'multer-s3';
 import path from "path";
 import {FilesModule} from "../files/files.module";
+import {TreasureWildController} from "../treasure-chest/treasure-wild.controller"
+import { TreasureWildService } from './treasure-wild.service';
+import { UserTreasureHuntModule } from 'src/user-treasure-hunt/user-treasure-hunt.module';
+
 
 @Module({
-  controllers: [TreasureChestController],
-  providers: [TreasureChestService],
-  imports: [TypeOrmModule.forFeature([TreasureChest]), FilesModule, MulterModule.registerAsync({
+  controllers: [TreasureChestController,TreasureWildController],
+  providers: [TreasureChestService,TreasureWildService],
+  imports: [UserTreasureHuntModule,TypeOrmModule.forFeature([TreasureChest]),FilesModule, MulterModule.registerAsync({
     imports: [ConfigModule],
     inject: [ConfigService],
     useFactory: (configService: ConfigService) => {

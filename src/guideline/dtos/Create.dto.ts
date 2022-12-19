@@ -1,6 +1,5 @@
-import {IsNotEmpty, IsOptional} from "class-validator";
+import {IsEnum, IsNotEmpty} from "class-validator";
 import {ApiProperty} from "@nestjs/swagger";
-import {Column} from "typeorm";
 import { GuidelineTypesEnum } from "../guideline.enum";
 
 
@@ -8,6 +7,7 @@ export class CreateGuidelineDto{
 
     @ApiProperty({example : " termsAndConditions, faq , eWaiver , huntEWaiver "})
     @IsNotEmpty()
+    @IsEnum(GuidelineTypesEnum)
     type: GuidelineTypesEnum 
 
     @ApiProperty({example:"string"})
