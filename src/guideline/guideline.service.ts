@@ -88,12 +88,16 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
     await this.guidelinesRepository.delete(id);
   }
 
+
   async getTermsByType(type: string) {
-    return this.guidelinesRepository.find({
+    const result = await this.guidelinesRepository.find({
       where: {
         type: type,
       },
     });
+    return{
+      data: result
+    }
   }
   public async findByEnum(guidelineEnum: GuidelineTypesEnum) {
     return this.guidelinesRepository.findOne({ where: { type: guidelineEnum } });
