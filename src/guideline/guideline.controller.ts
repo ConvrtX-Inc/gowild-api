@@ -1,5 +1,5 @@
 import { Controller, Get, Param, UseGuards,Body, Request } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   Crud,
   CrudController,
@@ -22,6 +22,7 @@ import { GuidelineTypesEnum } from './guideline.enum';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard,RolesGuard)
+@Roles(RoleEnum.ADMIN)
 @ApiTags('Admin Guidelines')
 @Crud({
   model: {
@@ -59,8 +60,8 @@ export class GuidelinesController implements CrudController<Guideline> {
 
   @Override('createOneBase')
   @Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
-  async createOne(@Body() body : CreateGuidelineDto , @Request() req){
-    return this.service.createOneGuideline(body,req.user)
+  async createOne(@Body() createGuidelineDto : CreateGuidelineDto, @Request() req){
+    return this.service.createOneGuideline(createGuidelineDto, req.user.sub)
   }
 
 
