@@ -1,5 +1,5 @@
 import { Controller, Get, Param, UseGuards,Body, Request } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   Crud,
   CrudController,
@@ -17,11 +17,13 @@ import {selectFields} from "./dtos/show-selected-fields.dto";
 import {Roles} from "../roles/roles.decorator";
 import {RoleEnum} from "../roles/roles.enum";
 import {RolesGuard} from "../roles/roles.guard";
+import {AdminRolesGuard} from "../roles/admin.roles.guard";
 import { CreateGuidelineDto } from './dtos/Create.dto';
 import { GuidelineTypesEnum } from './guideline.enum';
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard,RolesGuard)
+@UseGuards(JwtAuthGuard,AdminRolesGuard)
+//@Roles(RoleEnum.ADMIN)
 @ApiTags('Admin Guidelines')
 @Crud({
   model: {
@@ -58,9 +60,10 @@ export class GuidelinesController implements CrudController<Guideline> {
 
 
   @Override('createOneBase')
+  @ApiOperation({ summary: 'Create or Update Admin Guidelines' })
   @Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
-  async createOne(@Body() body : CreateGuidelineDto , @Request() req){
-    return this.service.createOneGuideline(body,req.user)
+  async createOne(@Body() createGuidelineDto : CreateGuidelineDto, @Request() req){
+    return this.service.createOneGuideline(createGuidelineDto, req.user.sub)
   }
 
 
