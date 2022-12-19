@@ -28,14 +28,11 @@ export class Sponsor extends AbstractBaseEntity {
 
   @Allow()
   @IsOptional()
-  @ApiProperty({ example: 'byte64image' })
-  @Transform((value: Buffer | null | string) => (value == null ? '' : value))
-  @Column({
-    name: 'img',
-    type: 'bytea',
-    nullable: true,
-  })
-  img?: Buffer | null | string;
+  @ApiProperty({ example: 'image' })
+  // @Transform((value: string | null) => (value == null ? '' : value))
+  @Column({ nullable: true })
+  img?: string;
+
   @IsOptional()
   @ApiProperty({ example: 'www.redbull.com' })
   @Column({
@@ -45,20 +42,20 @@ export class Sponsor extends AbstractBaseEntity {
   })
   link: string | null;
 
-  @BeforeUpdate()
-  @BeforeInsert()
-  public encodeImage() {
-    this.img = this.img ? base64_arraybuffer.base64_2_ab(this.img) : '';
-  }
+  // @BeforeUpdate()
+  // @BeforeInsert()
+  // public encodeImage() {
+  //   this.img = this.img ? base64_arraybuffer.base64_2_ab(this.img) : '';
+  // }
 
-  @AfterLoad()
-  public async decodeImage() {
-    try {
-      if (typeof this.img !== null && this.img != undefined) {
-        this.img = await base64_arraybuffer.ab_2_base64(
-          new Uint8Array(base64_arraybuffer.base64_2_ab(this.img)),
-        );
-      }
-    } catch (e) {}
-  }
+  // @AfterLoad()
+  // public async decodeImage() {
+  //   try {
+  //     if (typeof this.img !== null && this.img != undefined) {
+  //       this.img = await base64_arraybuffer.ab_2_base64(
+  //         new Uint8Array(base64_arraybuffer.base64_2_ab(this.img)),
+  //       );
+  //     }
+  //   } catch (e) {}
+  // }
 }
