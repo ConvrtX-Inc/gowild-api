@@ -27,10 +27,10 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
         entity.description = dto.description,
         entity.last_updated_user = req
 
-    if( dto.type !== (GuidelineTypesEnum.FAQ ||
+    if( dto.type === GuidelineTypesEnum.FAQ ||
         GuidelineTypesEnum.HUNT_E_WAIVER ||
         GuidelineTypesEnum.E_WAIVER ||
-        GuidelineTypesEnum.TERMS_CONDITIONS )) {
+        GuidelineTypesEnum.TERMS_CONDITIONS ) {
 
     }else{
       throw new NotFoundException({
