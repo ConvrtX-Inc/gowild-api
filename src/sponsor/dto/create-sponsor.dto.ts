@@ -6,14 +6,7 @@ export class CreateSponsorDto {
     @IsNotEmpty()
     treasure_chest_id: string;
 
-    @ApiProperty({ type: 'string', example: 'www.redbull.com', nullable: true })
-    @IsOptional()
-    img_url: string;
-
-    @ApiProperty({ type: 'string', nullable: true })
-    img: string | null;
-
-    @ApiProperty({ type: 'string', nullable: false })
+    @ApiProperty({ type: 'string',example: 'www.redbull.com', nullable: false })
     @IsNotEmpty()
     link: string;
 
