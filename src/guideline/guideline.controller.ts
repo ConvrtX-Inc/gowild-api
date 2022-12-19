@@ -59,6 +59,7 @@ export class GuidelinesController implements CrudController<Guideline> {
 
 
   @Override('createOneBase')
+  @ApiOperation({ summary: 'Create or Update Admin Guidelines' })
   @Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
   async createOne(@Body() createGuidelineDto : CreateGuidelineDto, @Request() req){
     return this.service.createOneGuideline(createGuidelineDto, req.user.sub)
