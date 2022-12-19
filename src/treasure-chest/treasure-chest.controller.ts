@@ -1,4 +1,4 @@
-import {Controller, HttpCode, HttpStatus, Param, Post, UploadedFile, UseGuards, UseInterceptors} from '@nestjs/common';
+import {Controller, HttpCode, HttpStatus, Param, Post, UploadedFile, UseGuards, UseInterceptors, Body} from '@nestjs/common';
 import { TreasureChestService } from './treasure-chest.service';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { TreasureChest } from './entities/treasure-chest.entity';
@@ -9,9 +9,10 @@ import {FileInterceptor} from "@nestjs/platform-express";
 import {FilesService} from "../files/files.service";
 import {AdminRolesGuard} from "../roles/admin.roles.guard";
 import {CreateTreasureChestDto} from "./dto/create-treasure-chest.dto";
+import { ChangeHuntStatusDto } from './dto/change-hunt-status';
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, AdminRolesGuard)
+@UseGuards(JwtAuthGuard,AdminRolesGuard)
 @ApiTags('Admin Treasure Chest')
 @Crud({
   model: {
@@ -74,5 +75,10 @@ export class TreasureChestController implements CrudController<TreasureChest> {
   ) {
     const fileId = await this.filesService.uploadFile(file);
     return this.service.updatePicture(id, fileId.path);
+  }
+
+  @Post('hunt/status/:id')
+  async huntStatus(@Param('id') id:string , @Body() dto :ChangeHuntStatusDto){
+    return this.service.huntStatus(id,dto);
   }
 }

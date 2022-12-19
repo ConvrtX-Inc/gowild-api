@@ -8,10 +8,11 @@ import { AdminRolesGuard } from "../roles/admin.roles.guard";
 import { CreateTreasureChestDto } from "./dto/create-treasure-chest.dto";
 import { RegisterTreasureHuntDto } from './dto/register-treasure-hunt.dto';
 import { TreasureWildService } from './treasure-wild.service';
+import { verifyHuntDto } from './dto/change-hunt-status';
 
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, AdminRolesGuard)
+@UseGuards(JwtAuthGuard)
 @ApiTags('Treasure Wild')
 @Crud({
     model: {
@@ -60,4 +61,14 @@ export class TreasureWildController implements CrudController<TreasureChest> {
         return this.service.registerTreasureHunt(dto , request)
     }
 
+    @Override('getManyBase')
+    async getManyUserTreasureHunt(){
+        return this.service.getManyUserTreasureHunt();
+    }
+
+    @Post('verify')
+    @HttpCode(HttpStatus.OK)
+    async veriifyHunt(@Body() dto: verifyHuntDto, @Request() req){
+        return this.service.verufyHunt(dto,req.user);
+    }
 }

@@ -54,8 +54,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
             });
         }
 
-        postFeed.picture = file;
-        console.log(file);
+        postFeed.picture = file;    
         return{ message: "Post-Feed created successfully!", data: await postFeed.save()} ;
     }
 
