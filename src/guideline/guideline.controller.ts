@@ -17,12 +17,13 @@ import {selectFields} from "./dtos/show-selected-fields.dto";
 import {Roles} from "../roles/roles.decorator";
 import {RoleEnum} from "../roles/roles.enum";
 import {RolesGuard} from "../roles/roles.guard";
+import {AdminRolesGuard} from "../roles/admin.roles.guard";
 import { CreateGuidelineDto } from './dtos/Create.dto';
 import { GuidelineTypesEnum } from './guideline.enum';
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard,RolesGuard)
-@Roles(RoleEnum.ADMIN)
+@UseGuards(JwtAuthGuard,AdminRolesGuard)
+//@Roles(RoleEnum.ADMIN)
 @ApiTags('Admin Guidelines')
 @Crud({
   model: {
