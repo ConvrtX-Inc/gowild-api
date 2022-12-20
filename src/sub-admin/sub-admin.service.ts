@@ -9,9 +9,10 @@ import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
 import { PasswordService } from 'src/users/password.service';
 import { UserEntity } from 'src/users/user.entity';
 import { UsersService } from 'src/users/users.service';
-import { FindConditions, ObjectID, Repository } from 'typeorm';
+import {FindConditions, getConnection, ObjectID, Repository} from 'typeorm';
 import { CreateSubAdminDto } from './dto/create-sub-admin.dto';
 import { UpdateSubAdminDto } from './dto/update-sub-admin.dto';
+import {Password} from "../users/password.entity";
 
 @Injectable()
 export class SubAdminService {
@@ -62,7 +63,7 @@ export class SubAdminService {
     let entity = new UserEntity();
     entity.firstName = dto.firstName,
       entity.lastName = dto.lastName,
-      entity.gender = dto.gender;
+      //entity.gender = dto.gender;
     entity.email = dto.email;
     entity.username = dto.username;
     entity.phoneNo = dto.phoneNo;
@@ -139,10 +140,7 @@ export class SubAdminService {
       location: `${admin.addressOne}`,
       accountStatus: admin.status.statusName
     };
-
     return container;
-
-
   }
 
   async findAllSubAdmin() {
@@ -164,9 +162,28 @@ export class SubAdminService {
   }
 
   async deleteSubAdmin(id: string) {
-    await this.usersRepository.softDelete(id);
-    return {
-      message: "User deleted"
+
+    const userData = await this.usersRepository.findOne(id);
+    if(userData){
+    await getConnection()
+        .createQueryBuilder()
+        .delete()
+        .from(Password)
+        .where("user_id = :id", { id: userData.id })
+        .execute();
+
+      await getConnection()
+          .createQueryBuilder()
+          .delete()
+          .from(UserEntity)
+          .where("id = :id", { id: userData.id })
+          .execute();
+
+      return {
+        message: "User deleted"
+      }
+    }else{
+      return { message: "User not deleted" }
     }
   }
 
