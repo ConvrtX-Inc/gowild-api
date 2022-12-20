@@ -172,13 +172,17 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
 
     const data = users.map((obj)=>{
       let container : {
-        fullName : string;
+        firstName : string;
+        lastName : string;
+        picture: string;
         email: string;
         onlineStatus: boolean;
         location: string;
         accountStatus: string;
       }={
-        fullName:obj.fullName,
+        firstName: obj.firstName,
+        lastName: obj.lastName,
+        picture: obj.picture,
         email: obj.email,
         onlineStatus: obj.updatedDate>tenMinutesBefore ? true : false,
         location: `${obj.addressOne}, ${obj.addressTwo}`,
