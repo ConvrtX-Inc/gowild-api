@@ -16,7 +16,6 @@ export class AuthResetPasswordDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsEmail()
   emailPhone: string;
 
   @ApiProperty()
