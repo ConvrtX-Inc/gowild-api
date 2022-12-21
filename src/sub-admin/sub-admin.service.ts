@@ -50,7 +50,7 @@ export class SubAdminService {
         dateOfBirth: obj.birthDate,
         onlineStatus: obj.updatedDate > tenMinutesBefore ? true : false,
         picture: obj.picture,
-        location: `${obj.addressOne}`,
+        location: `${obj.addressOne},${obj.addressTwo}`,
         accountStatus: obj.status.statusName
       };
       return container;
@@ -62,8 +62,8 @@ export class SubAdminService {
 
     let entity = new UserEntity();
     entity.firstName = dto.firstName,
-      entity.lastName = dto.lastName,
-      //entity.gender = dto.gender;
+        entity.lastName = dto.lastName,
+      entity.gender = dto.gender;
     entity.email = dto.email;
     entity.username = dto.username;
     entity.phoneNo = dto.phoneNo;
@@ -126,7 +126,7 @@ export class SubAdminService {
     admin.firstName = dto.firstName,
       admin.lastName = dto.lastName,
       admin.addressOne = dto.addressOne;
-    admin.addressTwo = dto.addressTwo;
+   // admin.addressTwo = dto.addressTwo;
     admin.username = dto.username;
     admin.email = dto.email;
     admin.username = dto.email;

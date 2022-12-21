@@ -31,7 +31,7 @@ export class CreateSubAdminDto {
   })
   username: string | null;
 
- /* @IsEnum(GenderEnum)
+  @IsEnum(GenderEnum)
   @ApiProperty({
     enum: GenderEnum,
     example: GenderEnum.Male,
@@ -40,7 +40,7 @@ export class CreateSubAdminDto {
   })
   @IsOptional()
   @Allow()
-  gender: GenderEnum;*/
+  gender: GenderEnum.Male;
 
   @ApiProperty({ example: '+639506703401', nullable: true })
   @Allow()

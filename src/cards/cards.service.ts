@@ -16,13 +16,13 @@ export class CardsService {
       private readonly cardRepository: Repository<Card>,
       private readonly statusService: StatusService) {
   }
-  async createCard(createCardDto: CreateCardDto) {
+  async createCard(createCardDto: CreateCardDto, image: string) {
     let addCard = new Card();
     addCard.cardTitle = createCardDto.cardTitle;
     addCard.cardSponsor = createCardDto.cardSponsor;
     addCard.cardUrlLink = createCardDto.cardUrlLink;
     addCard.description = createCardDto.description;
-    addCard.picture = createCardDto.picture;
+    addCard.picture = image;
 
     addCard.status = await this.statusService.findByEnum(StatusEnum.Active)
     await this.saveEntity(addCard);

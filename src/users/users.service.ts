@@ -179,8 +179,11 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         id: string
         firstName : string;
         lastName : string;
+        gender: string;
+        phoneNo: string;
         picture: string;
         email: string;
+        dateOfBirth: Date;
         onlineStatus: boolean;
         location: string;
         accountStatus: string;
@@ -188,8 +191,11 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         id: obj.id,
         firstName: obj.firstName,
         lastName: obj.lastName,
+        gender: obj.gender,
+        phoneNo: obj.phoneNo,
         picture: obj.picture,
         email: obj.email,
+        dateOfBirth: obj.birthDate,
         onlineStatus: obj.updatedDate>tenMinutesBefore ? true : false,
         location: `${obj.addressOne}, ${obj.addressTwo}`,
         accountStatus: obj.status.statusName
