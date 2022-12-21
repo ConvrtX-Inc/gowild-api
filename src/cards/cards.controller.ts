@@ -1,4 +1,16 @@
-import {Body, Controller, Delete, Get, Param, Patch, Post, UseGuards} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post, UploadedFile,
+  UseGuards,
+  UseInterceptors
+} from '@nestjs/common';
 import {CardsService} from './cards.service';
 import {CreateCardDto} from './dto/create-card.dto';
 import {UpdateCardDto} from './dto/update-card.dto';
@@ -19,6 +31,8 @@ import {CreateSubAdminDto} from "../sub-admin/dto/create-sub-admin.dto";
 import {StatusService} from "../statuses/status.service";
 import {JwtAuthGuard} from "../auth/jwt-auth.guard";
 import {AdminRolesGuard} from "../roles/admin.roles.guard";
+import {FileInterceptor} from "@nestjs/platform-express";
+import {ConfigService} from "@nestjs/config";
 
 
 @ApiBearerAuth()
@@ -50,13 +64,21 @@ import {AdminRolesGuard} from "../roles/admin.roles.guard";
 })
 
 export class CardsController implements CrudController<Card> {
-  constructor(private readonly cardsService: CardsService) {}
+  constructor(private readonly cardsService: CardsService,
+              private readonly configService: ConfigService) {}
 
   service: CrudService<Card>;
 
   @Override('createOneBase')
-  async createOneCard(@Body() dto:CreateCardDto){
-    return this.cardsService.createCard(dto)
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(FileInterceptor('file'))
+  async createOneCard(@Body() dto:CreateCardDto, @UploadedFile() file: Express.Multer.File){
+    const path: Record<files.FileType, string> = {
+      local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
+      s3: file.location,
+      firebase: file.publicUrl,
+    }
+    return this.cardsService.createCard(dto, path.local)
   }
 
 
