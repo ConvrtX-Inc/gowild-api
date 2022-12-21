@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {IsNotEmpty, IsOptional, Validate, validate} from 'class-validator';
-import {IsNotExist} from "../../common/validators/is-not-exists.validator";
-import {UserEntity} from "../../users/user.entity";
+import {IsEmail, IsNotEmpty, IsOptional} from 'class-validator';
+
 
 export class AuthVerifyOTPDto { 
   @ApiProperty()
@@ -17,9 +16,7 @@ export class AuthResetPasswordDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @Validate(IsNotExist, [UserEntity],{
-    message: "Please Enter valid Email"
-  })
+  @IsEmail()
   emailPhone: string;
 
   @ApiProperty()

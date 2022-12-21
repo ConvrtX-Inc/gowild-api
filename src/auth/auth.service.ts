@@ -271,10 +271,17 @@ export class AuthService {
     }*/
     const user = await this.usersService.findOneEntity({
       where:{
+        otp:hash,
         email: emailPhone
       }
     });
+    if(!user){
+      throw new NotFoundException({
+        message: `Please enter a Valid Email`,
+      });
+    }
 
+    //console.log(user);
     const passwordCheck = await this.passwordService.verifyPassword(user, password)
 
     if (passwordCheck){
