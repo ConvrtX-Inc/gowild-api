@@ -1,8 +1,9 @@
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
-import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
+import { AfterLoad, AfterUpdate, BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsOptional, Validate } from 'class-validator';
 import { IsExist } from 'src/common/validators/is-exists.validator';
+import appConfig from "../../config/app.config";
 import { Transform } from 'class-transformer';
 import * as base64_arraybuffer from 'base64-arraybuffer-converter';
 
@@ -16,7 +17,7 @@ export class Sponsor extends AbstractBaseEntity {
     type: 'uuid',
     nullable: false,
   })
-  treasure_chest_id?: string;
+  treasure_chest?: string;
 
   @IsOptional()
   @ApiProperty()
@@ -42,6 +43,13 @@ export class Sponsor extends AbstractBaseEntity {
   })
   link: string | null;
 
+
+  @AfterLoad()
+  updatePicture() {
+    if (this.img && this.img.indexOf('/') === 0) {
+      this.img = appConfig().backendDomain + this.img;
+    }
+  }
   // @BeforeUpdate()
   // @BeforeInsert()
   // public encodeImage() {

@@ -84,6 +84,30 @@ export class SubAdminService {
     };
   }
 
+  async regeneratePassword(id: string){
+    const admin = await this.usersRepository.findOne({
+      where:{id:id}
+    });
+    console.log(id);
+    console.log(admin);
+    if (!admin) {
+      throw new NotFoundException({
+        errors: [
+          {
+            user: 'Admin do not exist',
+          },
+        ],
+      });
+    }
+    const temporaryPassword = `gowild@${Math.floor(1000 + Math.random() * 9000)}`
+    await this.passwordService.createPassword(admin, temporaryPassword);
+    
+
+    return {
+      temporaryPassword: temporaryPassword, userData: admin
+    };
+  }
+
   public async updateSubAdmin(id: string, dto: UpdateUserDto): Promise<UserEntity> {
     const admin = await this.usersRepository.findOne({
       where: { id: id },

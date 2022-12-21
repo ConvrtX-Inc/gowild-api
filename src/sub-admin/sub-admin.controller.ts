@@ -13,6 +13,7 @@ import { request } from 'http';
 import { bool } from 'aws-sdk/clients/signer';
 import { Role } from 'src/roles/role.entity';
 import { RolesGuard } from 'src/roles/roles.guard';
+import { Password } from 'src/users/password.entity';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -72,6 +73,15 @@ async findOneEntity(@Request() request){
 @Override('getManyBase')
 async findManyEntities() {
   return this.subAdminService.findAllSubAdmin();
+}
+
+@ApiResponse({ type: Password })
+@Post('reset-password/:id')
+@ApiOperation({ summary: "Reset Password" })
+@HttpCode(HttpStatus.OK)
+@Roles(RoleEnum.ADMIN)
+async resetPassword(@Param('id') id: string,){
+  return this.subAdminService.regeneratePassword(id);
 }
 
 @ApiResponse({ type: UserEntity })

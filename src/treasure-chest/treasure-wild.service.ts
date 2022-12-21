@@ -8,6 +8,10 @@ import { UserTreasureHuntEntity, UserTreasureHuntStatusEnum } from 'src/user-tre
 import { UserTreasureHuntService } from 'src/user-treasure-hunt/user-treasure-hunt.service';
 import { isBigInt64Array } from 'util/types';
 import { HttpStatus } from '@nestjs/common/enums';
+import { Sponsor } from 'src/sponsor/entities/sponsor.entity';
+import { UserEntity } from 'src/users/user.entity';
+import { title } from 'process';
+import { stringify } from 'querystring';
 
 @Injectable()
 export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
@@ -19,6 +23,20 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     super(treasureChestRepository);
   }
 
+  async paginateResponse(data, page, limit) {
+
+    const [result, total] = data;
+    const totalPage = Math.ceil(total / limit);
+    const prevPage = page - 1 < 1 ? null : page - 1;
+    return {
+
+      data: [...result],
+      count: total,
+      currentPage: parseInt(page),
+      prevPage: prevPage,
+      totalPage: totalPage,
+    }
+  }
   /*
     Register User for Treaure Hunt 
     */
@@ -41,6 +59,26 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     console.log(all)
     return { data: all }
   }
+
+  async getTreasureWild(pageNo: number) {
+
+    const take = 10
+    const page = pageNo || 1;
+    const skip = (page - 1) * take;
+
+    const data = await this.treasureChestRepository.createQueryBuilder('treasureChest')
+
+      .leftJoinAndMapMany("treasureChest.treasureHunts", UserTreasureHuntEntity, 'treasureHunts', 'treasureChest.id = treasure_chest_id')
+      .leftJoinAndMapMany('treasureChest.sponsors', Sponsor, 'sponsors', 'treasureChest.id = treasure_chest')
+      .leftJoinAndMapOne('treasureHunts.user', UserEntity, 'user', 'treasureHunts.user_id= user.id')
+      .skip(skip).take(take)
+      .getManyAndCount();
+
+    return this.paginateResponse(data, page, take)
+
+
+  }
+
 
   /*
    Verify OTP code for User Treasure Hunt 
@@ -69,7 +107,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
           ]
         }
       }
-    }else{
+    } else {
       return {
         "errors": [
           {
