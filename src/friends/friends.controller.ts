@@ -119,4 +119,5 @@ export class FriendsController implements CrudController<Friends> {
   async removeSuggested(@Param('id') id:string, @Request() req){
     return await this.service.removeSuggested(id,req.user);
   }
+  
 }

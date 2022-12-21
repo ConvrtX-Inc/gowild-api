@@ -232,12 +232,21 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
     const childFriend = await this.friendsRepository.findOne({
       where: { parent_id: id },
     });
-    const deletedfriend = await this.friendsRepository.delete(id)
-
+    console.log(childFriend);
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@');
     if (childFriend) {
       await this.friendsRepository.delete(childFriend.id);
-    }
-
+    } else {
+      const parentFriend = await this.friendsRepository.findOne({
+        where: { id: id }
+      });
+      console.log(parentFriend);
+      if(parentFriend){
+         await this.friendsRepository.delete(parentFriend.parent_id);
+        console.log("parentFriend DELETED")
+      }
+    }  
+    const deletedfriend = await this.friendsRepository.delete(id)      
     if (deletedfriend.affected == 0) {
       return {
         error: [
@@ -279,7 +288,7 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
 
     var removed = [];
     if (crrUser.removed_suggested_friends != null) {
-      crrUser.removed_suggested_friends.map(e => {       
+      crrUser.removed_suggested_friends.map(e => {
         removed.push(e)
       });
     }
@@ -288,15 +297,15 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
     friendArr.map((f) => {
       friendId.push(f.to_user_id)
     })
- 
+
     // If Both Arrays Are Empty then Adding some Dummy Data
-    if(removed[0] == null){
-     removed.push(user.sub);    
+    if (removed[0] == null) {
+      removed.push(user.sub);
     }
-    if(friendId[0]==null){
+    if (friendId[0] == null) {
       friendId.push(user.sub);
     }
-   
+
     const users = UserEntity.createQueryBuilder('u');
     const all = await users
       .select([
@@ -315,7 +324,7 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
         'u.backImage as  backImage',
         'u.status as  status',
         'u.role as  role',
-      ])     
+      ])
       .where("u.id NOT IN (:...id) AND u.id != :user AND u.id NOT IN (:...rem)", { id: friendId, user: user.sub, rem: removed })
       .getRawMany();
     return { data: await this.mapListingsData(all) };
@@ -335,7 +344,7 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
     }
     const arr = { id: id }
     users.removed_suggested_friends.push(id);
-    return { data:  await users.save() };
+    return { data: await users.save() };
 
   }
 
