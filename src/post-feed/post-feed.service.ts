@@ -38,7 +38,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
       return { message : "Post-Feed created successfully!", data: feedData };
   }
 
-    public async updatePicture(id: string, file: FileEntity) {
+    public async updatePicture(id: string, picture: string) {
         const postFeed = await this.postFeedRepository.findOne({
             where: { id: id },
         });
@@ -54,7 +54,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
             });
         }
 
-        postFeed.picture = file;    
+        postFeed.picture = picture;    
         return{ message: "Post-Feed created successfully!", data: await postFeed.save()} ;
     }
 

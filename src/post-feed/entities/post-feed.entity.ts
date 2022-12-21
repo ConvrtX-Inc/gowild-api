@@ -29,10 +29,10 @@ export class PostFeed extends AbstractBaseEntity {
   description?: string;
 
   @Allow()
-  @ApiProperty({ nullable: true, type: () => FileEntity })
-  @ManyToOne(() => FileEntity, { nullable: true, cascade: false, eager: true })
-  @JoinColumn({ name: 'picture_id' })
-  picture: FileEntity;
+  @IsOptional()
+  @ApiProperty({ example: 'Picture' })
+  @Column({ nullable: true })
+  picture?: string;
 
   @IsOptional()
   @ApiProperty({ example: 'false' })

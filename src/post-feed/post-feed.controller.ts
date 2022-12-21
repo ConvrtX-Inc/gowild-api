@@ -22,6 +22,7 @@ import {Route} from "../route/entities/route.entity";
 import {Roles} from "../roles/roles.decorator";
 import {RoleEnum} from "../roles/roles.enum";
 import {FileInterceptor} from "@nestjs/platform-express";
+import {ConfigService} from "@nestjs/config";
 import {FilesService} from "../files/files.service";
 import {RolesGuard} from "../roles/roles.guard";
 
@@ -56,7 +57,8 @@ import {RolesGuard} from "../roles/roles.guard";
   version: '1',
 })
 export class PostFeedController implements CrudController<PostFeed> {
-  constructor(readonly service: PostFeedService, private readonly filesService: FilesService) {}
+  constructor(readonly service: PostFeedService, private readonly filesService: FilesService,
+    private readonly configService: ConfigService) {}
 
   get base(): CrudController<PostFeed> {
     return this;
@@ -113,8 +115,13 @@ async share(@Param('id') id ){
       @Param('id') id: string,
       @UploadedFile() file: Express.Multer.File,
   ) {
-    const fileId = await this.filesService.uploadFile(file);   
-    return this.service.updatePicture(id, fileId);
+     const path: Record<files.FileType, string> = {
+      local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
+      s3: file.location,
+      firebase: file.publicUrl,   
+     };
+    return this.service.updatePicture(id, path.local);
+     
   }
 
   // @ApiOperation({ summary: 'Create Post Feed' })

@@ -10,6 +10,7 @@ import {FilesService} from "../files/files.service";
 import {AdminRolesGuard} from "../roles/admin.roles.guard";
 import {CreateTreasureChestDto} from "./dto/create-treasure-chest.dto";
 import { ChangeHuntStatusDto } from './dto/change-hunt-status';
+import { ConfigService } from '@nestjs/config';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard,AdminRolesGuard)
@@ -47,7 +48,8 @@ import { ChangeHuntStatusDto } from './dto/change-hunt-status';
   version: '1',
 })
 export class TreasureChestController implements CrudController<TreasureChest> {
-  constructor(readonly service: TreasureChestService, private readonly filesService: FilesService) {}
+  constructor(readonly service: TreasureChestService, private readonly filesService: FilesService,
+    private readonly configService: ConfigService) {}
 
   get base(): CrudController<TreasureChest> {
     return this;
@@ -72,9 +74,14 @@ export class TreasureChestController implements CrudController<TreasureChest> {
   public async updatePicture(
       @Param('id') id: string,
       @UploadedFile() file: Express.Multer.File,
-  ) {
-    const fileId = await this.filesService.uploadFile(file);
-    return this.service.updatePicture(id, fileId.path);
+  ){
+    
+    const path: Record<files.FileType, string> = {
+      local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
+      s3: file.location,
+      firebase: file.publicUrl,
+    };
+    return this.service.updatePicture(id, path.local);
   }
 
   @Post('hunt/status/:id')
