@@ -69,6 +69,6 @@ export class TreasureWildController implements CrudController<TreasureChest> {
     @Post('verify')
     @HttpCode(HttpStatus.OK)
     async veriifyHunt(@Body() dto: verifyHuntDto, @Request() req){
-        return this.service.verufyHunt(dto,req.user);
+        return this.service.verifyHunt(dto,req.user);
     }
 }

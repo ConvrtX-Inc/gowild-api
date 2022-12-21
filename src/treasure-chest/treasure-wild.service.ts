@@ -45,7 +45,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
   /*
    Verify OTP code for User Treasure Hunt 
    */
-  async verufyHunt(dto, user) {
+  async verifyHunt(dto, user) {
     console.log(user.sub)
     const hunt = await this.UserTreasureHuntService.findOne({
       where: {

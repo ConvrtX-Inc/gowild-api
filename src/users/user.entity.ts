@@ -121,6 +121,11 @@ export class UserEntity extends AbstractBaseEntity {
 
   @ApiHideProperty()
   @Exclude()
+  @Column('jsonb',{nullable: true, default : {} })
+  removed_suggested_friends?: string[];
+
+  @ApiHideProperty()
+  @Exclude()
   @Column({
     nullable: true,
   })
