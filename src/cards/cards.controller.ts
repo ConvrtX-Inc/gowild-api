@@ -17,11 +17,13 @@ import {
 import {Card} from "./entities/card.entity";
 import {CreateSubAdminDto} from "../sub-admin/dto/create-sub-admin.dto";
 import {StatusService} from "../statuses/status.service";
+import {JwtAuthGuard} from "../auth/jwt-auth.guard";
+import {AdminRolesGuard} from "../roles/admin.roles.guard";
 
 
 @ApiBearerAuth()
-@UseGuards(RolesGuard)
-@Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
+@UseGuards(JwtAuthGuard,AdminRolesGuard)
+//@Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
 @ApiTags('Cards')
 @Crud({
   model: {

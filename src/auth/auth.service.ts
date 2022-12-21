@@ -285,7 +285,7 @@ export class AuthService {
 
     //await this.forgotService.softDelete(forgot.id);
     await this.passwordService.createPassword(user, password);
-    await user.save();
+    //await user.save();
     return {
       message: "Password Reset Successfully"
     }

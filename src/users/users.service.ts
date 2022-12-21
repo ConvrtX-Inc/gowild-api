@@ -138,13 +138,17 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
     let tenMinutesBefore = new Date();
     tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
     let container : {
-      fullName : string;
+      id: string;
+      firstName : string;
+      lastName: string;
       email: string;
       onlineStatus: boolean;
       location: string;
       accountStatus: string;
     }={
-      fullName:user.fullName,
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
       onlineStatus: user.updatedDate>tenMinutesBefore ? true : false,
       location: `${user.addressOne}, ${user.addressTwo}`,
@@ -172,6 +176,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
 
     const data = users.map((obj)=>{
       let container : {
+        id: string
         firstName : string;
         lastName : string;
         picture: string;
@@ -180,6 +185,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         location: string;
         accountStatus: string;
       }={
+        id: obj.id,
         firstName: obj.firstName,
         lastName: obj.lastName,
         picture: obj.picture,
