@@ -11,6 +11,7 @@ import {AdminRolesGuard} from "../roles/admin.roles.guard";
 import {CreateTreasureChestDto} from "./dto/create-treasure-chest.dto";
 import { ChangeHuntStatusDto } from './dto/change-hunt-status';
 import { ConfigService } from '@nestjs/config';
+import { Sponsor } from 'src/sponsor/entities/sponsor.entity';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard,AdminRolesGuard)
@@ -55,7 +56,7 @@ export class TreasureChestController implements CrudController<TreasureChest> {
     return this;
   }
 
-  @ApiResponse({ type: Route })
+  @ApiResponse({ type: TreasureChest })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {

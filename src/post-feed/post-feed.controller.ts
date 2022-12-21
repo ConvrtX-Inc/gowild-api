@@ -94,7 +94,7 @@ async share(@Param('id') id ){
     return this.service.create(request.user?.sub, createPostFeedDto);
   }
 
-  @ApiResponse({ type: Route })
+  @ApiResponse({ type: PostFeed })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {

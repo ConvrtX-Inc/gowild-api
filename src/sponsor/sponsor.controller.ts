@@ -68,7 +68,7 @@ async getManySponsers(@Param('treasure_chest_id') treasure_chest_id: string){
     return this.service.getmanySponsors(treasure_chest_id);
   }
 
-  @ApiResponse({ type: Route })
+  @ApiResponse({ type: Sponsor })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
