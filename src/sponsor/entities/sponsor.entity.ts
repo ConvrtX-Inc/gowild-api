@@ -17,7 +17,7 @@ export class Sponsor extends AbstractBaseEntity {
     type: 'uuid',
     nullable: false,
   })
-  treasure_chest_id?: string;
+  treasure_chest?: string;
 
   @IsOptional()
   @ApiProperty()

@@ -1,8 +1,8 @@
-import { Controller, HttpCode, HttpStatus, Param, Post, UseGuards, Body, Request  } from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Param, Post, UseGuards, Body, Request, Get, Query  } from '@nestjs/common';
 import { TreasureChestService } from './treasure-chest.service';
 import { Crud, CrudController, Override } from '@nestjsx/crud';
 import { TreasureChest } from './entities/treasure-chest.entity';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AdminRolesGuard } from "../roles/admin.roles.guard";
 import { CreateTreasureChestDto } from "./dto/create-treasure-chest.dto";
@@ -61,11 +61,14 @@ export class TreasureWildController implements CrudController<TreasureChest> {
         return this.service.registerTreasureHunt(dto , request)
     }
 
-    @Override('getManyBase')
-    async getManyUserTreasureHunt(){
-        return this.service.getManyUserTreasureHunt();
-    }
 
+@ApiResponse({ type: TreasureChest })
+@Get('listings')
+@ApiOperation({ summary: "Get All listings" })
+@HttpCode(HttpStatus.OK)
+async getAllListings(@Query() query){
+  return this.service.getTreasureWild( query.page)
+}
     @Post('verify')
     @HttpCode(HttpStatus.OK)
     async veriifyHunt(@Body() dto: verifyHuntDto, @Request() req){
