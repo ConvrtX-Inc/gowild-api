@@ -282,7 +282,7 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
       .select([
         'f.to_user_id as to_user_id',
       ])
-      .where("f.from_user_id = :id AND f.is_accepted = :accepted", { id: user.sub, accepted: true })
+      .where("f.from_user_id = :id", { id: user.sub })
       .getRawMany();
 
 
