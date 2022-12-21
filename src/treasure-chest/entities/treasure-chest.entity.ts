@@ -63,7 +63,7 @@ export class TreasureChest extends AbstractBaseEntity {
   winnerId?: string;
 
   @Allow()
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ nullable: true , example: 'Picture'})
   picture: string;
 
   @IsOptional()
