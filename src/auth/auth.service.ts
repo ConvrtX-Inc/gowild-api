@@ -271,10 +271,17 @@ export class AuthService {
     }*/
     const user = await this.usersService.findOneEntity({
       where:{
+        otp:hash,
         email: emailPhone
       }
     });
+    if(!user){
+      throw new NotFoundException({
+        message: `Please enter a Valid Email`,
+      });
+    }
 
+    //console.log(user);
     const passwordCheck = await this.passwordService.verifyPassword(user, password)
 
     if (passwordCheck){
@@ -285,7 +292,7 @@ export class AuthService {
 
     //await this.forgotService.softDelete(forgot.id);
     await this.passwordService.createPassword(user, password);
-    await user.save();
+    //await user.save();
     return {
       message: "Password Reset Successfully"
     }

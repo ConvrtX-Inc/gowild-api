@@ -60,6 +60,7 @@ import { DashboardController } from './dashboard/dashboard.controller';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { SubAdminModule } from './sub-admin/sub-admin.module';
 import {UserTreasureHuntModule} from "./user-treasure-hunt/user-treasure-hunt.module";
+import { CardsModule } from './cards/cards.module';
 
 
 @Module({
@@ -152,7 +153,8 @@ import {UserTreasureHuntModule} from "./user-treasure-hunt/user-treasure-hunt.mo
     HealthModule,
     DashboardModule,
     SubAdminModule,
-    UserTreasureHuntModule
+    UserTreasureHuntModule,
+    CardsModule
   ],
   providers: [
     {

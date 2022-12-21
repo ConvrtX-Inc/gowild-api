@@ -9,9 +9,10 @@ import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
 import { PasswordService } from 'src/users/password.service';
 import { UserEntity } from 'src/users/user.entity';
 import { UsersService } from 'src/users/users.service';
-import { FindConditions, ObjectID, Repository } from 'typeorm';
+import {FindConditions, getConnection, ObjectID, Repository} from 'typeorm';
 import { CreateSubAdminDto } from './dto/create-sub-admin.dto';
 import { UpdateSubAdminDto } from './dto/update-sub-admin.dto';
+import {Password} from "../users/password.entity";
 
 @Injectable()
 export class SubAdminService {
@@ -32,20 +33,24 @@ export class SubAdminService {
       let container: {
         id: string;
         username: string;
-        name: string;
+        firstName: string;
+        lastName: string;
         email: string;
+        dateOfBirth: Date;
         onlineStatus: boolean;
         picture: string;
         location: string;
         accountStatus: string;
       } = {
         id: obj.id,
-        name: `${obj.firstName} ${obj.lastName}`,
+        firstName: obj.firstName,
+        lastName: obj.lastName,
         username: obj.username,
         email: obj.email,
+        dateOfBirth: obj.birthDate,
         onlineStatus: obj.updatedDate > tenMinutesBefore ? true : false,
         picture: obj.picture,
-        location: `${obj.addressOne}, ${obj.addressTwo}`,
+        location: `${obj.addressOne}`,
         accountStatus: obj.status.statusName
       };
       return container;
@@ -58,12 +63,12 @@ export class SubAdminService {
     let entity = new UserEntity();
     entity.firstName = dto.firstName,
       entity.lastName = dto.lastName,
-      entity.gender = dto.gender;
+      //entity.gender = dto.gender;
     entity.email = dto.email;
-    entity.username = entity.fullName;
+    entity.username = dto.username;
     entity.phoneNo = dto.phoneNo;
     entity.addressOne = dto.addressOne;
-    entity.addressTwo = dto.addressTwo;
+    entity.birthDate = dto.birthDate
     entity.phoneVerified = false;
 
 
@@ -100,6 +105,7 @@ export class SubAdminService {
     admin.addressTwo = dto.addressTwo;
     admin.username = dto.username;
     admin.email = dto.email;
+    admin.username = dto.email;
 
 
     await admin.save();
@@ -114,27 +120,34 @@ export class SubAdminService {
     let tenMinutesBefore = new Date();
     tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
     let container: {
-      name: string;
+      id: string,
+      firstName: string;
+      lastName: string;
       username: string;
       email: string;
+      dateOfBirth: Date;
       onlineStatus: boolean;
       location: string;
       accountStatus: string;
     } = {
-      name: `${admin.firstName} ${admin.lastName}`,
+      id: id,
+      firstName: admin.firstName,
+      lastName: admin.lastName,
       username: admin.username,
       email: admin.email,
+      dateOfBirth: admin.birthDate,
       onlineStatus: admin.updatedDate > tenMinutesBefore ? true : false,
-      location: `${admin.addressOne}, ${admin.addressTwo}`,
+      location: `${admin.addressOne}`,
       accountStatus: admin.status.statusName
     };
-
     return container;
-
-
   }
 
   async findAllSubAdmin() {
+    let tenMinutesBefore = new Date();
+    tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
+
+
     const admins = await this.usersRepository.find({
       relations: ['role'],
       where: {
@@ -149,9 +162,28 @@ export class SubAdminService {
   }
 
   async deleteSubAdmin(id: string) {
-    await this.usersRepository.softDelete(id);
-    return {
-      message: "User deleted"
+
+    const userData = await this.usersRepository.findOne(id);
+    if(userData){
+    await getConnection()
+        .createQueryBuilder()
+        .delete()
+        .from(Password)
+        .where("user_id = :id", { id: userData.id })
+        .execute();
+
+      await getConnection()
+          .createQueryBuilder()
+          .delete()
+          .from(UserEntity)
+          .where("id = :id", { id: userData.id })
+          .execute();
+
+      return {
+        message: "User deleted"
+      }
+    }else{
+      return { message: "User not deleted" }
     }
   }
 
