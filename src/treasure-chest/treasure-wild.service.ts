@@ -61,7 +61,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     return { data: all }
   }
 
-  async getTreasureWild(pageNo: number,id:string) {
+  async getTreasureWild(pageNo: number, id: string) {
     console.log('getTreasureWild');
     const take = 10
     const page = pageNo || 1;
@@ -69,38 +69,36 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
 
     const data = await this.treasureChestRepository.createQueryBuilder('treasureChest')
 
-    .leftJoinAndMapMany("treasureChest.treasureHunts", UserTreasureHuntEntity, 'treasureHunts', 'treasureChest.id = treasure_chest_id AND user_id != :user ',{ user: id })     
-    .leftJoinAndMapMany('treasureChest.sponsors', Sponsor, 'sponsors', 'treasureChest.id = treasure_chest')
-    .leftJoinAndMapOne('treasureHunts.user', UserEntity, 'user', 'treasureHunts.user_id = user.id')
-    .skip(skip).take(take)
-
-    .getManyAndCount();
+      .leftJoinAndMapMany("treasureChest.treasureHunts", UserTreasureHuntEntity, 'treasureHunts', 'treasureChest.id = treasure_chest_id AND user_id != :user ', { user: id })
+      .leftJoinAndMapMany('treasureChest.sponsors', Sponsor, 'sponsors', 'treasureChest.id = treasure_chest')
+      .leftJoinAndMapOne('treasureHunts.user', UserEntity, 'user', 'treasureHunts.user_id = user.id')
+      .skip(skip).take(take)
+      .getManyAndCount();
 
     const crrUser = await this.treasureChestRepository.createQueryBuilder('treasureChest')
-    .leftJoinAndMapMany("treasureChest.treasureHunts", UserTreasureHuntEntity, 'treasureHunts', 'treasureChest.id = treasure_chest_id AND user_id = :user ',{ user: id })  
-    .leftJoinAndMapOne('treasureHunts.user', UserEntity, 'user', 'treasureHunts.user_id = user.id')
-    .getManyAndCount()  
-    
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-    console.log(typeof(crrUser));  
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-    const newArr = crrUser[0];
-    console.log(newArr[0]['treasureHunts']);
-    console.log();
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-    
-    data[0].map(chest=>{
-      console.log('chest #############################------------@@@@@@@@@@@@@@@@@')
-    console.log(chest);
-   })
-   
+      .leftJoinAndMapMany("treasureChest.treasureHunts", UserTreasureHuntEntity, 'treasureHunts', 'treasureChest.id = treasure_chest_id AND user_id = :user ', { user: id })
+      .leftJoinAndMapOne('treasureHunts.user', UserEntity, 'user', 'treasureHunts.user_id = user.id')
+      .getManyAndCount()
 
-   return this.paginateResponse(data, page, take)
+
+    const parrentArray = []
+    const customArray = [];
+
+    data[0].map(chest => {
+      const userHunt = crrUser[0];
+      console.log(userHunt[0]['treasureHunts'][0])
+      if (userHunt[0].id == chest.id) {
+        chest['current_user_hunt'] = userHunt['treasureHunts'];
+      }
+      customArray.push(chest);
+
+    })
+    parrentArray.push(customArray);
+    parrentArray.push(data[1]);
+
+
+
+    return this.paginateResponse(parrentArray, page, take)
   }
 
 
