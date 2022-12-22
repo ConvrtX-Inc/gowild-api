@@ -275,11 +275,11 @@ export class AuthService {
         phoneNo: emailPhone
       }
     });
-    if(!user){
+    /*if(!user){
       throw new NotFoundException({
         message: `Please enter a Valid Phone Number!`,
       });
-    }
+    }*/
 
     //console.log(user);
     const passwordCheck = await this.passwordService.verifyPassword(user, password)
