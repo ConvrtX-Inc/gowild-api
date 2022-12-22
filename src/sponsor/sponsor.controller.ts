@@ -88,14 +88,13 @@ async getManySponsers(@Param('treasure_chest_id') treasure_chest_id: string){
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    
-    const path: Record<files.FileType, string> = {
+    const driver = this.configService.get('file.driver');
+    const picture =  {
       local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
       s3: file.location,
       firebase: file.publicUrl,
     };
-    
-    return this.service.updateImage(id, path.local);
+    return this.service.updateImage(id, picture[driver] );
   }
 
   

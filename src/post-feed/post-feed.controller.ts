@@ -115,13 +115,13 @@ async share(@Param('id') id ){
       @Param('id') id: string,
       @UploadedFile() file: Express.Multer.File,
   ) {
-     const path: Record<files.FileType, string> = {
+    const driver = this.configService.get('file.driver');
+    const picture =  {
       local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
       s3: file.location,
-      firebase: file.publicUrl,   
-     };
-    return this.service.updatePicture(id, path.local);
-     
+      firebase: file.publicUrl,
+    };
+    return this.service.updatePicture(id, picture[driver] );
   }
 
   // @ApiOperation({ summary: 'Create Post Feed' })
