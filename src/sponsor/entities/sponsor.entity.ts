@@ -45,6 +45,7 @@ export class Sponsor extends AbstractBaseEntity {
 
 
   @AfterLoad()
+  @AfterUpdate()
   updatePicture() {
     if (this.img && this.img.indexOf('/') === 0) {
       this.img = appConfig().backendDomain + this.img;
