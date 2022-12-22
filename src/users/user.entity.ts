@@ -139,8 +139,7 @@ export class UserEntity extends AbstractBaseEntity {
   otp: string;
 
 
-  @ApiHideProperty()
-  @Exclude()
+  @ApiProperty()
   @Column({
     nullable: true,
     name: 'phone_verified',

@@ -11,6 +11,7 @@ import {AdminRolesGuard} from "../roles/admin.roles.guard";
 import {CreateTreasureChestDto} from "./dto/create-treasure-chest.dto";
 import { ChangeHuntStatusDto } from './dto/change-hunt-status';
 import { ConfigService } from '@nestjs/config';
+import { Sponsor } from 'src/sponsor/entities/sponsor.entity';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard,AdminRolesGuard)
@@ -55,7 +56,7 @@ export class TreasureChestController implements CrudController<TreasureChest> {
     return this;
   }
 
-  @ApiResponse({ type: Route })
+  @ApiResponse({ type: TreasureChest })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -75,13 +76,13 @@ export class TreasureChestController implements CrudController<TreasureChest> {
       @Param('id') id: string,
       @UploadedFile() file: Express.Multer.File,
   ){
-    
-    const path: Record<files.FileType, string> = {
+    const driver = this.configService.get('file.driver');
+    const picture =  {
       local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
       s3: file.location,
       firebase: file.publicUrl,
     };
-    return this.service.updatePicture(id, path.local);
+    return this.service.updatePicture(id, picture[driver] );
   }
 
   @Post('hunt/status/:id')
