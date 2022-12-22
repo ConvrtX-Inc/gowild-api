@@ -24,7 +24,7 @@ import { randomInt } from "crypto";
 import { RoleService } from "../roles/role.service";
 import { RoleEnum } from "../roles/roles.enum";
 import { AuthVerifyUserDto } from "./dtos/auth-verify-user.dto";
-import { use } from 'passport';
+import appConfig from 'src/config/app.config';
 
 @Injectable()
 export class AuthService {
@@ -319,12 +319,14 @@ export class AuthService {
     await user.save();
     return await this.tokenService.generateToken(user);
   }
-  public async me(userId: string): Promise<UserEntity> {
-    return await this.usersService.findOneEntity({
+  public async me(userId: string) {
+    const user =  await this.usersService.findOneEntity({
       where: {
         id: userId,
       },
     });
+   user['backend_domain'] = appConfig().backendDomain;
+   return user
   }
 
   public async generateAdmin() {

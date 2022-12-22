@@ -73,11 +73,11 @@ export class TreasureChest extends AbstractBaseEntity {
   @Column({ nullable: true })
   a_r?: string;
 
-  @AfterLoad()
-  @AfterUpdate()
-  updatePicture() {
-    if (this.picture && this.picture.indexOf('/') === 0) {
-      this.picture = appConfig().backendDomain + this.picture;
-    }
-  }
+  // @AfterLoad()
+  // @AfterUpdate()
+  // updatePicture() {
+  //   if (this.picture && this.picture.indexOf('/') === 0) {
+  //     this.picture = appConfig().backendDomain + this.picture;
+  //   }
+  // }
 }

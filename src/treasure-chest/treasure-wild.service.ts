@@ -60,7 +60,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     return { data: all }
   }
 
-  async getTreasureWild(pageNo: number) {
+  async getTreasureWild(pageNo: number,id:string) {
 
     const take = 10
     const page = pageNo || 1;
@@ -68,15 +68,13 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
 
     const data = await this.treasureChestRepository.createQueryBuilder('treasureChest')
 
-      .leftJoinAndMapMany("treasureChest.treasureHunts", UserTreasureHuntEntity, 'treasureHunts', 'treasureChest.id = treasure_chest_id')
+      .leftJoinAndMapMany("treasureChest.treasureHunts", UserTreasureHuntEntity, 'treasureHunts', 'treasureChest.id = treasure_chest_id')     
       .leftJoinAndMapMany('treasureChest.sponsors', Sponsor, 'sponsors', 'treasureChest.id = treasure_chest')
-      .leftJoinAndMapOne('treasureHunts.user', UserEntity, 'user', 'treasureHunts.user_id= user.id')
+      .leftJoinAndMapOne('treasureHunts.user', UserEntity, 'user', 'treasureHunts.user_id = user.id')
       .skip(skip).take(take)
       .getManyAndCount();
 
     return this.paginateResponse(data, page, take)
-
-
   }
 
 

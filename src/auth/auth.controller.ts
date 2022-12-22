@@ -126,7 +126,7 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  public async me(@Request() request: Express.Request): Promise<UserEntity> {
+  public async me(@Request() request: Express.Request) {
     return this.service.me(request.user?.sub);
   }
 
