@@ -325,7 +325,7 @@ export class AuthService {
         id: userId,
       },
     });
-   user['backend_domain'] = appConfig().backendDomain;
+   user['base_url'] = appConfig().backendDomain;
    return user
   }
 
