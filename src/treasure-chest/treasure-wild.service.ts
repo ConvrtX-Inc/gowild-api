@@ -99,8 +99,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
         return {
           "errors": [
             {
-              message: "Verification Failed",
-              status: HttpStatus.BAD_GATEWAY
+              message: "Verification Failed",             
             }
           ]
         }
@@ -109,8 +108,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
       return {
         "errors": [
           {
-            message: "No User Treasure Hunt Found",
-            status: HttpStatus.BAD_GATEWAY
+            message: "No User Treasure Hunt Found",            
           }
         ]
       }
