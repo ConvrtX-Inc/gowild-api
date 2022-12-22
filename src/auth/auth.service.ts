@@ -271,8 +271,8 @@ export class AuthService {
     }*/
     const user = await this.usersService.findOneEntity({
       where:{
-        otp:hash,
-        email: emailPhone
+        otp: hash,
+        phoneNo: emailPhone
       }
     });
     if(!user){

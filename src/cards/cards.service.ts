@@ -8,6 +8,7 @@ import {DeepPartial} from "../common/types/deep-partial.type";
 import {UserEntity} from "../users/user.entity";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
+import {NotFoundException} from "../exceptions/not-found.exception";
 
 @Injectable()
 export class CardsService {
@@ -16,21 +17,45 @@ export class CardsService {
       private readonly cardRepository: Repository<Card>,
       private readonly statusService: StatusService) {
   }
-  async createCard(createCardDto: CreateCardDto, image: string) {
+
+  public async createCard(createCardDto: CreateCardDto) {
     let addCard = new Card();
     addCard.cardTitle = createCardDto.cardTitle;
     addCard.cardSponsor = createCardDto.cardSponsor;
     addCard.cardUrlLink = createCardDto.cardUrlLink;
     addCard.description = createCardDto.description;
-    addCard.picture = image;
+    addCard.picture = createCardDto.picture;
 
     addCard.status = await this.statusService.findByEnum(StatusEnum.Active)
-    await this.saveEntity(addCard);
+    addCard = await this.saveEntity(addCard);
     return{
       data: addCard
     }
   }
 
+  public async updateImage(id: string, image: string) {
+    const cardImage = await this.cardRepository.findOne({
+      where: { id: id },
+    });
+
+
+    if (!cardImage) {
+      throw new NotFoundException({
+        errors: [
+          {
+            user: 'Image does not exist',
+          },
+        ],
+      });
+    }
+
+    cardImage.picture= image;
+    return{ message: "Card Image Updated Successfully!", data: await cardImage.save()};
+  }
+
+  async saveOne(data) {
+    return await this.cardRepository.save(this.cardRepository.create(data))
+  }
   findAll() {
     return `This action returns all cards`;
   }

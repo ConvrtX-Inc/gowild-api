@@ -14,7 +14,7 @@ import {
 import {CardsService} from './cards.service';
 import {CreateCardDto} from './dto/create-card.dto';
 import {UpdateCardDto} from './dto/update-card.dto';
-import {ApiBearerAuth, ApiTags} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiBody, ApiConsumes, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {RolesGuard} from "../roles/roles.guard";
 import {Roles} from "../roles/roles.decorator";
 import {RoleEnum} from "../roles/roles.enum";
@@ -31,12 +31,13 @@ import {CreateSubAdminDto} from "../sub-admin/dto/create-sub-admin.dto";
 import {StatusService} from "../statuses/status.service";
 import {JwtAuthGuard} from "../auth/jwt-auth.guard";
 import {AdminRolesGuard} from "../roles/admin.roles.guard";
+import {Route} from "../route/entities/route.entity";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {ConfigService} from "@nestjs/config";
 
 
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard,AdminRolesGuard)
+//@ApiBearerAuth()
+//@UseGuards(JwtAuthGuard/*,AdminRolesGuard*/)
 //@Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
 @ApiTags('Cards')
 @Crud({
@@ -70,18 +71,46 @@ export class CardsController implements CrudController<Card> {
   service: CrudService<Card>;
 
   @Override('createOneBase')
+  async createOneCard(@Body() dto:CreateCardDto){
+    return this.cardsService.createCard(dto)
+  }
+
+  @ApiResponse({ type: Card })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @Post(':id/update-image')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(FileInterceptor('file'))
-  async createOneCard(@Body() dto:CreateCardDto, @UploadedFile() file: Express.Multer.File){
+  public async updateImage(
+      @Param('id') id: string,
+      @UploadedFile() file: Express.Multer.File,
+  ) {
+
     const path: Record<files.FileType, string> = {
       local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
       s3: file.location,
       firebase: file.publicUrl,
-    }
-    return this.cardsService.createCard(dto, path.local)
+    };
+
+
+    return this.cardsService.updateImage(id, path.local);
   }
 
 
+  @Override('getOneBase')
+  async getOneCard(@Body() dto:CreateCardDto){
+    return this.cardsService.createCard(dto)
+  }
   @Get()
   findAll() {
     return this.cardsService.findAll();

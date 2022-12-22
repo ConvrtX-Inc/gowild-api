@@ -1,8 +1,10 @@
 import {ApiProperty} from "@nestjs/swagger";
-import {Allow, IsOptional} from "class-validator";
+import {Allow, IsNotEmpty, IsOptional} from "class-validator";
 import {Column} from "typeorm";
 
 export class CreateCardDto {
+
+
 
     @ApiProperty({example: 'Thrill Seekers', nullable: true})
     @Allow()
