@@ -10,6 +10,7 @@ import { Share } from 'src/share/entities/share.entity';
 import { CreatePostFeedDto } from "./dto/create-post-feed.dto";
 import { View } from 'typeorm/schema-builder/view/View';
 import {FileEntity} from "../files/file.entity";
+import { UserEntity } from 'src/users/user.entity';
 
 @Injectable()
 export class PostFeedService extends TypeOrmCrudService<PostFeed> {
@@ -98,10 +99,13 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
     */
    async getManyPost(){
 
-    const allPosts = await this.postFeedRepository.find({
-        order:{ createdDate: 'DESC' }
-    });
-
+    // const allPosts = await this.postFeedRepository.find({
+    //     order:{ createdDate: 'DESC' }
+    // });
+    const allPosts = await this.postFeedRepository.createQueryBuilder('postFeed')
+    .leftJoinAndMapOne('postFeed.user', UserEntity, 'user', 'postFeed.user_id = user.id')
+    .getMany();
+    
     let data = [];
     for(let i = 0 ; i < allPosts.length ; i++ ){
       const likes = await Like.count({
