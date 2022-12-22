@@ -12,6 +12,7 @@ import { Sponsor } from 'src/sponsor/entities/sponsor.entity';
 import { UserEntity } from 'src/users/user.entity';
 import { title } from 'process';
 import { stringify } from 'querystring';
+import { type } from 'os';
 
 @Injectable()
 export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
@@ -61,20 +62,45 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
   }
 
   async getTreasureWild(pageNo: number,id:string) {
-
+    console.log('getTreasureWild');
     const take = 10
     const page = pageNo || 1;
     const skip = (page - 1) * take;
 
     const data = await this.treasureChestRepository.createQueryBuilder('treasureChest')
 
-      .leftJoinAndMapMany("treasureChest.treasureHunts", UserTreasureHuntEntity, 'treasureHunts', 'treasureChest.id = treasure_chest_id')     
-      .leftJoinAndMapMany('treasureChest.sponsors', Sponsor, 'sponsors', 'treasureChest.id = treasure_chest')
-      .leftJoinAndMapOne('treasureHunts.user', UserEntity, 'user', 'treasureHunts.user_id = user.id')
-      .skip(skip).take(take)
-      .getManyAndCount();
+    .leftJoinAndMapMany("treasureChest.treasureHunts", UserTreasureHuntEntity, 'treasureHunts', 'treasureChest.id = treasure_chest_id AND user_id != :user ',{ user: id })     
+    .leftJoinAndMapMany('treasureChest.sponsors', Sponsor, 'sponsors', 'treasureChest.id = treasure_chest')
+    .leftJoinAndMapOne('treasureHunts.user', UserEntity, 'user', 'treasureHunts.user_id = user.id')
+    .skip(skip).take(take)
 
-    return this.paginateResponse(data, page, take)
+    .getManyAndCount();
+
+    const crrUser = await this.treasureChestRepository.createQueryBuilder('treasureChest')
+    .leftJoinAndMapMany("treasureChest.treasureHunts", UserTreasureHuntEntity, 'treasureHunts', 'treasureChest.id = treasure_chest_id AND user_id = :user ',{ user: id })  
+    .leftJoinAndMapOne('treasureHunts.user', UserEntity, 'user', 'treasureHunts.user_id = user.id')
+    .getManyAndCount()  
+    
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    console.log(typeof(crrUser));  
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    const newArr = crrUser[0];
+    console.log(newArr[0]['treasureHunts']);
+    console.log();
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    
+    data[0].map(chest=>{
+      console.log('chest #############################------------@@@@@@@@@@@@@@@@@')
+    console.log(chest);
+   })
+   
+
+   return this.paginateResponse(data, page, take)
   }
 
 
