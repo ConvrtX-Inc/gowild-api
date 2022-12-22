@@ -105,7 +105,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
     const allPosts = await this.postFeedRepository.createQueryBuilder('postFeed')
     .leftJoinAndMapOne('postFeed.user', UserEntity, 'user', 'postFeed.user_id = user.id')
     .getMany();
-console.log(allPosts);
+    
     let data = [];
     for(let i = 0 ; i < allPosts.length ; i++ ){
       const likes = await Like.count({
