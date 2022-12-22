@@ -277,7 +277,7 @@ export class AuthService {
     });
     if(!user){
       throw new NotFoundException({
-        message: `Please enter a Valid Email`,
+        message: `Please enter a Valid Phone Number!`,
       });
     }
 
