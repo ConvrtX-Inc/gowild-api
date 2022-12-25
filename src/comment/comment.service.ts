@@ -45,6 +45,7 @@ export class CommentService extends TypeOrmCrudService<Comment> {
     const comments = await this.commentRepository.createQueryBuilder('comments')
     .where("comments.postfeed_id = :id", { id: id })
     .innerJoinAndSelect('comments.user_id', 'comment')
+    .orderBy('comments.createdDate', 'ASC')
     .getMany()
     console.log(comments);
 

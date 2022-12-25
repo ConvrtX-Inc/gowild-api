@@ -1,4 +1,4 @@
-import {Controller, HttpCode, HttpStatus, Param, Post, UploadedFile, UseGuards, UseInterceptors} from '@nestjs/common';
+import {Controller, HttpCode, HttpStatus, Param, Post, UploadedFile, UseGuards, UseInterceptors, Body} from '@nestjs/common';
 import { TreasureChestService } from './treasure-chest.service';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { TreasureChest } from './entities/treasure-chest.entity';
@@ -9,9 +9,12 @@ import {FileInterceptor} from "@nestjs/platform-express";
 import {FilesService} from "../files/files.service";
 import {AdminRolesGuard} from "../roles/admin.roles.guard";
 import {CreateTreasureChestDto} from "./dto/create-treasure-chest.dto";
+import { ChangeHuntStatusDto } from './dto/change-hunt-status';
+import { ConfigService } from '@nestjs/config';
+import { Sponsor } from 'src/sponsor/entities/sponsor.entity';
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, AdminRolesGuard)
+@UseGuards(JwtAuthGuard)
 @ApiTags('Admin Treasure Chest')
 @Crud({
   model: {
@@ -46,13 +49,14 @@ import {CreateTreasureChestDto} from "./dto/create-treasure-chest.dto";
   version: '1',
 })
 export class TreasureChestController implements CrudController<TreasureChest> {
-  constructor(readonly service: TreasureChestService, private readonly filesService: FilesService) {}
+  constructor(readonly service: TreasureChestService, private readonly filesService: FilesService,
+    private readonly configService: ConfigService) {}
 
   get base(): CrudController<TreasureChest> {
     return this;
   }
 
-  @ApiResponse({ type: Route })
+  @ApiResponse({ type: TreasureChest })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -71,8 +75,18 @@ export class TreasureChestController implements CrudController<TreasureChest> {
   public async updatePicture(
       @Param('id') id: string,
       @UploadedFile() file: Express.Multer.File,
-  ) {
-    const fileId = await this.filesService.uploadFile(file);
-    return this.service.updatePicture(id, fileId.path);
+  ){
+    const driver = this.configService.get('file.driver');
+    const picture =  {
+      local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
+      s3: file.location,
+      firebase: file.publicUrl,
+    };
+    return this.service.updatePicture(id, picture[driver] );
+  }
+
+  @Post('hunt/status/:id')
+  async huntStatus(@Param('id') id:string , @Body() dto :ChangeHuntStatusDto){
+    return this.service.huntStatus(id,dto);
   }
 }

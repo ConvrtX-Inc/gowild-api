@@ -1,7 +1,7 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { Not, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { Friends } from './entities/friend.entity';
 import { UserEntity } from 'src/users/user.entity';
 import { SendFriendRequestDto } from './dto/create-friend.dto';
@@ -9,6 +9,8 @@ import { DeepPartial } from 'src/common/types/deep-partial.type';
 import { ConfirmDto } from './dto/confirm-request.dto'
 import { UsersService } from 'src/users/users.service';
 import { RepositoryOwner } from 'aws-sdk/clients/codestar';
+import { identity } from 'rxjs';
+import { throws } from 'assert';
 
 
 
@@ -230,12 +232,21 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
     const childFriend = await this.friendsRepository.findOne({
       where: { parent_id: id },
     });
-    const deletedfriend = await this.friendsRepository.delete(id)
-
+    console.log(childFriend);
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@');
     if (childFriend) {
       await this.friendsRepository.delete(childFriend.id);
-    }
-
+    } else {
+      const parentFriend = await this.friendsRepository.findOne({
+        where: { id: id }
+      });
+      console.log(parentFriend);
+      if(parentFriend){
+         await this.friendsRepository.delete(parentFriend.parent_id);
+        console.log("parentFriend DELETED")
+      }
+    }  
+    const deletedfriend = await this.friendsRepository.delete(id)      
     if (deletedfriend.affected == 0) {
       return {
         error: [
@@ -260,37 +271,122 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
     // }
   }
 
-  async suggestedFriends() {
-    const users = await UserEntity.find({});
-    return {
-      data: users
-    };
-    // let aggregatedFriends: Array<Friends[]> = [];
-    // const suggestedFriendsRepo = await this.friendsRepository
-    //   .createQueryBuilder('friendsList')
-    //   .select(['friendsList'])
-    //   .where('friendsList.user_id = :user_id', { user_id: user_id })
-    //   .andWhere('friendsList.is_approved = :is_approved', { is_approved: true })
-    //   .getMany();
-    // for (const friend of suggestedFriendsRepo) {
-    //   const suggestedFriendsOfFriendsRepo = await this.friendsRepository
-    //     .createQueryBuilder('friendsOfFriendsList')
-    //     .innerJoinAndMapMany(
-    //       'friendsOfFriendsList.user',
-    //       UserEntity,
-    //       'user',
-    //       'user.id = friendsOfFriendsList.user_id',
-    //     )
-    //     .select(['friendsOfFriendsList', 'user.id', 'user.full_name'])
-    //     .where('friendsOfFriendsList.user_id = :user_id', {
-    //       user_id: friend.friend_id,
-    //     })
-    //     .andWhere('friendsOfFriendsList.is_approved = :is_approved', {
-    //       is_approved: true,
-    //     })
-    //     .getMany();
-    //   aggregatedFriends.push(suggestedFriendsOfFriendsRepo);
-    // }
-    // return aggregatedFriends;
+  async suggestedFriends(user) {
+
+    const crrUser = await UserEntity.findOne({
+      where: { id: user.sub }
+    })
+
+    const friend = this.friendsRepository.createQueryBuilder('f');
+    const friendArr = await friend
+      .select([
+        'f.to_user_id as to_user_id',
+      ])
+      .where("f.from_user_id = :id", { id: user.sub })
+      .getRawMany();
+
+
+    var removed = [];
+    if (crrUser.removed_suggested_friends != null) {
+      crrUser.removed_suggested_friends.map(e => {
+        removed.push(e)
+      });
+    }
+
+    const friendId = []
+    friendArr.map((f) => {
+      friendId.push(f.to_user_id)
+    })
+
+    // If Both Arrays Are Empty then Adding some Dummy Data
+    if (removed[0] == null) {
+      removed.push(user.sub);
+    }
+    if (friendId[0] == null) {
+      friendId.push(user.sub);
+    }
+
+    const users = UserEntity.createQueryBuilder('u');
+    const all = await users
+      .select([
+        'u.id as id',
+        'u.firstName as firstName',
+        'u.lastName as  lastName',
+        'u.birthDate as  birthDate',
+        'u.gender as  gender',
+        'u.email as  email',
+        'u.phoneNo as  phoneNo',
+        'u.addressOne as  addressOne',
+        'u.addressTwo as  addressTwo',
+        'u.about_me as  about_me',
+        'u.picture as  picture',
+        'u.frontImage as  frontImage',
+        'u.backImage as  backImage',
+        'u.status as  status',
+        'u.role as  role',
+      ])
+      .where("u.id NOT IN (:...id) AND u.id != :user AND u.id NOT IN (:...rem)", { id: friendId, user: user.sub, rem: removed })
+      .getRawMany();
+    return { data: await this.mapListingsData(all) };
   }
+
+  /*
+    Remove From Suggested User 
+    */
+  async removeSuggested(id: string, user) {
+    const users = await UserEntity.findOne({
+      where: { id: user.sub }
+    });
+
+    if (users.removed_suggested_friends == null) {
+      users.removed_suggested_friends = []
+      await users.save()
+    }
+    const arr = { id: id }
+    users.removed_suggested_friends.push(id);
+    return { data: await users.save() };
+
+  }
+
+  async mapListingsData(dataArray) {
+
+    const data = dataArray.map((obj) => {
+      let container: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        birthDate: string;
+        gender: boolean;
+        email: string;
+        phoneNo: string;
+        addressOne: string;
+        addressTwo: string;
+        about_me: string;
+        picture: string;
+        frontImage: string;
+        backImage: string;
+        status: string;
+        role: string;
+      } = {
+        id: obj.id,
+        firstName: obj.firstname,
+        lastName: obj.lastname,
+        birthDate: obj.birthdate,
+        gender: obj.gender,
+        email: obj.email,
+        phoneNo: obj.phoneno,
+        addressOne: obj.addressone,
+        addressTwo: obj.addresstwo,
+        about_me: obj.about_me,
+        picture: obj.picture,
+        frontImage: obj.frontimage,
+        backImage: obj.backimage,
+        status: obj.status,
+        role: obj.role,
+      };
+      return container;
+    });
+    return data;
+  }
+
 }

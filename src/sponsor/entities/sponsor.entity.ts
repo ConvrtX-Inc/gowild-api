@@ -1,8 +1,9 @@
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
-import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
+import { AfterLoad, AfterUpdate, BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsOptional, Validate } from 'class-validator';
 import { IsExist } from 'src/common/validators/is-exists.validator';
+import appConfig from "../../config/app.config";
 import { Transform } from 'class-transformer';
 import * as base64_arraybuffer from 'base64-arraybuffer-converter';
 
@@ -16,7 +17,7 @@ export class Sponsor extends AbstractBaseEntity {
     type: 'uuid',
     nullable: false,
   })
-  treasure_chest_id?: string;
+  treasure_chest?: string;
 
   @IsOptional()
   @ApiProperty()
@@ -28,14 +29,11 @@ export class Sponsor extends AbstractBaseEntity {
 
   @Allow()
   @IsOptional()
-  @ApiProperty({ example: 'byte64image' })
-  @Transform((value: Buffer | null | string) => (value == null ? '' : value))
-  @Column({
-    name: 'img',
-    type: 'bytea',
-    nullable: true,
-  })
-  img?: Buffer | null | string;
+  @ApiProperty({ example: 'image' })
+  // @Transform((value: string | null) => (value == null ? '' : value))
+  @Column({ nullable: true })
+  img?: string;
+
   @IsOptional()
   @ApiProperty({ example: 'www.redbull.com' })
   @Column({
@@ -45,20 +43,28 @@ export class Sponsor extends AbstractBaseEntity {
   })
   link: string | null;
 
-  @BeforeUpdate()
-  @BeforeInsert()
-  public encodeImage() {
-    this.img = this.img ? base64_arraybuffer.base64_2_ab(this.img) : '';
-  }
 
-  @AfterLoad()
-  public async decodeImage() {
-    try {
-      if (typeof this.img !== null && this.img != undefined) {
-        this.img = await base64_arraybuffer.ab_2_base64(
-          new Uint8Array(base64_arraybuffer.base64_2_ab(this.img)),
-        );
-      }
-    } catch (e) {}
-  }
+  // @AfterLoad()
+  // @AfterUpdate()
+  // updatePicture() {
+  //   if (this.img && this.img.indexOf('/') === 0) {
+  //     this.img = appConfig().backendDomain + this.img;
+  //   }
+  // }
+  // @BeforeUpdate()
+  // @BeforeInsert()
+  // public encodeImage() {
+  //   this.img = this.img ? base64_arraybuffer.base64_2_ab(this.img) : '';
+  // }
+
+  // @AfterLoad()
+  // public async decodeImage() {
+  //   try {
+  //     if (typeof this.img !== null && this.img != undefined) {
+  //       this.img = await base64_arraybuffer.ab_2_base64(
+  //         new Uint8Array(base64_arraybuffer.base64_2_ab(this.img)),
+  //       );
+  //     }
+  //   } catch (e) {}
+  // }
 }

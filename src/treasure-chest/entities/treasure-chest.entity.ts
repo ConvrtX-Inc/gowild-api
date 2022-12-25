@@ -63,7 +63,9 @@ export class TreasureChest extends AbstractBaseEntity {
   winnerId?: string;
 
   @Allow()
-  @ApiProperty({ nullable: true })
+  @IsOptional()
+  @ApiProperty({ example: 'Picture' })
+  @Column({ nullable: true })
   picture: string;
 
   @IsOptional()
@@ -71,11 +73,11 @@ export class TreasureChest extends AbstractBaseEntity {
   @Column({ nullable: true })
   a_r?: string;
 
-  @AfterLoad()
-  @AfterUpdate()
-  updatePicture() {
-    if (this.picture && this.picture.indexOf('/') === 0) {
-      this.picture = appConfig().backendDomain + this.picture;
-    }
-  }
+  // @AfterLoad()
+  // @AfterUpdate()
+  // updatePicture() {
+  //   if (this.picture && this.picture.indexOf('/') === 0) {
+  //     this.picture = appConfig().backendDomain + this.picture;
+  //   }
+  // }
 }

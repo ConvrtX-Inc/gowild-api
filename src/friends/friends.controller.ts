@@ -43,8 +43,8 @@ export class FriendsController implements CrudController<Friends> {
 
   @ApiOperation({ summary: 'Get suggested friends list' })
   @Get('suggested-friends')
-  public async getSuggestedFriends() {
-    return this.service.suggestedFriends();
+  public async getSuggestedFriends(@Request() req) {
+    return this.service.suggestedFriends(req.user);
   }
 
   @Post('send-friend-request')
@@ -113,4 +113,11 @@ export class FriendsController implements CrudController<Friends> {
   async deleteOne(@Param('id') id:string){   
     return this.service.delete(id);
   }
+
+  @Get('suggested/remove/:id')
+  @HttpCode(HttpStatus.OK)
+  async removeSuggested(@Param('id') id:string, @Request() req){
+    return await this.service.removeSuggested(id,req.user);
+  }
+  
 }

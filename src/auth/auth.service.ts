@@ -24,7 +24,7 @@ import { randomInt } from "crypto";
 import { RoleService } from "../roles/role.service";
 import { RoleEnum } from "../roles/roles.enum";
 import { AuthVerifyUserDto } from "./dtos/auth-verify-user.dto";
-import { use } from 'passport';
+import appConfig from 'src/config/app.config';
 
 @Injectable()
 export class AuthService {
@@ -271,10 +271,17 @@ export class AuthService {
     }*/
     const user = await this.usersService.findOneEntity({
       where:{
-        email: emailPhone
+        otp: hash,
+        phoneNo: emailPhone
       }
     });
+    if(!user){
+      throw new NotFoundException({
+        message: `Please enter a Valid Phone Number!`,
+      });
+    }
 
+    //console.log(user);
     const passwordCheck = await this.passwordService.verifyPassword(user, password)
 
     if (passwordCheck){
@@ -285,7 +292,7 @@ export class AuthService {
 
     //await this.forgotService.softDelete(forgot.id);
     await this.passwordService.createPassword(user, password);
-    await user.save();
+    //await user.save();
     return {
       message: "Password Reset Successfully"
     }
@@ -312,12 +319,14 @@ export class AuthService {
     await user.save();
     return await this.tokenService.generateToken(user);
   }
-  public async me(userId: string): Promise<UserEntity> {
-    return await this.usersService.findOneEntity({
+  public async me(userId: string) {
+    const user =  await this.usersService.findOneEntity({
       where: {
         id: userId,
       },
     });
+   user['base_url'] = appConfig().backendDomain;
+   return user
   }
 
   public async generateAdmin() {

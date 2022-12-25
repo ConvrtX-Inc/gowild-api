@@ -1,27 +1,18 @@
-import { Controller, Get, Param, UseGuards,Body, Request } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import {
-  Crud,
-  CrudController,
-  CrudRequest,
-  Override,
-  ParsedBody,
-  ParsedRequest,
-} from '@nestjsx/crud';
-import { GuidelineService } from './guideline.service';
-import { Guideline } from './guideline.entity';
-import { GuidelineLogsService } from 'src/guideline-logs/guideline-logs.service';
-import { GuidelineLog } from 'src/guideline-logs/guideline-log.entity';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import {selectFields} from "./dtos/show-selected-fields.dto";
+import {Body, Controller, Get, Param, Request, UseGuards} from '@nestjs/common';
+import {ApiBearerAuth, ApiOperation, ApiTags} from '@nestjs/swagger';
+import {Crud, CrudController, Override,} from '@nestjsx/crud';
+import {GuidelineService} from './guideline.service';
+import {Guideline} from './guideline.entity';
+import {GuidelineLogsService} from 'src/guideline-logs/guideline-logs.service';
+import {JwtAuthGuard} from '../auth/jwt-auth.guard';
 import {Roles} from "../roles/roles.decorator";
 import {RoleEnum} from "../roles/roles.enum";
-import {RolesGuard} from "../roles/roles.guard";
-import { CreateGuidelineDto } from './dtos/Create.dto';
-import { GuidelineTypesEnum } from './guideline.enum';
+import {AdminRolesGuard} from "../roles/admin.roles.guard";
+import {CreateGuidelineDto} from './dtos/Create.dto';
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard,RolesGuard)
+//@UseGuards(JwtAuthGuard)
+//@Roles(RoleEnum.ADMIN)
 @ApiTags('Admin Guidelines')
 @Crud({
   model: {
@@ -58,33 +49,17 @@ export class GuidelinesController implements CrudController<Guideline> {
 
 
   @Override('createOneBase')
-  @Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
-  async createOne(@Body() body : CreateGuidelineDto , @Request() req){
-    return this.service.createOneGuideline(body,req.user)
+  @ApiOperation({ summary: 'Create or Update Admin Guidelines' })
+  @UseGuards(JwtAuthGuard, AdminRolesGuard)
+  //@Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
+  async createOne(@Body() createGuidelineDto : CreateGuidelineDto, @Request() req){
+    return this.service.createOneGuideline(createGuidelineDto, req.user.sub)
   }
 
 
-
-  // @Override()
-  // createOne(@ParsedBody() dto: selectFields) {
-  //   return this.service.saveOne(dto);
-  // }
-
-  // @Override('updateOneBase')
-  // coolFunction(
-  //   @ParsedRequest() req: CrudRequest,
-  //   @ParsedBody() dto: Guideline,
-  // ) {
-  //   const result = this.base.updateOneBase(req, dto);
-  //   const logData = new GuidelineLog();
-  //   logData.guideline_type = dto.type;
-  //   logData.userId = dto.last_updated_user;
-  //   this.guidelineLogsService.saveOne(logData);
-  //   return result;
-  // }
-
   @Get('/:type')
   @ApiOperation({ summary: 'Get Terms and Conditions by Type' })
+ // @Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN, RoleEnum.USER)
   getTermsByType(@Param('type') type: string) {
     return this.service.getTermsByType(type);
   }
