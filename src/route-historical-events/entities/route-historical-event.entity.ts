@@ -8,11 +8,13 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { Route } from '../../route/entities/route.entity';
 import { AppPoint } from '../../common/lat-lng.embedded';
 import { Geometry } from 'geojson';
 import { FileEntity } from '../../files/file.entity';
+import { RouteHistoricalEventMedias } from './route-historical-event-medias.entity';
 
 @Entity('gw_route_historical_events')
 export class RouteHistoricalEvent extends AbstractBaseEntity {
@@ -68,13 +70,11 @@ export class RouteHistoricalEvent extends AbstractBaseEntity {
 
   @Allow()
   @ApiProperty({ nullable: true, type: () => FileEntity })
-  @ManyToOne(() => FileEntity, { nullable: true, cascade: false, eager: true })
-  @JoinColumn({ name: 'picture_id' })
-  image: FileEntity;
+  @Column({nullable:true})
+  image: string;
 
-  @Allow()
-  @ApiProperty({ nullable: true, type: [FileEntity] })
-  @ManyToMany(() => FileEntity)
-  @JoinTable({ name: 'gw_route_historical_event_medias' })
-  medias: FileEntity[];
+ 
+ @OneToMany(() => RouteHistoricalEventMedias, (medias) => medias.routeHistoricalEvent, { cascade: ['remove'] })
+  medias: RouteHistoricalEventMedias[];
+
 }
