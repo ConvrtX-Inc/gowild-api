@@ -9,6 +9,7 @@ import {FilesService} from '../files/files.service';
 import {CreateRouteDto} from "./dto/create-route.dto";
 import {RoleEnum} from "../roles/roles.enum";
 import {FileEntity} from "../files/file.entity";
+import {UserEntity} from "../users/user.entity";
 
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
@@ -88,9 +89,13 @@ export class RouteService extends TypeOrmCrudService<Route> {
   }
 
   public async getUserRoutes(){
-    const routes = await this.routeRepository.find({
-      role: RoleEnum.USER
-    })
+
+    const routes = await this.routeRepository.createQueryBuilder('route')
+        .where("route.role = role",{role: RoleEnum.USER})
+        .leftJoinAndMapMany('route.user', UserEntity, 'user', 'user.id = route.user_id')
+        .getMany()
+
+
     if(!routes){
       return{
         error : [{ message : "No routes found"}]

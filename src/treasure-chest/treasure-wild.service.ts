@@ -12,6 +12,7 @@ import { Sponsor } from 'src/sponsor/entities/sponsor.entity';
 import { UserEntity } from 'src/users/user.entity';
 import { title } from 'process';
 import { stringify } from 'querystring';
+import {NotificationService} from "../notification/notification.service";
 
 @Injectable()
 export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
@@ -19,6 +20,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     @InjectRepository(TreasureChest)
     private treasureChestRepository: Repository<TreasureChest>,
     private readonly UserTreasureHuntService: UserTreasureHuntService,
+    private readonly NotificationService: NotificationService
   ) {
     super(treasureChestRepository);
   }
@@ -48,6 +50,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     }
 
     const newRegister = await this.UserTreasureHuntService.saveOne(data);
+    await this.NotificationService.createNotification(data.user_id, 'TreasureHunt created successfully!')
     return { data: newRegister }
   }
 

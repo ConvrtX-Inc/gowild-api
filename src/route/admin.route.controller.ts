@@ -29,10 +29,15 @@ import {AdminRolesGuard} from "../roles/admin.roles.guard";
   version: '1',
 })
 export class AdminRouteController {
-  constructor(readonly service: RouteService, private readonly filesService: FilesService) {}
+  constructor(readonly service: RouteService, private readonly filesService: FilesService) {
+  }
 
-
-  @ApiResponse({ type: Route })
+  @Get('users')
+  @ApiOperation({summary: 'Get User Routes'})
+  async getUserRoutes() {
+    return await this.service.getUserRoutes();
+  }
+  @ApiResponse({type: Route})
   @Post()
   @HttpCode(HttpStatus.OK)
   public async create(
@@ -43,7 +48,7 @@ export class AdminRouteController {
   }
 
 
-  @ApiResponse({ type: Route })
+  @ApiResponse({type: Route})
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -60,26 +65,23 @@ export class AdminRouteController {
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(FileInterceptor('file'))
   public async updatePicture(
-    @Param('id') id: string,
-    @UploadedFile() file: Express.Multer.File,
+      @Param('id') id: string,
+      @UploadedFile() file: Express.Multer.File,
   ) {
     const fileId = await this.filesService.uploadFile(file);
     return this.service.updatePicture(id, fileId);
   }
 
   @Get()
-  @ApiOperation({ summary : 'Get Routes'})
-  async getAdminRoutes(){
+  @ApiOperation({summary: 'Get Routes'})
+  async getAdminRoutes() {
     return await this.service.getAdminRoutes();
   }
+
   @Get(':id')
-  @ApiOperation({ summary : 'Get Single Route'})
-  async findOneRoute(@Param('id') id: string,){
-    return await this.service.findOneEntity({ where: {id:id}});
+  @ApiOperation({summary: 'Get Single Route'})
+  async findOneRoute(@Param('id') id: string,) {
+    return await this.service.findOneEntity({where: {id: id}});
   }
-  @Get('users')
-  @ApiOperation({ summary : 'Get User Routes'})
-  async getUserRoutes(){
-    return await this.service.getUserRoutes();
-  }
+
 }
