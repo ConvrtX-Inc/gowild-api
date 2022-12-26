@@ -71,13 +71,11 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     Find Many Register Users
     */
   async getManyUserTreasureHunt() {
-    const all = await UserTreasureHuntEntity.find({});
-    console.log(all)
+    const all = await UserTreasureHuntEntity.find({});    
     return { data: all }
   }
 
   async getTreasureWild(pageNo: number, id: string) {
-    console.log('getTreasureWild');
     const take = 10
     const page = pageNo || 1;
     const skip = (page - 1) * take;
@@ -126,8 +124,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
   /*
    Verify OTP code for User Treasure Hunt 
    */
-  async verifyHunt(dto, user) {
-    console.log(user.sub)
+  async verifyHunt(dto, user) {  
     const hunt = await this.UserTreasureHuntService.findOne({
       where: {
         treasure_chest_id: dto.treasure_chest_id,
