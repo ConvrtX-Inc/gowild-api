@@ -42,6 +42,21 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     Register User for Treaure Hunt 
     */
   async registerTreasureHunt(dto: RegisterTreasureHuntDto, req) {
+    const isExist = await this.UserTreasureHuntService.findOne({
+      where : {
+        user_id : req.user.sub,
+        status : UserTreasureHuntStatusEnum.PENDING || UserTreasureHuntStatusEnum.PROCESSING
+      }
+    });
+    if(isExist){
+      return {
+        "errors": [
+          {
+            message: "You're Already Register in a Hunt",             
+          }
+        ]
+      }
+    }
     const data = {
       treasure_chest_id: dto.treasure_chest_id,
       user_id: req.user.sub,
