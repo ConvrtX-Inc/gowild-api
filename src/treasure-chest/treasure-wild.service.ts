@@ -48,7 +48,14 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
         status : UserTreasureHuntStatusEnum.PENDING || UserTreasureHuntStatusEnum.PROCESSING
       }
     });
-    if(isExist){
+    const eventDate = await this.treasureChestRepository.findOne({
+      where:{
+        id: isExist.treasure_chest_id,
+        
+      }
+    })
+
+    if(isExist && eventDate.eventDate.getDate < Date.now){
       return {
         "errors": [
           {
