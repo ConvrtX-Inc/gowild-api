@@ -121,6 +121,11 @@ export class UserEntity extends AbstractBaseEntity {
 
   @ApiHideProperty()
   @Exclude()
+  @Column('jsonb',{nullable: true, default : [] })
+  removed_suggested_friends?: string[];
+
+  @ApiHideProperty()
+  @Exclude()
   @Column({
     nullable: true,
   })
@@ -134,8 +139,7 @@ export class UserEntity extends AbstractBaseEntity {
   otp: string;
 
 
-  @ApiHideProperty()
-  @Exclude()
+  @ApiProperty()
   @Column({
     nullable: true,
     name: 'phone_verified',
@@ -163,25 +167,25 @@ export class UserEntity extends AbstractBaseEntity {
     );
   }
 
-  @AfterLoad()
-  @AfterUpdate()
-  updatePicture() {
-    if (this.picture && this.picture.indexOf('/') === 0) {
-      this.picture = appConfig().backendDomain + this.picture;
-    }
-  }
-  @AfterLoad()
-  @AfterUpdate()
-  updateFrontImage() {
-    if (this.frontImage && this.frontImage.indexOf('/') === 0) {
-      this.frontImage = appConfig().backendDomain + this.frontImage;
-    }
-  }
-  @AfterLoad()
-  @AfterUpdate()
-  updateBackImage() {
-    if (this.backImage && this.backImage.indexOf('/') === 0) {
-      this.backImage = appConfig().backendDomain + this.backImage;
-    }
-  }
+  // @AfterLoad()
+  // @AfterUpdate()
+  // updatePicture() {
+  //   if (this.picture && this.picture.indexOf('/') === 0) {
+  //     this.picture = appConfig().backendDomain + this.picture;
+  //   }
+  // }
+  // @AfterLoad()
+  // @AfterUpdate()
+  // updateFrontImage() {
+  //   if (this.frontImage && this.frontImage.indexOf('/') === 0) {
+  //     this.frontImage = appConfig().backendDomain + this.frontImage;
+  //   }
+  // }
+  // @AfterLoad()
+  // @AfterUpdate()
+  // updateBackImage() {
+  //   if (this.backImage && this.backImage.indexOf('/') === 0) {
+  //     this.backImage = appConfig().backendDomain + this.backImage;
+  //   }
+  // }
 }

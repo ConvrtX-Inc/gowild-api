@@ -61,11 +61,11 @@ export class PostFeed extends AbstractBaseEntity {
   })
   share?: number;
 
-  @AfterLoad()
-  @AfterUpdate()
-  updatePicture() {
-    if (this.picture && this.picture.indexOf('/') === 0) {
-      this.picture = appConfig().backendDomain + this.picture;
-    }
-}
+//   @AfterLoad()
+//   @AfterUpdate()
+//   updatePicture() {
+//     if (this.picture && this.picture.indexOf('/') === 0) {
+//       this.picture = appConfig().backendDomain + this.picture;
+//     }
+// }
 }

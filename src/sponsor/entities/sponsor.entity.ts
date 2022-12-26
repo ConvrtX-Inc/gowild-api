@@ -44,13 +44,13 @@ export class Sponsor extends AbstractBaseEntity {
   link: string | null;
 
 
-  @AfterLoad()
-  @AfterUpdate()
-  updatePicture() {
-    if (this.img && this.img.indexOf('/') === 0) {
-      this.img = appConfig().backendDomain + this.img;
-    }
-  }
+  // @AfterLoad()
+  // @AfterUpdate()
+  // updatePicture() {
+  //   if (this.img && this.img.indexOf('/') === 0) {
+  //     this.img = appConfig().backendDomain + this.img;
+  //   }
+  // }
   // @BeforeUpdate()
   // @BeforeInsert()
   // public encodeImage() {

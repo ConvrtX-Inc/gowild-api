@@ -14,7 +14,7 @@ import { ConfigService } from '@nestjs/config';
 import { Sponsor } from 'src/sponsor/entities/sponsor.entity';
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard,AdminRolesGuard)
+@UseGuards(JwtAuthGuard)
 @ApiTags('Admin Treasure Chest')
 @Crud({
   model: {
