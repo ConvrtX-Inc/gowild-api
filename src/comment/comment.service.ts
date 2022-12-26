@@ -46,8 +46,7 @@ export class CommentService extends TypeOrmCrudService<Comment> {
     .where("comments.postfeed_id = :id", { id: id })
     .innerJoinAndSelect('comments.user_id', 'comment')
     .orderBy('comments.createdDate', 'ASC')
-    .getMany()
-    console.log(comments);
+    .getMany()    
 
     return { data : comments};
   }

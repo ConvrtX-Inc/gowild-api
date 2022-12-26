@@ -42,8 +42,7 @@ export class LikeService extends TypeOrmCrudService<Like> {
       }
     });
     if (isExist) {
-      const unlike = await this.likeRepository.delete(isExist.id)
-      console.log(unlike);
+      const unlike = await this.likeRepository.delete(isExist.id)      
       
       const likes = await this.likeRepository.count({
         where: { postfeed_id: dto.postfeed_id }
