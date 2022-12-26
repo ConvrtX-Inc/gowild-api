@@ -69,7 +69,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
 
     const data = await this.treasureChestRepository.createQueryBuilder('treasureChest')
 
-      .leftJoinAndMapMany("treasureChest.treasureHunts", UserTreasureHuntEntity, 'treasureHunts', 'treasureChest.id = treasure_chest_id AND user_id != :user ', { user: id })
+      .leftJoinAndMapMany("treasureChest.treasureHunts", UserTreasureHuntEntity, 'treasureHunts', 'treasureChest.id = treasure_chest_id')
       .leftJoinAndMapMany('treasureChest.sponsors', Sponsor, 'sponsors', 'treasureChest.id = treasure_chest')
       .leftJoinAndMapOne('treasureHunts.user', UserEntity, 'user', 'treasureHunts.user_id = user.id')
       .skip(skip).take(take)
@@ -84,20 +84,26 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     const parrentArray = []
     const customArray = [];
 
-    data[0].map(chest => {
-      const userHunt = crrUser[0];
-      console.log(userHunt[0]['treasureHunts'][0])
-      if (userHunt[0].id == chest.id) {
-        chest['current_user_hunt'] = userHunt['treasureHunts'];
+    data[0].map((chest, index) => {
+      const userHunt = crrUser[0];     
+      if (userHunt[index]['treasureHunts'][0]) {
+        var userHuntid = userHunt[index]['treasureHunts'][0];       
+        if (userHuntid.treasure_chest_id == chest.id) {
+          console.log('If condition is true');
+          chest['current_user_hunt'] = userHunt[index]['treasureHunts'][0];
+          customArray.push(chest);
+        } else {
+          chest['current_user_hunt'] = null;
+          customArray.push(chest);
+        }
+      } else {
+        chest['current_user_hunt'] = null;
+        customArray.push(chest);
       }
-      customArray.push(chest);
 
     })
     parrentArray.push(customArray);
     parrentArray.push(data[1]);
-
-
-
     return this.paginateResponse(parrentArray, page, take)
   }
 
