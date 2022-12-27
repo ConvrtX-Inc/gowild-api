@@ -11,6 +11,7 @@ import { CreatePostFeedDto } from "./dto/create-post-feed.dto";
 import { View } from 'typeorm/schema-builder/view/View';
 import {FileEntity} from "../files/file.entity";
 import { UserEntity } from 'src/users/user.entity';
+import {response} from "express";
 
 @Injectable()
 export class PostFeedService extends TypeOrmCrudService<PostFeed> {
@@ -19,6 +20,8 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
     private postFeedRepository: Repository<PostFeed>,
     @InjectRepository(Friends)
     private friendsRepository: Repository<Friends>,
+    @InjectRepository(Like)
+    private likeRepository: Repository<Like>
   ) {
     super(postFeedRepository);
   }
@@ -93,9 +96,26 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
     const comments = await Comment.count({
       postfeed_id:id
     })
+
+       let like_images = [];
+       const likesPicture = await this.likeRepository.createQueryBuilder('like')
+           .leftJoinAndMapOne('like.user', UserEntity, 'user', 'user.id = like.user_id')
+           .orderBy('RANDOM()')
+           .limit(3)
+           .where("like.postfeed_id = :id",{id})
+           .getMany()
+
+       likesPicture.forEach((obj,index)=>{
+           if(obj['user'].picture != null) {
+               like_images.push(obj['user'].picture)
+           }
+       })
+
     post['likes'] = likes;
     post['comments'] = comments;
+    post['likes_images'] = like_images;
     if(!post){
+
       return{
         "errors" : [
           {
@@ -105,7 +125,8 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
         ]
       }
     }
-    return { data : post };
+
+    return { data : post};
    }
 
    /*

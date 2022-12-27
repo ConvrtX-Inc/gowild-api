@@ -13,11 +13,13 @@ import * as AWS from "aws-sdk";
 import * as multerS3 from 'multer-s3';
 import path from "path";
 import {FilesModule} from "../files/files.module";
+import {Like} from "../like/entities/like.entity";
+import {LikeService} from "../like/like.service";
 
 @Module({
   controllers: [PostFeedController],
-  providers: [PostFeedService, FriendsService, ],
-  imports: [TypeOrmModule.forFeature([PostFeed, Friends]), FilesModule
+  providers: [PostFeedService, FriendsService, LikeService],
+  imports: [TypeOrmModule.forFeature([PostFeed, Friends, Like]), FilesModule
     ,MulterModule.registerAsync({
     imports: [ConfigModule],
     inject: [ConfigService],
