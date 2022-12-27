@@ -13,6 +13,7 @@ import { UserEntity } from 'src/users/user.entity';
 import { title } from 'process';
 import { stringify } from 'querystring';
 import { type } from 'os';
+import {NotificationService} from "../notification/notification.service";
 
 @Injectable()
 export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
@@ -20,6 +21,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     @InjectRepository(TreasureChest)
     private treasureChestRepository: Repository<TreasureChest>,
     private readonly UserTreasureHuntService: UserTreasureHuntService,
+    private readonly NotificationService: NotificationService
   ) {
     super(treasureChestRepository);
   }
@@ -59,7 +61,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
       return {
         "errors": [
           {
-            message: "You're Already Register in a Hunt",             
+            message: "You're Already Register in a Hunt",
           }
         ]
       }
@@ -71,6 +73,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     }
 
     const newRegister = await this.UserTreasureHuntService.saveOne(data);
+    await this.NotificationService.createNotification(data.user_id, 'TreasureHunt created successfully!')
     return { data: newRegister }
   }
 
@@ -78,7 +81,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     Find Many Register Users
     */
   async getManyUserTreasureHunt() {
-    const all = await UserTreasureHuntEntity.find({});    
+    const all = await UserTreasureHuntEntity.find({});
     return { data: all }
   }
 
@@ -105,9 +108,9 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     const customArray = [];
 
     data[0].map((chest, index) => {
-      const userHunt = crrUser[0];     
+      const userHunt = crrUser[0];
       if (userHunt[index]['treasureHunts'][0]) {
-        var userHuntid = userHunt[index]['treasureHunts'][0];       
+        var userHuntid = userHunt[index]['treasureHunts'][0];
         if (userHuntid.treasure_chest_id == chest.id) {
           console.log('If condition is true');
           chest['current_user_hunt'] = userHunt[index]['treasureHunts'][0];
@@ -131,7 +134,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
   /*
    Verify OTP code for User Treasure Hunt 
    */
-  async verifyHunt(dto, user) {  
+  async verifyHunt(dto, user) {
     const hunt = await this.UserTreasureHuntService.findOne({
       where: {
         treasure_chest_id: dto.treasure_chest_id,

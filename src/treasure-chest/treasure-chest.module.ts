@@ -14,12 +14,14 @@ import {FilesModule} from "../files/files.module";
 import {TreasureWildController} from "../treasure-chest/treasure-wild.controller"
 import { TreasureWildService } from './treasure-wild.service';
 import { UserTreasureHuntModule } from 'src/user-treasure-hunt/user-treasure-hunt.module';
+import {NotificationService} from "../notification/notification.service";
+import {Notification} from "../notification/notification.entity";
 
 
 @Module({
   controllers: [TreasureChestController,TreasureWildController],
-  providers: [TreasureChestService,TreasureWildService],
-  imports: [UserTreasureHuntModule,TypeOrmModule.forFeature([TreasureChest]),FilesModule, MulterModule.registerAsync({
+  providers: [TreasureChestService,TreasureWildService, NotificationService],
+  imports: [UserTreasureHuntModule,TypeOrmModule.forFeature([TreasureChest,Notification]),FilesModule, MulterModule.registerAsync({
     imports: [ConfigModule],
     inject: [ConfigService],
     useFactory: (configService: ConfigService) => {
