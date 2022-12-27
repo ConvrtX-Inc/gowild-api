@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Body, HttpCode, Injectable, NotFoundException, Post, Request } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
@@ -13,7 +13,7 @@ import { UserEntity } from 'src/users/user.entity';
 import { title } from 'process';
 import { stringify } from 'querystring';
 import { type } from 'os';
-import {NotificationService} from "../notification/notification.service";
+import { NotificationService } from "../notification/notification.service";
 
 @Injectable()
 export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
@@ -45,12 +45,21 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     */
   async registerTreasureHunt(dto: RegisterTreasureHuntDto, req) {
     const isExist = await this.UserTreasureHuntService.findOne({
-      where : {
-        user_id : req.user.sub,
-        status : UserTreasureHuntStatusEnum.PENDING || UserTreasureHuntStatusEnum.PROCESSING
+      where: {
+        user_id: req.user.sub,
+        status: UserTreasureHuntStatusEnum.PENDING || UserTreasureHuntStatusEnum.PROCESSING
       }
     });
-    if(isExist){
+    if (isExist) {
+      var eventDate = await this.treasureChestRepository.findOne({
+        where: {
+          id: isExist.treasure_chest_id,
+
+        }
+      });
+    }
+
+    if (isExist && eventDate.eventDate.getDate < Date.now) {
       return {
         "errors": [
           {
@@ -144,7 +153,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
         return {
           "errors": [
             {
-              message: "Verification Failed",             
+              message: "Verification Failed",
             }
           ]
         }
@@ -153,10 +162,35 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
       return {
         "errors": [
           {
-            message: "No User Treasure Hunt Found",            
+            message: "No User Treasure Hunt Found",
           }
         ]
       }
     }
+  }
+
+  /*
+   * Resent Treasure Hunt OTP 
+   */
+  async resendCode(dto: RegisterTreasureHuntDto, id: string) {
+    const hunt = await this.UserTreasureHuntService.findOne({
+      where: {
+        treasure_chest_id: dto.treasure_chest_id,
+        user_id: id,
+        status : UserTreasureHuntStatusEnum.PROCESSING
+      }
+    })
+    if (!hunt) {
+      return {
+        "errors": [
+          {
+            message: "No User Treasure Hunt Found",
+          }
+        ]
+      }
+    }
+    hunt.code = '000000';
+    await hunt.save();
+    return { message : "A fresh registereation number has been sent to your registered mobile number"}
   }
 }

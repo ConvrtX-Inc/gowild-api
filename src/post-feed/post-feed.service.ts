@@ -25,7 +25,14 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
 
   async create(userId: string, createPostFeedDto: CreatePostFeedDto) {
       const feedData = await this.postFeedRepository.create({ user_id: userId, views: 0, ...createPostFeedDto });
-      await this.postFeedRepository.save(feedData)
+      await this.postFeedRepository.save(feedData);
+
+      const user = await UserEntity.findOne(
+        {
+          where:{id:userId}
+        }
+      )
+
       if(!feedData){
           return{
               "errors" : [
@@ -36,6 +43,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
               ]
           }
       }
+      feedData['user'] = user;
       return { message : "Post-Feed created successfully!", data: feedData };
   }
 
@@ -44,6 +52,11 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
             where: { id: id },
         });
 
+        const user = await UserEntity.findOne(
+          {
+            where:{id: postFeed.user_id}
+          }
+        )
 
         if (!postFeed) {
             throw new NotFoundException({
@@ -55,6 +68,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
             });
         }
 
+        postFeed['user'] = user;
         postFeed.picture = picture;    
         return{ message: "Post-Feed created successfully!", data: await postFeed.save()} ;
     }

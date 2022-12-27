@@ -18,7 +18,6 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
     addNotification.user_id = UserId;
     addNotification.notification_msg = message;
     addNotification = await this.saveEntity(addNotification);
-
     return{
       data: addNotification
     }
