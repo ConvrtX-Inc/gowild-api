@@ -17,9 +17,7 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
     let addNotification = new Notification();
     addNotification.user_id = UserId;
     addNotification.notification_msg = message;
-    addNotification = await this.saveEntity(addNotification);
-
-    console.log(addNotification)
+    addNotification = await this.saveEntity(addNotification);  
     return{
       data: addNotification
     }
