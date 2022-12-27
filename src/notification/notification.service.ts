@@ -19,10 +19,13 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
     addNotification.notification_msg = message;
     addNotification = await this.saveEntity(addNotification);
 
-    console.log(addNotification)
     return{
       data: addNotification
     }
+  }
+  public async getNotification(UserId: string){
+    const getNotifications = await this.destinationsRepository.find({ where:{ user_id: UserId } })
+    return getNotifications
   }
 
   async saveEntity(data: DeepPartial<Notification>) {

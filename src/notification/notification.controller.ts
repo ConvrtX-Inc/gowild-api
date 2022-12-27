@@ -1,6 +1,6 @@
-import {Controller, UseGuards} from '@nestjs/common';
+import {Controller, Get, Param, Post, UseGuards} from '@nestjs/common';
 import { NotificationService } from './notification.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {ApiBearerAuth, ApiOperation, ApiTags} from '@nestjs/swagger';
 import {Crud, CrudController} from '@nestjsx/crud';
 import { Notification } from './notification.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
