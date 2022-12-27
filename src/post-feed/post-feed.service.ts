@@ -139,6 +139,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
     // });
     const allPosts = await this.postFeedRepository.createQueryBuilder('postFeed')
     .leftJoinAndMapOne('postFeed.user', UserEntity, 'user', 'postFeed.user_id = user.id')
+    .orderBy( 'postFeed.createdDate','DESC' )
     .getMany();
     
     let data = [];
