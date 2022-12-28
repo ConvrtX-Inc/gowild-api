@@ -6,12 +6,8 @@ import { Repository } from 'typeorm';
 import { PostFeed } from './entities/post-feed.entity';
 import { Comment } from 'src/comment/entities/comment.entity';
 import { Like } from 'src/like/entities/like.entity';
-import { Share } from 'src/share/entities/share.entity';
 import { CreatePostFeedDto } from "./dto/create-post-feed.dto";
-import { View } from 'typeorm/schema-builder/view/View';
-import {FileEntity} from "../files/file.entity";
 import { UserEntity } from 'src/users/user.entity';
-import {response} from "express";
 
 @Injectable()
 export class PostFeedService extends TypeOrmCrudService<PostFeed> {
@@ -150,8 +146,24 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
       const comments = await Comment.count({
         postfeed_id: allPosts[i].id
       })
+        let like_images = [];
+        const likesPicture = await this.likeRepository.createQueryBuilder('like')
+            .where("like.postfeed_id = :id", {id: allPosts[i].id})
+            .leftJoinAndMapOne('like.user', UserEntity, 'user', 'user.id = like.user_id')
+            .orderBy('like.createdDate','DESC')
+            .limit(3)
+            .getMany()
+
+        likesPicture.forEach((obj,index)=>{
+            if(obj['user'].picture != null) {
+                like_images.push(obj['user'].picture)
+            }else{
+                like_images = [""];
+            }
+        })
       allPosts[i]['likes'] = likes;
       allPosts[i]['comments'] = comments;
+      allPosts[i]['likes_images'] = like_images;
       data.push(allPosts[i]);
     }
     if(!data){
