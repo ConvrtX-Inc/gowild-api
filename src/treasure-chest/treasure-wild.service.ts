@@ -92,8 +92,11 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     const page = pageNo || 1;
     const skip = (page - 1) * take;
 
-    const data = await this.treasureChestRepository.createQueryBuilder('treasureChest')
-
+    let currentDate = new Date();
+    currentDate.setUTCHours(0,0,0,0);
+    
+    const data = await this.treasureChestRepository.createQueryBuilder('treasureChest')      
+      .where('treasureChest.eventDate >= :currentDate', {currentDate: currentDate})
       .leftJoinAndMapMany("treasureChest.treasureHunts", UserTreasureHuntEntity, 'treasureHunts', 'treasureChest.id = treasure_chest_id')
       .leftJoinAndMapMany('treasureChest.sponsors', Sponsor, 'sponsors', 'treasureChest.id = treasure_chest')
       .leftJoinAndMapOne('treasureHunts.user', UserEntity, 'user', 'treasureHunts.user_id = user.id')
