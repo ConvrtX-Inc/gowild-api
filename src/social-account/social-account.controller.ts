@@ -28,7 +28,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   },
 })
 @Controller({
-  path: 'notifications',
+  path: 'social-account',
   version: '1',
 })
 export class SocialAccountController implements CrudController<SocialAccount> {
