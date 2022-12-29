@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, NotFoundException} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Notification } from './notification.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -25,7 +25,18 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
   // get notification by user id
   public async getNotificationByUserId(id: string) {
 
-    const getNotifications = await this.destinationsRepository.find({ where:{ user_id: id } })
+    const getNotifications = await this.destinationsRepository.find({ where:{ user_id: id } });
+
+    if (!getNotifications) {
+      throw new NotFoundException({
+        errors: [
+          {
+            user: 'User does not exist',
+          },
+        ],
+      });
+    }
+    await this.destinationsRepository.update({user_id: id},{is_seen: true})
 
     return{
       data: getNotifications

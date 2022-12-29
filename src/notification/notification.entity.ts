@@ -15,6 +15,11 @@ export class Notification extends AbstractBaseEntity {
   user_id?: string | null;
 
   @IsOptional()
+  @ApiProperty({ example: 'true/false ' })
+  @Column({nullable: true, default: false})
+  is_seen?: boolean;
+
+  @IsOptional()
   @ApiProperty({ example: 'notification_msg' })
   @Column({ length: 100, nullable: true })
   notification_msg?: string;
