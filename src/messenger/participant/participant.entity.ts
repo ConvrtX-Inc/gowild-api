@@ -1,8 +1,9 @@
-import { Column, Entity } from 'typeorm';
+import {Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, Validate } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { IsExist } from 'src/common/validators/is-exists.validator';
+import {Room} from "../room/room.entity";
 
 @Entity('gw_participants')
 export class Participant extends AbstractBaseEntity {
@@ -19,6 +20,11 @@ export class Participant extends AbstractBaseEntity {
   @Validate(IsExist, ['Room', 'id'], {
     message: 'Room not Found',
   })
-  @Column({ nullable: true })
-  room_id?: string | null;
+  // @Column({ nullable: true })
+  // room_id?: string | null;
+
+  @ApiProperty({ nullable: true })
+  @ManyToOne(() => Room, (room) => room.participant)
+  @JoinColumn({ name: "room_id" })
+  room: Room
 }

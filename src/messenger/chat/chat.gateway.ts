@@ -14,7 +14,7 @@ import { ClientSocketInfo } from './clientSocketInfo';
 import { RoomInfo } from './roomInfo';
 import { MessageDetail, MessageStatus } from '../message/messageDetail';
 
-@WebSocketGateway({cors: true})
+@WebSocketGateway({ namespace:'/chat',  cors: true})
 export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -45,7 +45,7 @@ export class ChatGateway
   @SubscribeMessage('connect_users')
   public async conect(client: Socket, payload: any): Promise<void> {
     await this._roomService.insertRoom(payload.sender_id, payload.receiver_id);
-    this.logger.log(`ConnectConversation` + this._roomService.newRoomID);
+    this.logger.log(`Connect Conversation ` + this._roomService.newRoomID);
     this.addClient(client, payload.sender_id, this._roomService.newRoomID);
     this.joinRoom(client, this._roomService.newRoomID);
   }
@@ -88,7 +88,7 @@ export class ChatGateway
     let objRoom = this.lstRooms.find((o) => o.RoomID === room);
     if (objRoom === undefined) {
       var rm = new RoomInfo(room);
-      rm.UserMessages = '';
+      rm.UserMessages = [];
       this.lstRooms.push(rm);
     }
   }
@@ -115,13 +115,12 @@ export class ChatGateway
     this.logger.log('saveMessage:' + roomID);
     let objRoom = this.lstRooms.find((o) => o.RoomID === roomID);
     if (objRoom != undefined) {
-      //this.logger.log('saveMessage:'+objRoom.UserMessages);
-      if (objRoom.UserMessages != '') {
+      if (objRoom.UserMessages.length> 0) {
         await this._roomService.saveMessagesofRoom(
           roomID,
           objRoom.UserMessages,
         );
-        objRoom.UserMessages = '';
+        objRoom.UserMessages = [];
       }
     }
   }
@@ -129,20 +128,13 @@ export class ChatGateway
   addMessage(UserMessage: MessageDetail, clientRoom: string) {
     let objRoom = this.lstRooms.find((o) => o.RoomID === clientRoom);
     if (objRoom === undefined) {
-      let myJSON = JSON.stringify(UserMessage);
-      let msg = myJSON + ',\r\n';
       var rm = new RoomInfo(clientRoom);
-      rm.UserMessages = msg;
+      rm.UserMessages.push(UserMessage);
       this.lstRooms.push(rm);
+      this.saveMessage(clientRoom);
     } else {
-      this.logger.log('addMessage:' + objRoom.UserMessages);
-      let myJSON = JSON.stringify(UserMessage);
-      objRoom.UserMessages = objRoom.UserMessages + myJSON + ',\r\n';
-
-      this.logger.log('addMessage:' + objRoom.UserMessages.length);
-      if (objRoom.UserMessages.length > 500) {
-        this.saveMessage(clientRoom);
-      }
+      objRoom.UserMessages.push(UserMessage);
+      this.saveMessage(clientRoom);
     }
   }
 }

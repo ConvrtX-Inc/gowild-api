@@ -12,6 +12,7 @@ import { MessageService } from '../message/message.service';
 import { Message } from '../message/message.entity';
 
 import { classToPlain } from 'class-transformer';
+import {MessageInterface} from "../message/messageDetail";
 
 @Injectable()
 export class RoomService extends TypeOrmCrudService<Room> {
@@ -60,12 +61,12 @@ export class RoomService extends TypeOrmCrudService<Room> {
     var roomid: any;
     query.select('room.*');
     query.innerJoin(
-      'participant',
+      'room.participant',
       'p',
       "p.room_id::text = room.id::text AND p.user_id = '" + user_id + "'",
     );
     query.innerJoin(
-      'participant',
+      'room.participant',
       'p2',
       "p2.room_id::text = room.id::text AND p2.room_id::text = p.room_id::text AND p2.user_id = '" +
         recipient_id +
@@ -84,39 +85,30 @@ export class RoomService extends TypeOrmCrudService<Room> {
 
       let data1 = new Participant();
       data1.user_id = user_id;
-      data1.room_id = this.newRoomID;
+      data1.room = this.newRoomID;
       await data1.save();
 
       let data2 = new Participant();
       data2.user_id = recipient_id;
-      data2.room_id = this.newRoomID;
+      data2.room = this.newRoomID;
       await data2.save();
     }
   }
 
-  public async saveMessagesofRoom(room_id: string, msg: string) {
+  public async saveMessagesofRoom(room_id: string, messages: MessageInterface[]) {
     let participantData = [];
+    const room = await this.findOneEntity({where: {id: room_id}});
     participantData = await this.participantService.find({
-      where: { room_id: room_id },
+      where: { room: room },
     });
-    for (let i = 0; i < participantData.length; i++) {
-      let msgData = [];
-      msgData = await this.messageService.find({
-        where: { room_id: room_id, user_id: participantData[i].user_id },
-      });
-      if (msgData.length == 0) {
-        let userMessage = new Message();
-        userMessage.room_id = room_id;
-        userMessage.user_id = participantData[i].user_id;
-        userMessage.message = msg;
-        await userMessage.save();
-      } else {
-        msgData[0].message = msgData[0].message + msg;
-        await this.messageService.updateMessage(
-          msgData[0].id,
-          msgData[0].message,
-        );
-      }
+    console.log(messages);
+    for (const msg of messages) {
+      await this.messageService.saveOne({
+        room_id: room_id,
+        user_id: msg.userid,
+        message: msg.text,
+        attachment: msg.attachment
+      })
     }
   }
 }

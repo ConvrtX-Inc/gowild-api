@@ -26,4 +26,9 @@ export class Message extends AbstractBaseEntity {
   @ApiProperty({ example: 'Hey' })
   @Column({ type: 'text' })
   message?: string;
+
+  @IsOptional()
+  @ApiProperty({ example: 'url' })
+  @Column({ type: 'text', nullable:true })
+  attachment?: string;
 }
