@@ -156,8 +156,8 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
       requested.is_accepted = true;
       const childFriend = await this.friendsRepository.findOne({
         where: { parent_id: requested.id }
-      });
-      console.log(childFriend)
+      });   
+        
       childFriend.is_accepted = true;
       await childFriend.save();
       const accepted = await requested.save();
@@ -198,8 +198,7 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
       ]
 
     });
-    console.log(query);
-
+ 
     var friends = [];
     var retunArr = [];
 
@@ -232,18 +231,14 @@ export class FriendsService extends TypeOrmCrudService<Friends> {
     const childFriend = await this.friendsRepository.findOne({
       where: { parent_id: id },
     });
-    console.log(childFriend);
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@');
     if (childFriend) {
       await this.friendsRepository.delete(childFriend.id);
     } else {
       const parentFriend = await this.friendsRepository.findOne({
         where: { id: id }
-      });
-      console.log(parentFriend);
+      });   
       if(parentFriend){
-         await this.friendsRepository.delete(parentFriend.parent_id);
-        console.log("parentFriend DELETED")
+         await this.friendsRepository.delete(parentFriend.parent_id);        
       }
     }  
     const deletedfriend = await this.friendsRepository.delete(id)      

@@ -1,4 +1,4 @@
-import { Controller, HttpCode, HttpStatus, Param, Post, UseGuards, Body, Request, Get, Query  } from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Param, Post, UseGuards, Body, Request, Get, Query } from '@nestjs/common';
 import { TreasureChestService } from './treasure-chest.service';
 import { Crud, CrudController, Override } from '@nestjsx/crud';
 import { TreasureChest } from './entities/treasure-chest.entity';
@@ -57,21 +57,28 @@ export class TreasureWildController implements CrudController<TreasureChest> {
 
     @Post('register')
     @HttpCode(HttpStatus.OK)
-    async registerTreasureHunt(@Body() dto : RegisterTreasureHuntDto, @Request() request ) {
-        return this.service.registerTreasureHunt(dto , request)
+    async registerTreasureHunt(@Body() dto: RegisterTreasureHuntDto, @Request() request) {
+        return this.service.registerTreasureHunt(dto, request)
     }
 
 
-@ApiResponse({ type: TreasureChest })
-@Get('listings')
-@ApiOperation({ summary: "Get All listings" })
-@HttpCode(HttpStatus.OK)
-async getAllListings(@Query() query, @Request() req){
-  return this.service.getTreasureWild( query.page,req.user.sub)
-}
+    @ApiResponse({ type: TreasureChest })
+    @Get('listings')
+    @ApiOperation({ summary: "Get All listings" })
+    @HttpCode(HttpStatus.OK)
+    async getAllListings(@Query() query, @Request() req) {
+        return this.service.getTreasureWild(query.page, req.user.sub)
+    }
     @Post('verify')
     @HttpCode(HttpStatus.OK)
-    async veriifyHunt(@Body() dto: verifyHuntDto, @Request() req){
-        return this.service.verifyHunt(dto,req.user);
+    async veriifyHunt(@Body() dto: verifyHuntDto, @Request() req) {
+        return this.service.verifyHunt(dto, req.user);
+    }
+
+
+    @Post('resend-code')
+    @HttpCode(HttpStatus.OK)
+    async resendCode(@Body() dto:RegisterTreasureHuntDto , @Request() req) {
+        return this.service.resendCode(dto, req.user.sub);
     }
 }

@@ -4,18 +4,20 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RouteHistoricalEvent } from './entities/route-historical-event.entity';
 import { FilesService } from '../files/files.service';
+import { RouteHistoricalEventMedias } from './entities/route-historical-event-medias.entity';
+import { RouteHistoricalEventMediasService } from './route-historical-events-medias.service';
 
 @Injectable()
 export class RouteHistoricalEventsService extends TypeOrmCrudService<RouteHistoricalEvent> {
   constructor(
     @InjectRepository(RouteHistoricalEvent)
     private readonly routeHistoricalEventRepository: Repository<RouteHistoricalEvent>,
-    private readonly filesService: FilesService,
+    private readonly mediaService: RouteHistoricalEventMediasService,
   ) {
     super(routeHistoricalEventRepository);
   }
 
-  public async updatePicture(id: string, fileId: string) {
+  public async updatePicture(id: string, image: string) {
     const route = await this.routeHistoricalEventRepository.findOne(id);
 
     if (!route) {
@@ -28,25 +30,22 @@ export class RouteHistoricalEventsService extends TypeOrmCrudService<RouteHistor
       });
     }
 
-    route.image = await this.filesService.fileById(fileId);
-    return await route.save();
+    route.image = image;
+    return{ message: "Picture Updated Successfully!", data: await route.save()};
   }
 
-  public async updateMedias(id: string, fileIds: string[]) {
-    const routeClue = await this.routeHistoricalEventRepository.findOne(id);
+  public async updateMedias(id: string, picture: string) {
+    const event = await this.routeHistoricalEventRepository.findOne(id);
 
-    if (!routeClue) {
+    if (!event) {
       throw new NotFoundException({
         errors: [
           {
-            user: 'routeClue do not exist',
+            user: 'event do not exist',
           },
         ],
       });
     }
-
-    const values = fileIds.map((fileId) => this.filesService.fileById(fileId));
-    routeClue.medias = await Promise.all(values);
-    return await routeClue.save();
+    return await this.mediaService.updatePicture(event, picture);
   }
 }

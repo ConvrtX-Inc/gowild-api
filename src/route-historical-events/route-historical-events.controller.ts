@@ -3,17 +3,22 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
-  Param,
-  Post,
-  UseGuards,
+  Param, Request,
+  Post,UploadedFiles, UploadedFile,
+  UseGuards, UseInterceptors
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { RouteHistoricalEvent } from './entities/route-historical-event.entity';
 import { RouteHistoricalEventsService } from './route-historical-events.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ImageUpdateDto } from '../users/dtos/image-update.dto';
 import {AdminRolesGuard} from "../roles/admin.roles.guard";
+import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { ConfigService } from '@nestjs/config';
+import { Roles } from 'src/roles/roles.decorator';
+import { RoleEnum } from 'src/roles/roles.enum';
+import { RouteHistoricalEventMedias } from './entities/route-historical-event-medias.entity';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, AdminRolesGuard)
@@ -44,34 +49,69 @@ import {AdminRolesGuard} from "../roles/admin.roles.guard";
 export class RouteHistoricalEventsController
   implements CrudController<RouteHistoricalEvent>
 {
-  constructor(readonly service: RouteHistoricalEventsService) {}
+  constructor(readonly service: RouteHistoricalEventsService, private readonly configService: ConfigService) {}
 
   get base(): CrudController<RouteHistoricalEvent> {
     return this;
   }
 
   @ApiResponse({ type: RouteHistoricalEvent })
-  @ApiBody({ type: ImageUpdateDto })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @Post(':id/update-picture')
   @HttpCode(HttpStatus.OK)
-  public async updatePicture(
+  @UseInterceptors(FileInterceptor('file'))
+  public async updateImage(
     @Param('id') id: string,
-    @Body() dto: ImageUpdateDto,
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.service.updatePicture(id, dto.fileId);
+    const driver = this.configService.get('file.driver');
+    const picture =  {
+      local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
+      s3: file.location,
+      firebase: file.publicUrl,
+    };
+    return this.service.updatePicture(id, picture[driver] );
   }
 
-  @ApiResponse({ type: RouteHistoricalEvent })
-  @ApiBody({ type: [ImageUpdateDto] })
-  @Post(':id/medias')
+
+
+  @ApiResponse({ type: RouteHistoricalEventMedias })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @Post(':id/update-medias')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(FileInterceptor('file'))
   public async updateMedias(
     @Param('id') id: string,
-    @Body() dtos: ImageUpdateDto[],
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.service.updateMedias(
-      id,
-      dtos.map(({ fileId }) => fileId),
-    );
+    const driver = this.configService.get('file.driver');
+    const picture =  {
+      local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
+      s3: file.location,
+      firebase: file.publicUrl,
+    };
+    return this.service.updateMedias(id, picture[driver] );
   }
 }

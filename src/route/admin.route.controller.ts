@@ -31,6 +31,11 @@ import {AdminRolesGuard} from "../roles/admin.roles.guard";
 export class AdminRouteController {
   constructor(readonly service: RouteService, private readonly filesService: FilesService) {}
 
+  @Get('users')
+  @ApiOperation({ summary : 'Get User Routes'})
+  async getUserRoutes(){
+    return await this.service.getUserRoutes();
+  }
 
   @ApiResponse({ type: Route })
   @Post()
@@ -76,10 +81,5 @@ export class AdminRouteController {
   @ApiOperation({ summary : 'Get Single Route'})
   async findOneRoute(@Param('id') id: string,){
     return await this.service.findOneEntity({ where: {id:id}});
-  }
-  @Get('users')
-  @ApiOperation({ summary : 'Get User Routes'})
-  async getUserRoutes(){
-    return await this.service.getUserRoutes();
   }
 }

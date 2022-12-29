@@ -17,6 +17,7 @@ import { FileEntity } from '../files/file.entity';
 import { GenderEnum } from './gender.enum';
 import {Role} from "../roles/role.entity";
 import appConfig from "../config/app.config";
+import { time } from 'console';
 
 @Entity('gw_users')
 export class UserEntity extends AbstractBaseEntity {
@@ -32,7 +33,7 @@ export class UserEntity extends AbstractBaseEntity {
 
   @IsOptional()
   @ApiProperty({ example: '1999-12-12 11:11:11', nullable: true })
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'date', nullable: true })
   birthDate?: Date;
 
   @ApiProperty({
