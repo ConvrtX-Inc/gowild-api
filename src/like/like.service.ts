@@ -68,7 +68,7 @@ export class LikeService extends TypeOrmCrudService<Like> {
         }
       })
       post['likes'] = likes;
-      post['user_likes'] = like_images
+      post['likes_images'] = like_images
       return {
         message: "Post Un-Liked Successfully",
         data: post
@@ -100,7 +100,7 @@ export class LikeService extends TypeOrmCrudService<Like> {
       }
     })
     post['likes'] = likes;
-    post['user_likes'] = like_images
+    post['likes_images'] = like_images
 
     return {
       message: "Post Liked Successfully",
