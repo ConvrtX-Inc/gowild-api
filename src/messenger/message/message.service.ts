@@ -15,7 +15,7 @@ export class MessageService extends TypeOrmCrudService<Message> {
   constructor(
     @InjectRepository(Message)
     private roomRepository: Repository<Message>,
-    _participantService: ParticipantService,
+    private participantService: ParticipantService,
   ) {
     super(roomRepository);
   }
@@ -44,14 +44,7 @@ export class MessageService extends TypeOrmCrudService<Message> {
     await this.roomRepository.delete(id);
   }
 
-  async updateMessage(id: string, msg: string) {
-    return await this.roomRepository.update(
-      {
-        id,
-      },
-      {
-        message: msg,
-      },
-    );
+  async inbox(userId: string) {
+    return await this.participantService.userParticipants(userId);
   }
 }

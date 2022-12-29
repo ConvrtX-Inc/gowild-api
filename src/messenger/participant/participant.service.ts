@@ -6,6 +6,7 @@ import { DeepPartial } from '../../common/types/deep-partial.type';
 import { FindOptions } from '../../common/types/find-options.type';
 
 import { Participant } from './participant.entity';
+import {UserEntity} from "../../users/user.entity";
 
 @Injectable()
 export class ParticipantService extends TypeOrmCrudService<Participant> {
@@ -40,5 +41,21 @@ export class ParticipantService extends TypeOrmCrudService<Participant> {
 
   async delete(id: string): Promise<void> {
     await this.participantRepository.delete(id);
+  }
+
+  async userParticipants(userId: string) {
+    const roomIds = await this.participantRepository.createQueryBuilder('participant')
+        .select('participant.room_id as room_id')
+        .where("participant.user_id = :userId",{userId})
+        .getRawMany();
+    const roomArray = roomIds.map(function (obj) {
+      return obj.room_id;
+    });
+    return await this.participantRepository.createQueryBuilder('participant')
+        .innerJoinAndMapOne('user', UserEntity, 'user', 'user.id = participant.user_id')
+        .select(['participant.user_id as user_id','user.first_name', 'user.last_name', 'user.picture as picture'])
+        .where("participant.room_id IN(:...roomArray)", {roomArray})
+        .andWhere("participant.user_id != :userId", {userId})
+        .getRawMany();
   }
 }
