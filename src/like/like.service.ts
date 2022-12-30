@@ -98,10 +98,9 @@ export class LikeService extends TypeOrmCrudService<Like> {
 
     likesPicture.forEach((obj,index)=>{
       if(obj['user']){
-      if(obj['user'].picture != null) {
+
+        if(obj['user'].picture != null) {
         like_images.push(obj['user'].picture)
-      }else{
-        like_images.push("");
       }
     }})
     post['likes'] = likes;

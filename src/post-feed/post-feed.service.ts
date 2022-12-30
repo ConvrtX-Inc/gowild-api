@@ -167,8 +167,6 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
                        }else {
                            like_images.push("");
                        }
-                   }else{
-                       like_images.push("");
                    }
                })
                allPosts[i]['likes'] = likes;
