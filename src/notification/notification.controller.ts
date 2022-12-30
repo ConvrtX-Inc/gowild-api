@@ -1,6 +1,6 @@
 import {ApiBearerAuth, ApiOperation, ApiTags} from "@nestjs/swagger";
 import {Crud, CrudController, Override} from "@nestjsx/crud";
-import {Controller, Get, Param, UseGuards} from "@nestjs/common";
+import {Controller, Get, Param, UseGuards,Request} from "@nestjs/common";
 import {NotificationService} from "./notification.service";
 import {Notification} from "./notification.entity";
 import {JwtAuthGuard} from "../auth/jwt-auth.guard";
@@ -39,12 +39,15 @@ export class NotificationController implements CrudController<Notification> {
     return this;
   }
 
+  @Override('createOneBase')
+  public async createNotification(@Request() request){
+    return this.service.createNotification(request.user?.sub,"user created!");
+  }
 
   //@Get()
   @Override('getManyBase')
   @ApiOperation({summary: "Retrieve all Notifications"})
   async getAllNotifications(){
-
     return this.service.getAllNotifications()
   }
 
