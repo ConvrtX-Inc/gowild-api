@@ -14,20 +14,20 @@ export class MessageService extends TypeOrmCrudService<Message> {
 
   constructor(
     @InjectRepository(Message)
-    private roomRepository: Repository<Message>,
+    private messageRepository: Repository<Message>,
     private participantService: ParticipantService,
   ) {
-    super(roomRepository);
+    super(messageRepository);
   }
 
   async findOneEntity(options: FindOptions<Message>) {
-    return this.roomRepository.findOne({
+    return this.messageRepository.findOne({
       where: options.where,
     });
   }
 
   async findManyEntities(options: FindOptions<Message>) {
-    return this.roomRepository.find({
+    return this.messageRepository.find({
       where: options.where,
     });
   }
@@ -37,14 +37,20 @@ export class MessageService extends TypeOrmCrudService<Message> {
   }
 
   async saveEntity(data: DeepPartial<Message>[]) {
-    return this.roomRepository.save(this.roomRepository.create(data));
+    return this.messageRepository.save(this.messageRepository.create(data));
   }
 
   async delete(id: string): Promise<void> {
-    await this.roomRepository.delete(id);
+    await this.messageRepository.delete(id);
   }
 
   async inbox(userId: string) {
     return await this.participantService.userParticipants(userId);
+  }
+
+  async userMessages(roomId: string) {
+    return await this.messageRepository.createQueryBuilder('message')
+        .where('message.room_id = :roomId', {roomId})
+        .getMany();
   }
 }

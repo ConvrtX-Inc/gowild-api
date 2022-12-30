@@ -1,6 +1,6 @@
 import {Controller, Get, Param, Request, UseGuards} from '@nestjs/common';
 import {ApiBearerAuth, ApiOperation, ApiTags} from '@nestjs/swagger';
-import { Crud, CrudController } from '@nestjsx/crud';
+import {Crud, CrudController, Override} from '@nestjsx/crud';
 
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import {Message} from "./message.entity";
@@ -14,7 +14,7 @@ import {MessageService} from "./message.service";
     type: Message,
   },
   routes: {
-    exclude: ['replaceOneBase', 'createManyBase', 'getOneBase', 'createOneBase', 'updateOneBase'],
+    exclude: ['replaceOneBase', 'createManyBase', 'getOneBase','getManyBase', 'createOneBase', 'updateOneBase'],
   },
   query: {
     maxLimit: 50,
@@ -39,6 +39,11 @@ export class MessageController implements CrudController<Message> {
     return this;
   }
 
+  @ApiOperation({ summary: 'Get User Messages' })
+  @Get('/:roomId')
+  async getUserMessages(@Param('roomId') roomId){
+    return await this.service.userMessages(roomId)
+  }
   @ApiOperation({ summary: 'Get Inbox' })
   @Get('/inbox')
   public async inbox(@Request() request: Express.Request) {
