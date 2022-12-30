@@ -133,52 +133,60 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
     // const allPosts = await this.postFeedRepository.find({
     //     order:{ createdDate: 'DESC' }
     // });
-    const allPosts = await this.postFeedRepository.createQueryBuilder('postFeed')
-    .leftJoinAndMapOne('postFeed.user', UserEntity, 'user', 'postFeed.user_id = user.id')
-    .orderBy( 'postFeed.createdDate','DESC' )
-    .getMany();
-    
-    let data = [];
-    for(let i = 0 ; i < allPosts.length ; i++ ){
-      const likes = await Like.count({
-        postfeed_id: allPosts[i].id
-      });
-      const comments = await Comment.count({
-        postfeed_id: allPosts[i].id
-      })
-        let like_images = [];
-        const likesPicture = await this.likeRepository.createQueryBuilder('like')
-            .where("like.postfeed_id = :id", {id: allPosts[i].id})
-            .leftJoinAndMapOne('like.user', UserEntity, 'user', 'user.id = like.user_id')
-            .orderBy('like.createdDate','DESC')
-            .limit(3)
-            .getMany()
 
-        likesPicture.forEach((obj,index)=>{
-            if(obj['user'].picture != null) {
-                like_images.push(obj['user'].picture)
-            }else{
-                like_images = [""];
-            }
-        })
-      allPosts[i]['likes'] = likes;
-      allPosts[i]['comments'] = comments;
-      allPosts[i]['likes_images'] = like_images;
-      data.push(allPosts[i]);
-    }
-    if(!data){
-        return{
-               "errors" : [
-                   {
-                       message : "All Post-Feeds not fetched!",
-                       status : HttpStatus.BAD_REQUEST,
+
+     const allPosts = await this.postFeedRepository.createQueryBuilder('postfeed')
+         .leftJoinAndMapOne('postfeed.user', UserEntity, 'user', 'postfeed.user_id = user.id')
+         .orderBy( 'postfeed.createdDate','DESC' )
+         .getMany()
+
+
+           let data = [];
+           for (let i = 0; i < allPosts.length; i++) {
+               const likes = await Like.count({
+                   postfeed_id: allPosts[i].id
+               });
+               const comments = await Comment.count({
+                   postfeed_id: allPosts[i].id
+               })
+
+               let like_images = [];
+               const likesPicture = await this.likeRepository.createQueryBuilder('like')
+                   .where("like.postfeed_id = :id", {id: allPosts[i].id})
+                   .leftJoinAndMapOne('like.user', UserEntity, 'user', 'user.id = like.user_id')
+                   .orderBy('like.createdDate', 'DESC')
+                   .getMany()
+
+
+               likesPicture.forEach((obj, index) => {
+
+                   if(obj['user']){
+
+                       if (obj['user'].picture != null) {
+                           like_images.push(obj['user'].picture)
+                       }else {
+                           like_images.push("");
+                       }
                    }
+               })
+               allPosts[i]['likes'] = likes;
+               allPosts[i]['comments'] = comments;
+               allPosts[i]['likes_images'] = like_images;
+               data.push(allPosts[i]);
+           }
+           if (!data) {
+               return {
+                   "errors": [
+                       {
+                           message: "All Post-Feeds not fetched!",
+                           status: HttpStatus.BAD_REQUEST,
+                       }
                    ]
-        }
-    }
+               }
+           }
 
-       return { message : "Post_Feeds successfully fetched!", data: data };
-   }
+           return {message: "Post_Feeds successfully fetched!", data: data};
+       }
 
    /*
     Increment In Share Count
