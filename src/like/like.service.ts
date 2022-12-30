@@ -56,7 +56,7 @@ export class LikeService extends TypeOrmCrudService<Like> {
       const likesPicture = await this.likeRepository.createQueryBuilder('like')
           .where("like.postfeed_id = :id", {id: dto.postfeed_id})
           .leftJoinAndMapOne('like.user', UserEntity, 'user', 'user.id = like.user_id')
-          .orderBy('RANDOM()'/*'like.createdDate','DESC'*/)
+          .orderBy('RANDOM()')
           .limit(3)
           .getMany()
 
@@ -92,7 +92,7 @@ export class LikeService extends TypeOrmCrudService<Like> {
     const likesPicture = await this.likeRepository.createQueryBuilder('like')
         .where("like.postfeed_id = :id", {id: dto.postfeed_id})
         .leftJoinAndMapOne('like.user', UserEntity, 'user', 'user.id = like.user_id')
-        .orderBy('RANDOM()'/*'like.createdDate','DESC'*/)
+        .orderBy('RANDOM()')
         .limit(3)
         .getMany()
 

@@ -154,7 +154,8 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
                const likesPicture = await this.likeRepository.createQueryBuilder('like')
                    .where("like.postfeed_id = :id", {id: allPosts[i].id})
                    .leftJoinAndMapOne('like.user', UserEntity, 'user', 'user.id = like.user_id')
-                   .orderBy('like.createdDate', 'DESC')
+                   .orderBy('RANDOM()')
+                   .limit(3)
                    .getMany()
 
 
