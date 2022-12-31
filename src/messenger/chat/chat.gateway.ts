@@ -58,6 +58,7 @@ export class ChatGateway
       payload.text,
       MessageStatus.msSent,
       curDate,
+      payload.attachment
     );
     let room = this.getRoomOfClient(client);
     this.addMessage(_message, room);
