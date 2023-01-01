@@ -112,7 +112,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
 
   }
 
-  public async updateProfile(id: string, dto: UpdateUserDto) {
+  public async updateProfile(id: string, dto: UpdateUserDto) {    
     await this.usersRepository.createQueryBuilder()
       .update()
       .set(dto)

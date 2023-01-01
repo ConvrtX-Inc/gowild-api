@@ -17,10 +17,7 @@ export class UpdateUserDto {
 
   @ApiProperty({ example: 'username', nullable: true })
   @Transform((value: string) => value.toLowerCase().trim())
-  @IsOptional()
-  @Validate(IsNotExist, ['UserEntity'], {
-    message: 'emailAlreadyExists',
-  })
+  @IsOptional() 
   username: string;
 
   @IsOptional()

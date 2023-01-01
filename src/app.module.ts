@@ -61,6 +61,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { SubAdminModule } from './sub-admin/sub-admin.module';
 import {UserTreasureHuntModule} from "./user-treasure-hunt/user-treasure-hunt.module";
 import { CardsModule } from './cards/cards.module';
+import { PostFeedAttachmentModule } from './post-feed-attchment/post-feed-attachment.module';
 
 
 @Module({
@@ -154,7 +155,8 @@ import { CardsModule } from './cards/cards.module';
     DashboardModule,
     SubAdminModule,
     UserTreasureHuntModule,
-    CardsModule
+    CardsModule, 
+    PostFeedAttachmentModule
   ],
   providers: [
     {
