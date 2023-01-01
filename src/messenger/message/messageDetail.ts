@@ -7,18 +7,14 @@ export enum MessageStatus {
 export interface MessageInterface {
   userid: string;
   text?: string;
-  attachment?: attachmentInterface | null;
+  attachment?: string | null;
   dateCreate?: Date;
 }
 
-interface attachmentInterface {
-  extension: string;
-  base64: string;
-}
 export class MessageDetail {
   private userid: string;
   private text: string;
-  private attachment?: attachmentInterface| null;
+  private attachment?: string| null;
   private status: number;
   private dateCreate: Date;
 
@@ -27,7 +23,7 @@ export class MessageDetail {
     msg: string,
     status: number,
     dateCreate: Date,
-    attachment?: attachmentInterface| null,
+    attachment?: string| null,
   ) {
     this.userid = userid;
     this.text = msg;

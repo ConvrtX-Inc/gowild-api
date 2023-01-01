@@ -13,6 +13,7 @@ import { RoomService } from '../room/room.service';
 import { ClientSocketInfo } from './clientSocketInfo';
 import { RoomInfo } from './roomInfo';
 import { MessageDetail, MessageStatus } from '../message/messageDetail';
+import {convertToImage} from "../../common/constants/base64.image";
 
 @WebSocketGateway({ namespace:'/chat',  cors: true})
 export class ChatGateway
@@ -53,13 +54,18 @@ export class ChatGateway
   @SubscribeMessage('msgToServer')
   public handleMessage(client: Socket, payload: any): void {
     var curDate = new Date();
+    let attachment = null;
+    if (payload.attachment){
+      attachment = convertToImage(payload.attachment.base64, payload.attachment.extension);
+    }
     let _message = new MessageDetail(
       payload.sender_id,
       payload.text,
       MessageStatus.msSent,
       curDate,
-      payload.attachment
+      attachment
     );
+    payload.attachment = attachment;
     let room = this.getRoomOfClient(client);
     this.addMessage(_message, room);
     this.wss.to(room).emit('msgToClient', payload);
