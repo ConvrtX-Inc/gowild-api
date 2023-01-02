@@ -41,7 +41,10 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
   public async getTicket(id: string){
     const ticket = await this.ticketRepository.findOne({ where:{ id: id } })
 
-    return{ data: ticket }
+    return{
+      message: 'Ticket Fetched Successfully!',
+      data: ticket
+    }
   }
 
   // get ticket by user_id
@@ -52,7 +55,10 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
         .leftJoinAndMapOne('ticket.user', UserEntity, 'user', 'ticket.user_id = user.id')
         .getMany()
 
-    return { data: tickets}
+    return {
+      message: 'Ticket Fetched Successfully!' ,
+      data: tickets
+    }
   }
 
   public async updateTicketPicture(id: string, image: string) {
@@ -72,7 +78,7 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
     }
 
     ticket.image= image;
-    return{ message: "Card Image Updated Successfully!", data: await ticket.save()};
+    return{ message: "Ticket's Image Updated Successfully!", data: await ticket.save()};
   }
 
   async saveEntity(data: DeepPartial<Ticket>) {
