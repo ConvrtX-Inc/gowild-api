@@ -60,7 +60,7 @@ export class ChatGateway
     }
     let _message = new MessageDetail(
       payload.sender_id,
-      payload.text,
+      payload.message,
       MessageStatus.msSent,
       curDate,
       attachment
