@@ -104,15 +104,16 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
 
     likesPicture.forEach((obj, index) => {
 
-      if(obj['user']) {
+      if (obj['user']) {
 
         if (obj['user'].picture != null) {
           like_images.push(obj['user'].picture)
-        }else{
+        } else {
           like_images.push("")
         }
       }
     })
+
     post['likes'] = likes;
     post['comments'] = comments;
     post['likes_images'] = like_images;
@@ -161,8 +162,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
         .getMany()
 
       likesPicture.forEach((obj, index) => {
-
-        if(obj['user']) {
+        if (obj['user']) {
 
           if (obj['user'].picture != null) {
             like_images.push(obj['user'].picture)
