@@ -1,32 +1,14 @@
-import { Controller, UseGuards } from '@nestjs/common';
+import {Controller, Get, Param, UseGuards} from '@nestjs/common';
 import { TicketMessagesService } from './ticket-messages.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {ApiBearerAuth, ApiOperation, ApiTags} from '@nestjs/swagger';
 import { TicketMessage } from './entities/ticket-message.entity';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import {Query} from "@nestjs/common/decorators";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @ApiTags('Ticket Messages')
-@Crud({
-  model: {
-    type: TicketMessage,
-  },
-  routes: {
-    exclude: ['replaceOneBase', 'createManyBase'],
-  },
-  query: {
-    maxLimit: 50,
-    alwaysPaginate: true,
-  },
-  params: {
-    id: {
-      type: 'uuid',
-      primary: true,
-      field: 'id',
-    },
-  },
-})
 @Controller({
   path: 'ticket-messages',
   version: '1',
@@ -34,7 +16,9 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 export class TicketMessagesController implements CrudController<TicketMessage> {
   constructor(readonly service: TicketMessagesService) {}
 
-  get base(): CrudController<TicketMessage> {
-    return this;
+  @ApiOperation({ summary: 'Get Ticket Messages' })
+  @Get('/:ticket_id')
+  public async getTicketMessages(@Param('ticket_id') ticketId: string, @Query() query) {
+    return this.service.getTicketMessages(ticketId, query.page);
   }
 }
