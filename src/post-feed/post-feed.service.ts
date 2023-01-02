@@ -1,4 +1,4 @@
-import {Injectable, HttpStatus, NotFoundException} from '@nestjs/common';
+import { Injectable, HttpStatus, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Friends } from 'src/friends/entities/friend.entity';
@@ -8,6 +8,8 @@ import { Comment } from 'src/comment/entities/comment.entity';
 import { Like } from 'src/like/entities/like.entity';
 import { CreatePostFeedDto } from "./dto/create-post-feed.dto";
 import { UserEntity } from 'src/users/user.entity';
+import { PostFeedAttachment } from 'src/post-feed-attchment/post-feed-attachment.entity';
+import { PostFeedAttachmentService } from 'src/post-feed-attchment/post-feed-attachment.service';
 
 @Injectable()
 export class PostFeedService extends TypeOrmCrudService<PostFeed> {
@@ -17,60 +19,71 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
     @InjectRepository(Friends)
     private friendsRepository: Repository<Friends>,
     @InjectRepository(Like)
-    private likeRepository: Repository<Like>
+    private likeRepository: Repository<Like>,
+    private readonly postFeedAttachmentService: PostFeedAttachmentService,
   ) {
     super(postFeedRepository);
   }
 
   async create(userId: string, createPostFeedDto: CreatePostFeedDto) {
-      const feedData = await this.postFeedRepository.create({ user_id: userId, views: 0, ...createPostFeedDto });
-      await this.postFeedRepository.save(feedData);
+    const feedData = await this.postFeedRepository.create({ user_id: userId, views: 0, ...createPostFeedDto });
+    await this.postFeedRepository.save(feedData);
 
-      const user = await UserEntity.findOne(
-        {
-          where:{id:userId}
-        }
-      )
-
-      if(!feedData){
-          return{
-              "errors" : [
-                  {
-                      message : "Could not create Post-Feed!",
-                      status : HttpStatus.BAD_REQUEST,
-                  }
-              ]
-          }
+    const user = await UserEntity.findOne(
+      {
+        where: { id: userId }
       }
-      feedData['user'] = user;
-      return { message : "Post-Feed created successfully!", data: feedData };
+    )
+
+    if (!feedData) {
+      return {
+        "errors": [
+          {
+            message: "Could not create Post-Feed!",
+            status: HttpStatus.BAD_REQUEST,
+          }
+        ]
+      }
+    }
+    feedData['user'] = user;
+    return { message: "Post-Feed created successfully!", data: feedData };
   }
 
-    public async updatePicture(id: string, picture: string) {
-        const postFeed = await this.postFeedRepository.findOne({
-            where: { id: id },
-        });
+  public async updatePicture(id: string, picture: string, attachment?: string) {
+    const postFeed = await this.postFeedRepository.findOne({
+      where: { id: id },
+    });
 
-        const user = await UserEntity.findOne(
+    const user = await UserEntity.findOne(
+      {
+        where: { id: postFeed.user_id }
+      }
+    )
+
+    if (!postFeed) {
+      throw new NotFoundException({
+        errors: [
           {
-            where:{id: postFeed.user_id}
-          }
-        )
-
-        if (!postFeed) {
-            throw new NotFoundException({
-                errors: [
-                    {
-                        user: 'post feed does not exist',
-                    },
-                ],
-            });
-        }
-
-        postFeed['user'] = user;
-        postFeed.picture = picture;    
-        return{ message: "Post-Feed created successfully!", data: await postFeed.save()} ;
+            user: 'post feed does not exist',
+          },
+        ],
+      });
     }
+    postFeed['user'] = user;
+    if (picture) {
+      postFeed.picture = picture;
+    }
+    if (attachment) {
+      var newAttachment = await this.postFeedAttachmentService.createAttachment(attachment, id)
+    }
+    const response = await postFeed.save();
+    var attachmentArr = [];
+    if (newAttachment) {
+      attachmentArr.push(newAttachment.data);
+    }
+    response['attachment'] = attachmentArr;
+    return { message: "Post-Feed created successfully!", data: response };
+  }
 
   async update(createPostFeedDto: CreatePostFeedDto) {
     return this.postFeedRepository.save(this.postFeedRepository.create({ ...createPostFeedDto }));
@@ -79,137 +92,139 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
   /*
     Get One Post-feed and incrementing its view
     */
-   async getOnePost(id:string){
+  async getOnePost(id: string) {
     const post = await this.postFeedRepository.findOne({
-      id:id,
+      id: id,
     });
+    if (!post) {
+
+      return {
+        "errors": [
+          {
+            message: "Post-Feed Does not exist",
+            status: HttpStatus.BAD_REQUEST,
+          }
+        ]
+      }
+    }
     post.views++;
     await post.save();
 
     const likes = await Like.count({
-      postfeed_id:id
+      postfeed_id: id
     });
     const comments = await Comment.count({
-      postfeed_id:id
+      postfeed_id: id
+    })
+    const attachments = await PostFeedAttachment.find({
+      postfeed_id: id
     })
 
-       let like_images = [];
-       const likesPicture = await this.likeRepository.createQueryBuilder('like')
-           .leftJoinAndMapOne('like.user', UserEntity, 'user', 'user.id = like.user_id')
-           .orderBy('RANDOM()')
-           .limit(3)
-           .where("like.postfeed_id = :id",{id})
-           .getMany()
+    // Getting Images of like Users
+    let like_images = [];
+    const likesPicture = await this.likeRepository.createQueryBuilder('like')
+      .leftJoinAndMapOne('like.user', UserEntity, 'user', 'user.id = like.user_id')
+      .orderBy('RANDOM()')
+      .limit(3)
+      .where("like.postfeed_id = :id", { id })
+      .getMany()
+    likesPicture.forEach((obj, index) => {
 
-       likesPicture.forEach((obj,index)=>{
-           if(obj['user'].picture != null) {
-               like_images.push(obj['user'].picture)
-           }
-       })
+      if (obj['user']) {
+        if (obj['user'].picture != null) {
+          like_images.push(obj['user'].picture)
+        } else {
+          like_images.push("")
+        }
+      }
+    })
 
     post['likes'] = likes;
     post['comments'] = comments;
     post['likes_images'] = like_images;
-    if(!post){
+    post['attachment'] = attachments;
+    return { data: post };
+  }
 
-      return{
-        "errors" : [
+  /*
+   Get Many Post-feed
+   */
+  async getManyPost() {
+  
+    const allPosts = await this.postFeedRepository.createQueryBuilder('postFeed')
+      .leftJoinAndMapOne('postFeed.user', UserEntity, 'user', 'postFeed.user_id = user.id')
+      .leftJoinAndMapMany('postFeed.attachment', PostFeedAttachment,'attachment', 'postFeed.id = attachment.postfeed_id')
+      .orderBy('postFeed.createdDate', 'DESC')
+      .getMany();
+
+    let data = [];
+    for (let i = 0; i < allPosts.length; i++) {
+      const likes = await Like.count({
+        postfeed_id: allPosts[i].id
+      });
+      const comments = await Comment.count({
+        postfeed_id: allPosts[i].id
+      })
+
+      // Getting Likes User Images
+      let like_images = [];
+      const likesPicture = await this.likeRepository.createQueryBuilder('like')
+        .where("like.postfeed_id = :id", { id: allPosts[i].id })
+        .leftJoinAndMapOne('like.user', UserEntity, 'user', 'user.id = like.user_id')
+        .orderBy('like.createdDate', 'DESC')
+        .limit(3)
+        .getMany()
+
+      likesPicture.forEach((obj, index) => {
+        if (obj['user']) {
+
+          if (obj['user'].picture != null) {
+            like_images.push(obj['user'].picture)
+          } else {
+            like_images.push("");
+          }
+        }
+      })
+      allPosts[i]['likes'] = likes;
+      allPosts[i]['comments'] = comments;
+      allPosts[i]['likes_images'] = like_images;
+      data.push(allPosts[i]);
+    }
+    if (!data) {
+      return {
+        "errors": [
           {
-            message : "Post-Feed Does not exist",
-            status : HttpStatus.BAD_REQUEST,
+            message: "Post-Feeds Not Found",
+            status: HttpStatus.BAD_REQUEST,
           }
         ]
       }
     }
 
-    return { data : post};
-   }
+    return { message: "Post_Feeds successfully fetched!", data: data };
+  }
 
-   /*
-    Get Many Post-feed
-    */
-   async getManyPost(){
-
-    // const allPosts = await this.postFeedRepository.find({
-    //     order:{ createdDate: 'DESC' }
-    // });
-
-
-     const allPosts = await this.postFeedRepository.createQueryBuilder('postfeed')
-         .leftJoinAndMapOne('postfeed.user', UserEntity, 'user', 'postfeed.user_id = user.id')
-         .orderBy( 'postfeed.createdDate','DESC' )
-         .getMany()
-
-
-           let data = [];
-           for (let i = 0; i < allPosts.length; i++) {
-               const likes = await Like.count({
-                   postfeed_id: allPosts[i].id
-               });
-               const comments = await Comment.count({
-                   postfeed_id: allPosts[i].id
-               })
-
-               let like_images = [];
-               const likesPicture = await this.likeRepository.createQueryBuilder('like')
-                   .where("like.postfeed_id = :id", {id: allPosts[i].id})
-                   .leftJoinAndMapOne('like.user', UserEntity, 'user', 'user.id = like.user_id')
-                   .orderBy('RANDOM()')
-                   .limit(3)
-                   .getMany()
-
-
-               likesPicture.forEach((obj, index) => {
-
-                   if(obj['user']){
-
-                       if (obj['user'].picture != null) {
-                           like_images.push(obj['user'].picture)
-                       }else {
-                           like_images.push("");
-                       }
-                   }
-               })
-               allPosts[i]['likes'] = likes;
-               allPosts[i]['comments'] = comments;
-               allPosts[i]['likes_images'] = like_images;
-               data.push(allPosts[i]);
-           }
-           if (!data) {
-               return {
-                   "errors": [
-                       {
-                           message: "All Post-Feeds not fetched!",
-                           status: HttpStatus.BAD_REQUEST,
-                       }
-                   ]
-               }
-           }
-
-           return {message: "Post_Feeds successfully fetched!", data: data};
-       }
-
-   /*
-    Increment In Share Count
-    */
-   async sharePost(id:string){
+  /*
+   Increment In Share Count
+   */
+  async sharePost(id: string) {
     const post = await this.postFeedRepository.findOne({
-      id:id,
+      id: id,
     });
     post.share++;
     await post.save();
-    if(!post){
-      return{
-        "errors" : [
+    if (!post) {
+      return {
+        "errors": [
           {
-            message : "Post-Feed Does not exist",
-            status : HttpStatus.BAD_REQUEST,
+            message: "Post-Feed Does not exist",
+            status: HttpStatus.BAD_REQUEST,
           }
         ]
       }
     }
     return post;
-   }
+  }
 
   async friendsPosts(user_id: string) {
     return 1;

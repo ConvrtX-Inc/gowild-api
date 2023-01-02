@@ -136,27 +136,54 @@ export class AuthService {
   }
 
   public async register(dto: AuthRegisterLoginDto): Promise<UserEntity> {
+
+    var isExist = await this.usersService.findOne({
+      where: { email: dto.email }
+    })
+
+    var phoneExist = await this.usersService.findOne({
+      where: { phoneNo: dto.phoneNo  }
+    })
     const hash = this.genHash();
+    if (isExist || phoneExist) {
+      isExist.firstName = dto.firstName;
+      isExist.lastName = dto.lastName;
+      isExist.gender = dto.gender;
+      isExist.email = dto.email;
+      isExist.username = null;
+      isExist.phoneNo = dto.phoneNo;
+      isExist.addressOne = dto.addressOne;
+      isExist.addressTwo = dto.addressTwo;
+      isExist.otp = '0000';
+      isExist.phoneVerified = false;
+      isExist.hash = hash;
 
-    let entity = new UserEntity();
-    entity.firstName = dto.firstName;
-    entity.lastName = dto.lastName;
-    entity.gender = dto.gender;
-    entity.email = dto.email;
-    entity.username = null;
-    entity.phoneNo = dto.phoneNo;
-    entity.addressOne = dto.addressOne;
-    entity.addressTwo = dto.addressTwo;
-    entity.otp = '0000';
-    entity.phoneVerified = false;
-    entity.hash = hash;
+      isExist.status = await this.statusService.findByEnum(StatusEnum.Active);
+      isExist.role = await this.roleService.findByEnum(RoleEnum.USER);
+      isExist = await this.usersService.saveEntity(isExist);
+      await this.passwordService.createPassword(isExist, dto.password);
+      return isExist;
+    } else {
+      let entity = new UserEntity();
+      entity.firstName = dto.firstName;
+      entity.lastName = dto.lastName;
+      entity.gender = dto.gender;
+      entity.email = dto.email;
+      entity.username = null;
+      entity.phoneNo = dto.phoneNo;
+      entity.addressOne = dto.addressOne;
+      entity.addressTwo = dto.addressTwo;
+      entity.otp = '0000';
+      entity.phoneVerified = false;
+      entity.hash = hash;
 
 
-    entity.status = await this.statusService.findByEnum(StatusEnum.Active);
-    entity.role = await this.roleService.findByEnum(RoleEnum.USER);
-    entity = await this.usersService.saveEntity(entity);
-    await this.passwordService.createPassword(entity, dto.password);
-    return entity;
+      entity.status = await this.statusService.findByEnum(StatusEnum.Active);
+      entity.role = await this.roleService.findByEnum(RoleEnum.USER);
+      entity = await this.usersService.saveEntity(entity);
+      await this.passwordService.createPassword(entity, dto.password);
+      return entity;
+    }
   }
 
   public async resetAdminPassword(
@@ -276,7 +303,7 @@ export class AuthService {
       });
     }*/
     const user = await this.usersService.findOneEntity({
-      where:{
+      where: {
         otp: hash,
         phoneNo: emailPhone
       }
@@ -290,7 +317,7 @@ export class AuthService {
     //console.log(user);
     const passwordCheck = await this.passwordService.verifyPassword(user, password)
 
-    if (passwordCheck){
+    if (passwordCheck) {
       throw new NotFoundException({
         message: `Cannot set your Previous Password`,
       });
@@ -326,13 +353,13 @@ export class AuthService {
     return await this.tokenService.generateToken(user);
   }
   public async me(userId: string) {
-    const user =  await this.usersService.findOneEntity({
+    const user = await this.usersService.findOneEntity({
       where: {
         id: userId,
       },
     });
-   user['base_url'] = appConfig().backendDomain;
-   return user
+    user['base_url'] = appConfig().backendDomain;
+    return user
   }
 
   public async generateAdmin() {

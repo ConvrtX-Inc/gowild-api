@@ -51,7 +51,7 @@ export class MessageService extends TypeOrmCrudService<Message> {
   async inbox(userId: string) {
     return await this.participantService.userParticipants(userId);
   }
-
+  // Messages
   async userMessages(roomId: string, pageNo: number) {
     const take = 20
     const page = pageNo || 1;

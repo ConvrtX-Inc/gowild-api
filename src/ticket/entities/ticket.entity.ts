@@ -41,7 +41,7 @@ export class Ticket extends AbstractBaseEntity {
     type: 'text',
     nullable: true,
   })
-  img_url: string | null;
+  image: string | null;
 
   @IsOptional()
   @ApiProperty({
