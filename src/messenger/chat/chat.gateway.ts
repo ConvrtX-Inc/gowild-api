@@ -15,7 +15,7 @@ import { RoomInfo } from './roomInfo';
 import { MessageDetail, MessageStatus } from '../message/messageDetail';
 import {convertToImage} from "../../common/constants/base64.image";
 
-@WebSocketGateway({ namespace:'/chat',  cors: true})
+@WebSocketGateway(5000,{ namespace:'/sockets',  cors: true})
 export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {

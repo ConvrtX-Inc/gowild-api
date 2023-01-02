@@ -12,7 +12,7 @@ import {SystemSupportService} from "./system-support.service";
 import {RoleEnum} from "../roles/roles.enum";
 
 
-@WebSocketGateway({ namespace:'/support',  cors: true})
+@WebSocketGateway(5000,{ namespace:'/support',  cors: true})
 export class SupportGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {

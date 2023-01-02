@@ -44,8 +44,10 @@ import {UsersController} from "./users.controller";
               s3: () => {
                 const s3 = new AWS.S3();
                 AWS.config.update({
-                  accessKeyId: configService.get('file.accessKeyId'),
-                  secretAccessKey: configService.get('file.secretAccessKey'),
+                  credentials: {
+                    accessKeyId: configService.get('file.accessKeyId'),
+                    secretAccessKey: configService.get('file.secretAccessKey')
+                  },
                   region: configService.get('file.awsS3Region'),
                 });
 
