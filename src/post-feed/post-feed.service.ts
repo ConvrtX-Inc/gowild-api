@@ -104,11 +104,11 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
 
     likesPicture.forEach((obj, index) => {
 
-      if(obj['user']) {
+      if (obj['user']) {
 
         if (obj['user'].picture != null) {
           like_images.push(obj['user'].picture)
-        }else{
+        } else {
           like_images.push("")
         }
       }
@@ -136,10 +136,10 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
    Get Many Post-feed
    */
   async getManyPost() {
-  
+
     const allPosts = await this.postFeedRepository.createQueryBuilder('postFeed')
       .leftJoinAndMapOne('postFeed.user', UserEntity, 'user', 'postFeed.user_id = user.id')
-      .leftJoinAndMapMany('postFeed.attachment', PostFeedAttachment,'attachment', 'postFeed.id = attachment.postfeed_id')
+      .leftJoinAndMapMany('postFeed.attachment', PostFeedAttachment, 'attachment', 'postFeed.id = attachment.postfeed_id')
       .orderBy('postFeed.createdDate', 'DESC')
       .getMany();
 
@@ -162,10 +162,12 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
         .getMany()
 
       likesPicture.forEach((obj, index) => {
-        if (obj['user'].picture != null) {
-          like_images.push(obj['user'].picture)
-        } else {
-          like_images = [""];
+        if (obj['user']) {
+          if (obj['user'].picture != null) {
+            like_images.push(obj['user'].picture)
+          } else {
+            like_images.push("");
+          }
         }
       })
       allPosts[i]['likes'] = likes;
