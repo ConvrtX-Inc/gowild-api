@@ -35,13 +35,6 @@ export class Ticket extends AbstractBaseEntity {
   @Column({ type: 'text' })
   message?: string;
 
-  @IsOptional()
-  @ApiProperty()
-  @Column({
-    type: 'text',
-    nullable: true,
-  })
-  image: string | null;
 
   @IsOptional()
   @ApiProperty({

@@ -19,7 +19,6 @@ import {CreateTicketDto} from "./dto/create-ticket.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {FilesService} from "../files/files.service";
 import {ConfigService} from "@nestjs/config";
-import {Card} from "../cards/entities/card.entity";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -69,7 +68,7 @@ export class TicketController implements CrudController<Ticket> {
 
   @Get('users/:user_id')
   @ApiOperation({summary: "Retrieve all tickets by user ID"})
-  public async getComments(@Param('user_id') userId: string) {
+  public async getTicketsUserId(@Param('user_id') userId: string) {
     return this.service.getTicketsByUserId(userId);
   }
 
@@ -103,4 +102,13 @@ export class TicketController implements CrudController<Ticket> {
     };
     return this.service.updateTicketPicture(id, picture[driver] );
   }
+  // design api for updating status from pending to completed
+
+  @Post(':id/status')
+  @ApiOperation({summary: "Change Status from PENDING to COMPLETED"})
+  async ticketStatus(@Param('id') id:string){
+    return this.service.updateStatus(id);
+  }
+
+
 }
