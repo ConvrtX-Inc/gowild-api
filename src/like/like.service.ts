@@ -6,6 +6,8 @@ import { Like } from './entities/like.entity';
 import { DeepPartial } from 'src/common/types/deep-partial.type';
 import { PostFeed } from 'src/post-feed/entities/post-feed.entity';
 import {UserEntity} from "../users/user.entity";
+import { PostFeedAttachment } from 'src/post-feed-attchment/post-feed-attachment.entity';
+import { ConstraintMetadata } from 'class-validator/types/metadata/ConstraintMetadata';
 
 @Injectable()
 export class LikeService extends TypeOrmCrudService<Like> {
@@ -39,6 +41,11 @@ export class LikeService extends TypeOrmCrudService<Like> {
         ]
       }
     }
+     // Getting Post Attachments 
+     var attachments = await PostFeedAttachment.find({
+      where:{ postfeed_id : post.id}
+    }) 
+    
     const isExist = await this.likeRepository.findOne({
       where: {
         user_id: req,
@@ -71,8 +78,10 @@ export class LikeService extends TypeOrmCrudService<Like> {
         }
 
       })
+    
       post['likes'] = likes;
       post['likes_images'] = like_images
+      post['attachment'] = attachments;
       return {
         message: "Post Un-Liked Successfully",
         data: post
@@ -107,7 +116,8 @@ export class LikeService extends TypeOrmCrudService<Like> {
       }
     })
     post['likes'] = likes;
-    post['likes_images'] = like_images
+    post['likes_images'] = like_images;
+    post['attachment'] = attachments;
 
     return {
       message: "Post Liked Successfully",
