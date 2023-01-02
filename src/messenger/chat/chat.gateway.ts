@@ -59,7 +59,7 @@ export class ChatGateway
       attachment = convertToImage(payload.attachment.base64, payload.attachment.extension);
     }
     let _message = new MessageDetail(
-      payload.sender_id,
+      payload.user_id,
       payload.message,
       MessageStatus.msSent,
       curDate,
