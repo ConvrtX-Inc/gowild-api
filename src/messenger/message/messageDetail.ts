@@ -6,14 +6,14 @@ export enum MessageStatus {
 
 export interface MessageInterface {
   userid: string;
-  text?: string;
+  message?: string;
   attachment?: string | null;
   dateCreate?: Date;
 }
 
 export class MessageDetail {
   private userid: string;
-  private text: string;
+  private message: string;
   private attachment?: string| null;
   private status: number;
   private dateCreate: Date;
@@ -26,7 +26,7 @@ export class MessageDetail {
     attachment?: string| null,
   ) {
     this.userid = userid;
-    this.text = msg;
+    this.message = msg;
     this.status = status;
     this.dateCreate = dateCreate;
     this.attachment = attachment;
@@ -37,7 +37,7 @@ export class MessageDetail {
   }
 
   get Text(): string {
-    return this.text;
+    return this.message;
   }
 
   get Status(): number {

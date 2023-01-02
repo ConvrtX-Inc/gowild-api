@@ -101,7 +101,7 @@ export class RoomService extends TypeOrmCrudService<Room> {
       await this.messageService.saveOne({
         room_id: room_id,
         user_id: msg.userid,
-        message: msg.text,
+        message: msg.message,
         attachment: msg.attachment
       })
     }
