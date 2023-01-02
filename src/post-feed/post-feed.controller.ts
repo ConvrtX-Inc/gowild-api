@@ -9,7 +9,8 @@ import {
   Post,
   Request, UploadedFile,
   UseGuards,
-  UseInterceptors
+  UseInterceptors,
+  UploadedFiles
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController, Override } from '@nestjsx/crud';
@@ -27,6 +28,7 @@ import { FilesService } from "../files/files.service";
 import { RolesGuard } from "../roles/roles.guard";
 import { PostFeedAttachmentService } from 'src/post-feed-attchment/post-feed-attachment.service';
 import { PostFeedAttachment } from 'src/post-feed-attchment/post-feed-attachment.entity';
+import { FileFieldsInterceptor } from "@nestjs/platform-express";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -115,18 +117,30 @@ export class PostFeedController implements CrudController<PostFeed> {
   @Post(':id/update-picture')
   @HttpCode(HttpStatus.OK)
   @Roles(RoleEnum.USER)
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileFieldsInterceptor([
+    { name: 'file', maxCount: 1 },
+    { name: 'attachment', maxCount: 1 },
+  ]))
   public async updatePicture(
     @Param('id') id: string,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles() files: { file?: Express.Multer.File, attachment?: Express.Multer.File },
   ) {
     const driver = this.configService.get('file.driver');
-    const picture = {
-      local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
-      s3: file.location,
-      firebase: file.publicUrl,
-    };
-    return this.service.updatePicture(id, picture[driver]);
+    if (files['file']) {
+      var picture = {
+        local: `/${this.configService.get('app.apiPrefix')}/v1/${files['file'][0].path}`,
+        s3: files['file'].location,
+        firebase: files['file'][0].publicUrl,
+      };
+    }
+    if (files['attachment']) {
+      var attachments = {
+        local: `/${this.configService.get('app.apiPrefix')}/v1/${files['attachment'][0].path}`,
+        s3: files['attachment'].location,
+        firebase: files['attachment'][0].publicUrl,
+      }    
+    }
+    return this.service.updatePicture(id, picture?picture[driver]:null, attachments?attachments[driver]:null);
   }
 
 
@@ -135,43 +149,5 @@ export class PostFeedController implements CrudController<PostFeed> {
   public async getPostsFromOtherUsers(@Param('user_id') user_id: string) {
     return this.service.otherUsersPost(user_id);
   }
-
-  @ApiResponse({ type: PostFeedAttachment })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-        },
-      },
-    },
-  })
-  @Post('attachment/:postfeed_id')
-  @HttpCode(HttpStatus.OK)
-  @UseInterceptors(FileInterceptor('file'))
-  public async createAttachment(
-    @UploadedFile() file: Express.Multer.File,
-    @Param('postfeed_id') postfeed_id
-  ) {
-    const driver = this.configService.get('file.driver');
-    if (file) {
-      var picture = {
-        local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
-        s3: file.location,
-        firebase: file.publicUrl,
-      };
-    }else{
-      return {
-        "errors": [
-          {
-            message: "Select Attachment File",           
-          }
-        ]
-      }
-    }
-    return this.attachmentService.createAttachment(picture[driver],postfeed_id);
-  }
+   
 }
