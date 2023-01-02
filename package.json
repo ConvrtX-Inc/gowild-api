@@ -80,7 +80,8 @@
     "twilio": "^3.72.0",
     "twitter": "1.7.1",
     "typeorm": "0.2.41",
-    "typeorm-seeding": "^1.6.1"
+    "typeorm-seeding": "^1.6.1",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.5.0",

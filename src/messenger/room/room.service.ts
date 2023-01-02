@@ -13,6 +13,7 @@ import { Message } from '../message/message.entity';
 
 import { classToPlain } from 'class-transformer';
 import {MessageInterface} from "../message/messageDetail";
+import {convertToImage} from "../../common/constants/base64.image";
 
 @Injectable()
 export class RoomService extends TypeOrmCrudService<Room> {
@@ -96,17 +97,11 @@ export class RoomService extends TypeOrmCrudService<Room> {
   }
 
   public async saveMessagesofRoom(room_id: string, messages: MessageInterface[]) {
-    let participantData = [];
-    const room = await this.findOneEntity({where: {id: room_id}});
-    participantData = await this.participantService.find({
-      where: { room: room },
-    });
-    console.log(messages);
     for (const msg of messages) {
       await this.messageService.saveOne({
         room_id: room_id,
         user_id: msg.userid,
-        message: msg.text,
+        message: msg.message,
         attachment: msg.attachment
       })
     }

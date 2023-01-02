@@ -218,9 +218,15 @@ export class AuthService {
       emailPhone = dto.phone;
       user = await this.usersService.findOneEntity({
         where: {
+          email: dto.email,
           phoneNo: dto.phone,
         },
       });
+
+      if(!user){
+        throw new NotFoundException({message: "Please Enter correct email address!"})
+      }
+
     } else {
       emailPhone = dto.email;
       user = await this.usersService.findOneEntity({
@@ -244,12 +250,12 @@ export class AuthService {
       user,
     });
     if (dto.email) {
-      await this.mailService.forgotPassword({
+      /*await this.mailService.forgotPassword({
         to: dto.email,
         data: {
           hash,
         },
-      });
+      });*/
     } else {
       // await this.smsService.send({
       //   phone_number: user.phone_no.toString(),

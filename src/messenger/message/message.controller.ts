@@ -39,14 +39,15 @@ export class MessageController implements CrudController<Message> {
     return this;
   }
 
-  @ApiOperation({ summary: 'Get User Messages' })
-  @Get('/:roomId')
-  async getUserMessages(@Param('roomId') roomId){
-    return await this.service.userMessages(roomId)
-  }
   @ApiOperation({ summary: 'Get Inbox' })
   @Get('/inbox')
   public async inbox(@Request() request: Express.Request) {
     return await this.service.inbox(request.user.sub);
   }
+  @ApiOperation({ summary: 'Get User Messages' })
+  @Get('/room/:roomId')
+  async getUserMessages(@Param('roomId') roomId){
+    return await this.service.userMessages(roomId)
+  }
+
 }

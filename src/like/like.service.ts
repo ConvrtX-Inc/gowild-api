@@ -56,16 +56,20 @@ export class LikeService extends TypeOrmCrudService<Like> {
       const likesPicture = await this.likeRepository.createQueryBuilder('like')
           .where("like.postfeed_id = :id", {id: dto.postfeed_id})
           .leftJoinAndMapOne('like.user', UserEntity, 'user', 'user.id = like.user_id')
-          .orderBy('like.createdDate','DESC')
+          .orderBy('RANDOM()')
           .limit(3)
           .getMany()
 
       likesPicture.forEach((obj,index)=>{
-        if(obj['user'].picture != null) {
-          like_images.push(obj['user'].picture)
-        }else{
-          like_images = [""];
+
+        if(obj['user']){
+          if(obj['user'].picture != null) {
+            like_images.push(obj['user'].picture)
+          }else{
+            like_images.push("");
+          }
         }
+
       })
       post['likes'] = likes;
       post['likes_images'] = like_images
@@ -88,15 +92,18 @@ export class LikeService extends TypeOrmCrudService<Like> {
     const likesPicture = await this.likeRepository.createQueryBuilder('like')
         .where("like.postfeed_id = :id", {id: dto.postfeed_id})
         .leftJoinAndMapOne('like.user', UserEntity, 'user', 'user.id = like.user_id')
-        .orderBy('like.createdDate','DESC')
+        .orderBy('RANDOM()')
         .limit(3)
         .getMany()
 
     likesPicture.forEach((obj,index)=>{
-      if(obj['user'].picture != null) {
+      if(obj['user']){
+
+        if(obj['user'].picture != null) {
         like_images.push(obj['user'].picture)
       }else{
-        like_images = [""];
+            like_images.push("");
+        }
       }
     })
     post['likes'] = likes;

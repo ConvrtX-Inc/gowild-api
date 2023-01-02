@@ -4,6 +4,7 @@ import { IsOptional, Validate } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { IsExist } from 'src/common/validators/is-exists.validator';
 import {Room} from "../room/room.entity";
+import {timestamp} from "aws-sdk/clients/backup";
 
 @Entity('gw_participants')
 export class Participant extends AbstractBaseEntity {
@@ -28,4 +29,7 @@ export class Participant extends AbstractBaseEntity {
   @ManyToOne(() => Room, (room) => room.participant)
   @JoinColumn({ name: "room_id" })
   room: Room
+
+  @Column({ type: 'timestamp',nullable: true })
+  last_deleted_at?: timestamp;
 }

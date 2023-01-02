@@ -53,7 +53,7 @@ export class ParticipantService extends TypeOrmCrudService<Participant> {
     });
     return await this.participantRepository.createQueryBuilder('participant')
         .innerJoinAndMapOne('user', UserEntity, 'user', 'user.id = participant.user_id')
-        .select(['participant.user_id as user_id','user.first_name', 'user.last_name', 'user.picture as picture'])
+        .select(['participant.room_id as room_id','participant.user_id as user_id','user.first_name', 'user.last_name', 'user.picture as picture'])
         .where("participant.room_id IN(:...roomArray)", {roomArray})
         .andWhere("participant.user_id != :userId", {userId})
         .getRawMany();
