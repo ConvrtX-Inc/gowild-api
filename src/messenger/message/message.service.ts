@@ -7,6 +7,7 @@ import { FindOptions } from '../../common/types/find-options.type';
 
 import { Message } from './message.entity';
 import { ParticipantService } from '../participant/participant.service';
+import { paginateResponse } from 'src/common/paginate.response';
 
 @Injectable()
 export class MessageService extends TypeOrmCrudService<Message> {
@@ -19,6 +20,9 @@ export class MessageService extends TypeOrmCrudService<Message> {
   ) {
     super(messageRepository);
   }
+
+
+
 
   async findOneEntity(options: FindOptions<Message>) {
     return this.messageRepository.findOne({
@@ -48,9 +52,17 @@ export class MessageService extends TypeOrmCrudService<Message> {
     return await this.participantService.userParticipants(userId);
   }
 
-  async userMessages(roomId: string) {
-    return await this.messageRepository.createQueryBuilder('message')
+  async userMessages(roomId: string, pageNo: number) {
+    const take = 20
+    const page = pageNo || 1;
+    const skip = (page - 1) * take;
+
+
+   const data = await this.messageRepository.createQueryBuilder('message')
         .where('message.room_id = :roomId', {roomId})
-        .getMany();
+        .skip(skip).take(take)
+        .getManyAndCount();
+
+    return paginateResponse(data, page, take)
   }
 }

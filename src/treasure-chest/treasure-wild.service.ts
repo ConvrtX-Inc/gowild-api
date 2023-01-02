@@ -14,6 +14,7 @@ import { title } from 'process';
 import { stringify } from 'querystring';
 import { type } from 'os';
 import { NotificationService } from "../notification/notification.service";
+import { paginateResponse } from 'src/common/paginate.response';
 
 @Injectable()
 export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
@@ -26,20 +27,6 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     super(treasureChestRepository);
   }
 
-  async paginateResponse(data, page, limit) {
-
-    const [result, total] = data;
-    const totalPage = Math.ceil(total / limit);
-    const prevPage = page - 1 < 1 ? null : page - 1;
-    return {
-
-      data: [...result],
-      count: total,
-      currentPage: parseInt(page),
-      prevPage: prevPage,
-      totalPage: totalPage,
-    }
-  }
   /*
     Register User for Treaure Hunt 
     */
@@ -132,7 +119,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     })
     parrentArray.push(customArray);
     parrentArray.push(data[1]);
-    return this.paginateResponse(parrentArray, page, take)
+    return paginateResponse(parrentArray, page, take)
   }
 
 
