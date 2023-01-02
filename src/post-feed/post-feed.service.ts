@@ -103,8 +103,14 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
       .getMany()
 
     likesPicture.forEach((obj, index) => {
-      if (obj['user'].picture != null) {
-        like_images.push(obj['user'].picture)
+
+      if(obj['user']) {
+
+        if (obj['user'].picture != null) {
+          like_images.push(obj['user'].picture)
+        }else{
+          like_images.push("")
+        }
       }
     })
 
