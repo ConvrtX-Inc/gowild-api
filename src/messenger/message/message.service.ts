@@ -10,6 +10,7 @@ import { ParticipantService } from '../participant/participant.service';
 import { paginateResponse } from 'src/common/paginate.response';
 import { Participant } from '../participant/participant.entity';
 
+
 @Injectable()
 export class MessageService extends TypeOrmCrudService<Message> {
   public newRoomID: any;
@@ -18,7 +19,6 @@ export class MessageService extends TypeOrmCrudService<Message> {
     @InjectRepository(Message)
     private messageRepository: Repository<Message>,
     private participantService: ParticipantService,
-    // private participantRepsitory: Repository<Participant>
   ) {
     super(messageRepository);
   }
@@ -69,4 +69,6 @@ export class MessageService extends TypeOrmCrudService<Message> {
 
     return paginateResponse(data, page, take)
   }
+
+
 }

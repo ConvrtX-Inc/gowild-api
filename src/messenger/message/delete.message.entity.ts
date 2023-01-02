@@ -4,6 +4,7 @@ import { IsOptional, Validate } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { IsExist } from 'src/common/validators/is-exists.validator';
 
+
 @Entity('gw_deleted_messages')
 export class DeletedMessage extends AbstractBaseEntity {
   @IsOptional()
