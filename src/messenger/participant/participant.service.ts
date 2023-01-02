@@ -58,4 +58,20 @@ export class ParticipantService extends TypeOrmCrudService<Participant> {
         .andWhere("participant.user_id != :userId", {userId})
         .getRawMany();
   }
+
+    /*
+  clean conversation
+  */
+
+  async cleanConversation(userId: string, roomId: string){
+  
+    await this.participantRepository.createQueryBuilder()
+    .update('gw_participants').set({last_deleted_at: new Date()})
+    .where("user_id = :user_id AND room_id = :room_id", { user_id: userId, room_id: roomId })
+    .execute();
+
+    return {message: "Conversation deleted"};
+
+    
+  }
 }

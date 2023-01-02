@@ -8,6 +8,7 @@ import { FindOptions } from '../../common/types/find-options.type';
 import { Message } from './message.entity';
 import { ParticipantService } from '../participant/participant.service';
 import { paginateResponse } from 'src/common/paginate.response';
+import { Participant } from '../participant/participant.entity';
 
 @Injectable()
 export class MessageService extends TypeOrmCrudService<Message> {
@@ -17,6 +18,7 @@ export class MessageService extends TypeOrmCrudService<Message> {
     @InjectRepository(Message)
     private messageRepository: Repository<Message>,
     private participantService: ParticipantService,
+    // private participantRepsitory: Repository<Participant>
   ) {
     super(messageRepository);
   }
@@ -59,7 +61,9 @@ export class MessageService extends TypeOrmCrudService<Message> {
 
 
    const data = await this.messageRepository.createQueryBuilder('message')
-        .where('message.room_id = :roomId', {roomId})
+   
+        .leftJoinAndMapMany('message.participants', Participant, 'participants')
+        .where('message.room_id = :roomId and participants.room_id = :roomId and participants.last_deleted_at is null', {roomId})
         .skip(skip).take(take)
         .getManyAndCount();
 
