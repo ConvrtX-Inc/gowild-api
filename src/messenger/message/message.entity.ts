@@ -11,7 +11,7 @@ export class Message extends AbstractBaseEntity {
   @Validate(IsExist, ['Room', 'id'], {
     message: 'Room not Found',
   })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   room_id?: string | null;
 
   @IsOptional()
@@ -19,7 +19,7 @@ export class Message extends AbstractBaseEntity {
   @Validate(IsExist, ['UserEntity', 'id'], {
     message: 'User not Found',
   })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   user_id?: string | null;
 
   @IsOptional()
