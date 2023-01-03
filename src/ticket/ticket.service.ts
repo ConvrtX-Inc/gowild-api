@@ -8,6 +8,7 @@ import {UserEntity} from "../users/user.entity";
 import {NotFoundException} from "../exceptions/not-found.exception";
 import {SystemSupportAttachmentService} from "../system-support-attachment/system-support-attachment.service";
 import {SystemSupportAttachment} from "../system-support-attachment/system-support-attachment.entity";
+import {NotificationService} from "../notification/notification.service";
 
 @Injectable()
 export class TicketService extends TypeOrmCrudService<Ticket> {
@@ -15,6 +16,7 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
     @InjectRepository(Ticket)
     private ticketRepository: Repository<Ticket>,
     private readonly systemSupportAttachmentService: SystemSupportAttachmentService,
+    private readonly notificationService: NotificationService
   ) {
     super(ticketRepository);
   }
@@ -31,6 +33,9 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
     });
    const ticket = await this.saveEntity(newTicket);
    ticket['user'] = user;
+   await this.notificationService.createNotificationAdmin(
+       `${user.firstName} ${user.lastName} created a notification!`,
+       'support');
 
    return {
      status: HttpStatus.OK,
@@ -65,6 +70,21 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
     }
   }
 
+  // get all tickets
+  async getAllTickets(){
+    const tickets = await this.ticketRepository.find({})
+
+    if(!tickets){
+      throw new NotFoundException({
+        errors:[
+          {
+            message: 'Tickets not Found!'
+          }
+        ]
+      })
+    }
+    return tickets
+  }
   async updateTicketPicture(id: string, image: string) {
     const ticket = await this.ticketRepository.findOne({
       where: { id: id },

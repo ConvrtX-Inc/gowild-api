@@ -1,27 +1,31 @@
 import {
   Body,
-  Request,
   Controller,
-  UseGuards,
   Get,
-  Param,
-  Post,
   HttpCode,
   HttpStatus,
-  UseInterceptors, UploadedFile
+  Param,
+  Post,
+  Request,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors
 } from '@nestjs/common';
-import { TicketService } from './ticket.service';
+import {TicketService} from './ticket.service';
 import {ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
 import {Crud, CrudController, Override} from '@nestjsx/crud';
-import { Ticket } from './entities/ticket.entity';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import {Ticket} from './entities/ticket.entity';
+import {JwtAuthGuard} from '../auth/jwt-auth.guard';
 import {CreateTicketDto} from "./dto/create-ticket.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {FilesService} from "../files/files.service";
 import {ConfigService} from "@nestjs/config";
+import {Roles} from "../roles/roles.decorator";
+import {RolesGuard} from "../roles/roles.guard";
+import {RoleEnum} from "../roles/roles.enum";
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('Ticket')
 @Crud({
   model: {
@@ -64,6 +68,16 @@ export class TicketController implements CrudController<Ticket> {
   @Override('getOneBase')
   async getOneTicket(@Param('id') id: string) {
     return this.service.getTicket(id);
+  }
+
+  @Override('getManyBase')
+  @Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
+  @ApiOperation({summary: "Retrieve all tickets"})
+  async getManyTickets(){
+    return{
+      message: 'Tickets fetched Successfully!',
+      data: await this.service.getAllTickets()
+    }
   }
 
   @Get('users/:user_id')

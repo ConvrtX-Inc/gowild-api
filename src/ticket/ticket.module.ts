@@ -13,11 +13,13 @@ import * as multerS3 from 'multer-s3';
 import path from "path";
 import {SystemSupportAttachmentService} from "../system-support-attachment/system-support-attachment.service";
 import {SystemSupportAttachment} from "../system-support-attachment/system-support-attachment.entity";
+import {NotificationService} from "../notification/notification.service";
+import {Notification} from "../notification/notification.entity";
 
 @Module({
   controllers: [TicketController],
-  providers: [TicketService, SystemSupportAttachmentService],
-  imports: [TypeOrmModule.forFeature([Ticket, SystemSupportAttachment]), FilesModule
+  providers: [TicketService, SystemSupportAttachmentService, NotificationService],
+  imports: [TypeOrmModule.forFeature([Ticket, SystemSupportAttachment, Notification]), FilesModule
     ,MulterModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
