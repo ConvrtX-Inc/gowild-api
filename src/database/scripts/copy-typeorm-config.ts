@@ -20,6 +20,7 @@ class AppModule {}
 
 const setConfig = async () => {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
   const typeOrmServiceConfig = app.get(TypeOrmConfigService);
   fs.writeFileSync(
     'ormconfig.json',

@@ -84,6 +84,8 @@ export class UsersController implements CrudController<UserEntity> {
     };
     const keys = ['picture', 'frontImage', 'backImage'];
     const driver = this.configService.get('file.driver');
+    console.log(driver);
+    console.log('File Driver');
     for (const key of keys)
     {
       if(key in files){
