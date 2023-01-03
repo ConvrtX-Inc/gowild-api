@@ -1,8 +1,19 @@
-import {Controller, HttpCode, HttpStatus, Param, Post, UploadedFile, UseGuards, UseInterceptors, Body} from '@nestjs/common';
+import {
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+  Body,
+  Get
+} from '@nestjs/common';
 import { TreasureChestService } from './treasure-chest.service';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { TreasureChest } from './entities/treasure-chest.entity';
-import {ApiBearerAuth, ApiBody, ApiConsumes, ApiResponse, ApiTags} from '@nestjs/swagger';
+import {ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {Route} from "../route/entities/route.entity";
 import {FileInterceptor} from "@nestjs/platform-express";
@@ -12,6 +23,7 @@ import {CreateTreasureChestDto} from "./dto/create-treasure-chest.dto";
 import { ChangeHuntStatusDto } from './dto/change-hunt-status';
 import { ConfigService } from '@nestjs/config';
 import { Sponsor } from 'src/sponsor/entities/sponsor.entity';
+import {UserTreasureHuntService} from "../user-treasure-hunt/user-treasure-hunt.service";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -49,8 +61,12 @@ import { Sponsor } from 'src/sponsor/entities/sponsor.entity';
   version: '1',
 })
 export class TreasureChestController implements CrudController<TreasureChest> {
-  constructor(readonly service: TreasureChestService, private readonly filesService: FilesService,
-    private readonly configService: ConfigService) {}
+  constructor(readonly service: TreasureChestService,
+              private readonly filesService: FilesService,
+              private readonly configService: ConfigService,
+              private readonly userTreasureHuntService: UserTreasureHuntService
+
+              ) {}
 
   get base(): CrudController<TreasureChest> {
     return this;
@@ -88,5 +104,11 @@ export class TreasureChestController implements CrudController<TreasureChest> {
   @Post('hunt/status/:id')
   async huntStatus(@Param('id') id:string , @Body() dto :ChangeHuntStatusDto){
     return this.service.huntStatus(id,dto);
+  }
+
+  @Get('user-hunts')
+  @ApiOperation({summary: 'Retrieve all user Hunts!'})
+  async getAllUserHunts(){
+    return await this.userTreasureHuntService.getAllHunts();
   }
 }

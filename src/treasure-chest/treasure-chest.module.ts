@@ -16,12 +16,14 @@ import { TreasureWildService } from './treasure-wild.service';
 import { UserTreasureHuntModule } from 'src/user-treasure-hunt/user-treasure-hunt.module';
 import {NotificationService} from "../notification/notification.service";
 import {Notification} from "../notification/notification.entity";
+import {UserTreasureHuntService} from "../user-treasure-hunt/user-treasure-hunt.service";
+import {UserTreasureHuntEntity} from "../user-treasure-hunt/user-treasure-hunt.entity";
 
 
 @Module({
   controllers: [TreasureChestController,TreasureWildController],
-  providers: [TreasureChestService,TreasureWildService, NotificationService],
-  imports: [UserTreasureHuntModule,TypeOrmModule.forFeature([TreasureChest,Notification]),FilesModule, MulterModule.registerAsync({
+  providers: [TreasureChestService,TreasureWildService, NotificationService, UserTreasureHuntService],
+  imports: [UserTreasureHuntModule,TypeOrmModule.forFeature([TreasureChest,Notification, UserTreasureHuntEntity]),FilesModule, MulterModule.registerAsync({
     imports: [ConfigModule],
     inject: [ConfigService],
     useFactory: (configService: ConfigService) => {

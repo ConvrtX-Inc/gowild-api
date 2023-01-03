@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 import { UserTreasureHuntEntity } from './user-treasure-hunt.entity';
 import { DeepPartial } from '../common/types/deep-partial.type';
 import { FindOptions } from '../common/types/find-options.type';
+import {UserEntity} from "../users/user.entity";
+import {TreasureChest} from "../treasure-chest/entities/treasure-chest.entity";
 
 @Injectable()
 export class UserTreasureHuntService extends TypeOrmCrudService<UserTreasureHuntEntity> {
@@ -13,6 +15,41 @@ export class UserTreasureHuntService extends TypeOrmCrudService<UserTreasureHunt
     private UserTreasureHuntRepository: Repository<UserTreasureHuntEntity>,
   ) {
     super(UserTreasureHuntRepository);
+  }
+
+  async getAllHunts(){
+
+    const hunts = await this.UserTreasureHuntRepository
+        .createQueryBuilder('hunt')
+        .leftJoinAndMapOne('hunt.user','UserEntity', 'user','hunt.user_id = user.id')
+        .leftJoinAndMapOne('hunt.treasure_chest', 'TreasureChest','treasure_chest',
+            'hunt.treasure_chest_id = treasure_chest.id')
+        .getMany();
+
+    const mappedHunts = hunts.map(hunt => {
+      const mappedHunt = {
+        id: hunt.id,
+        user_id:hunt.user_id,
+        treasure_chest_id: hunt.treasure_chest_id,
+        status: hunt.status,
+        user: {
+          id: hunt['user'].id,
+          firstName: hunt['user'].firstName,
+          lastName: hunt['user'].lastName,
+          username: hunt['user'].username,
+          email: hunt['user'].email,
+          picture: hunt['user'].picture,
+        },
+        treasure_chest: {
+          id: hunt['treasure_chest'].id,
+          title: hunt['treasure_chest'].title,
+          status: hunt['treasure_chest'].status,
+        },
+      };
+      return mappedHunt;
+    });
+
+    return mappedHunts;
   }
 
   async saveOne(data) {

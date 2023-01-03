@@ -11,7 +11,7 @@ export class Notification extends AbstractBaseEntity {
   @Validate(IsExist, ['UserEntity', 'id'], {
     message: 'User not Found',
   })
-  @Column({ nullable: true })
+  @Column({ nullable: true , type: 'uuid'})
   user_id?: string | null;
 
   @IsOptional()
