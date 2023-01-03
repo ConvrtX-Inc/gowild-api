@@ -9,6 +9,7 @@ import { Like } from 'src/like/entities/like.entity';
 import { CreatePostFeedDto } from "./dto/create-post-feed.dto";
 import { UserEntity } from 'src/users/user.entity';
 import { PostFeedAttachment } from 'src/post-feed-attchment/post-feed-attachment.entity';
+import { PostFeedAttachmentService } from 'src/post-feed-attchment/post-feed-attachment.service';
 
 @Injectable()
 export class PostFeedService extends TypeOrmCrudService<PostFeed> {
@@ -18,7 +19,8 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
     @InjectRepository(Friends)
     private friendsRepository: Repository<Friends>,
     @InjectRepository(Like)
-    private likeRepository: Repository<Like>
+    private likeRepository: Repository<Like>,
+    private readonly postFeedAttachmentService: PostFeedAttachmentService,
   ) {
     super(postFeedRepository);
   }
@@ -47,7 +49,7 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
     return { message: "Post-Feed created successfully!", data: feedData };
   }
 
-  public async updatePicture(id: string, picture: string) {
+  public async updatePicture(id: string, picture: string, attachment?: string) {
     const postFeed = await this.postFeedRepository.findOne({
       where: { id: id },
     });
@@ -67,10 +69,20 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
         ],
       });
     }
-
     postFeed['user'] = user;
-    postFeed.picture = picture;
-    return { message: "Post-Feed created successfully!", data: await postFeed.save() };
+    if (picture) {
+      postFeed.picture = picture;
+    }
+    if (attachment) {
+      var newAttachment = await this.postFeedAttachmentService.createAttachment(attachment, id)
+    }
+    const response = await postFeed.save();
+    var attachmentArr = [];
+    if (newAttachment) {
+      attachmentArr.push(newAttachment.data);
+    }
+    response['attachment'] = attachmentArr;
+    return { message: "Post-Feed created successfully!", data: response };
   }
 
   async update(createPostFeedDto: CreatePostFeedDto) {
@@ -84,33 +96,6 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
     const post = await this.postFeedRepository.findOne({
       id: id,
     });
-    post.views++;
-    await post.save();
-
-    const likes = await Like.count({
-      postfeed_id: id
-    });
-    const comments = await Comment.count({
-      postfeed_id: id
-    })
-
-    let like_images = [];
-    const likesPicture = await this.likeRepository.createQueryBuilder('like')
-      .leftJoinAndMapOne('like.user', UserEntity, 'user', 'user.id = like.user_id')
-      .orderBy('RANDOM()')
-      .limit(3)
-      .where("like.postfeed_id = :id", { id })
-      .getMany()
-
-    likesPicture.forEach((obj, index) => {
-      if (obj['user'].picture != null) {
-        like_images.push(obj['user'].picture)
-      }
-    })
-
-    post['likes'] = likes;
-    post['comments'] = comments;
-    post['likes_images'] = like_images;
     if (!post) {
 
       return {
@@ -122,7 +107,42 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
         ]
       }
     }
+    post.views++;
+    await post.save();
 
+    const likes = await Like.count({
+      postfeed_id: id
+    });
+    const comments = await Comment.count({
+      postfeed_id: id
+    })
+    const attachments = await PostFeedAttachment.find({
+      postfeed_id: id
+    })
+
+    // Getting Images of like Users
+    let like_images = [];
+    const likesPicture = await this.likeRepository.createQueryBuilder('like')
+      .leftJoinAndMapOne('like.user', UserEntity, 'user', 'user.id = like.user_id')
+      .orderBy('RANDOM()')
+      .limit(3)
+      .where("like.postfeed_id = :id", { id })
+      .getMany()
+    likesPicture.forEach((obj, index) => {
+
+      if (obj['user']) {
+        if (obj['user'].picture != null) {
+          like_images.push(obj['user'].picture)
+        } else {
+          like_images.push("")
+        }
+      }
+    })
+
+    post['likes'] = likes;
+    post['comments'] = comments;
+    post['likes_images'] = like_images;
+    post['attachment'] = attachments;
     return { data: post };
   }
 
@@ -156,10 +176,13 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
         .getMany()
 
       likesPicture.forEach((obj, index) => {
-        if (obj['user'].picture != null) {
-          like_images.push(obj['user'].picture)
-        } else {
-          like_images = [""];
+        if (obj['user']) {
+
+          if (obj['user'].picture != null) {
+            like_images.push(obj['user'].picture)
+          } else {
+            like_images.push("");
+          }
         }
       })
       allPosts[i]['likes'] = likes;
