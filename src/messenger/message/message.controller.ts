@@ -7,6 +7,7 @@ import { string } from 'yargs';
 
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { ParticipantService } from '../participant/participant.service';
+import { DeleteMessageService } from './delete-message.service';
 import {Message} from "./message.entity";
 import {MessageService} from "./message.service";
 
@@ -37,7 +38,8 @@ import {MessageService} from "./message.service";
   version: '1',
 })
 export class MessageController implements CrudController<Message> {
-  constructor(public service: MessageService, public participantService: ParticipantService) {}
+  constructor(public service: MessageService, public participantService: ParticipantService,
+    public deleteMessageService: DeleteMessageService) {}
 
   get base(): CrudController<Message> {
     return this;
@@ -46,8 +48,8 @@ export class MessageController implements CrudController<Message> {
   @ApiResponse({ type: Message })
   @ApiOperation({ summary: 'Get User Messages' })
   @Get('/:roomId')
-  async getUserMessages(@Param('roomId') roomId, @Query() query){
-    return await this.service.userMessages(roomId, query.page)
+  async getUserMessages(@Request() req, @Param('roomId') roomId, @Query() query){
+    return await this.service.userMessages(req.user.sub, roomId, query.page)
   }
   @ApiOperation({ summary: 'Get Inbox' })
   @Get('/inbox')
@@ -61,4 +63,9 @@ export class MessageController implements CrudController<Message> {
     return await this.participantService.cleanConversation(request.user.sub, roomId);
   }
 
+  @ApiOperation({ summary: 'Delete single message' })
+  @Post('/:roomId/:messageId')
+  public async deleteMessage(@Request() request: Express.Request, @Param('roomId') roomId, @Param('messageId') messageId) {
+    return await this.deleteMessageService.deleteMessage(request.user.sub, roomId, messageId);
+  }
 }

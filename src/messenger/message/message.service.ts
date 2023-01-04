@@ -9,6 +9,8 @@ import { Message } from './message.entity';
 import { ParticipantService } from '../participant/participant.service';
 import { paginateResponse } from 'src/common/paginate.response';
 import { Participant } from '../participant/participant.entity';
+import { DeletedMessage } from './delete.message.entity';
+
 
 @Injectable()
 export class MessageService extends TypeOrmCrudService<Message> {
@@ -18,7 +20,6 @@ export class MessageService extends TypeOrmCrudService<Message> {
     @InjectRepository(Message)
     private messageRepository: Repository<Message>,
     private participantService: ParticipantService,
-    // private participantRepsitory: Repository<Participant>
   ) {
     super(messageRepository);
   }
@@ -54,19 +55,27 @@ export class MessageService extends TypeOrmCrudService<Message> {
     return await this.participantService.userParticipants(userId);
   }
   // Messages
-  async userMessages(roomId: string, pageNo: number) {
+  async userMessages(userId: string, roomId: string, pageNo: number) {
     const take = 20
     const page = pageNo || 1;
     const skip = (page - 1) * take;
 
 
    const data = await this.messageRepository.createQueryBuilder('message')
-   
-        .leftJoinAndMapMany('message.participants', Participant, 'participants')
-        .where('message.room_id = :roomId and participants.room_id = :roomId and participants.last_deleted_at is null', {roomId})
+
+        .leftJoinAndMapMany('message.deletedmessage', DeletedMessage, 'deletedmessage', 'message.id = deletedmessage.message_id AND deletedmessage.user_id = :userId', {userId: userId})
+        .leftJoinAndMapMany('message.participants', Participant, 'participants', 'message.room_id = participants.room_id AND participants.user_id = :userId', {userId: userId})
+        .where('message.room_id = :roomId', {roomId: roomId})
+        .andWhere('deletedmessage.message_id IS Null')
+        .andWhere('participants.last_deleted_at IS NULL OR (participants.last_deleted_at IS NOT NULL AND participants.create_date > participants.last_deleted_at)')
+        .select(['message.id', 'message.room_id', 'message.user_id', 'message.message', 'message.attachment'])
         .skip(skip).take(take)
-        .getManyAndCount();
+        .getManyAndCount()
+
+        
 
     return paginateResponse(data, page, take)
   }
+
+
 }
