@@ -34,9 +34,7 @@ export class UserTreasureHuntService extends TypeOrmCrudService<UserTreasureHunt
     }
 
     const mappedHunts = hunts.map(hunt => {
-
       if ( hunt['user'] && hunt['treasure_chest']) {
-
         const mappedHunt = {
           id: hunt.id,
           user_id: hunt.user_id,
