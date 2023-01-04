@@ -26,6 +26,13 @@ export class UserTreasureHuntService extends TypeOrmCrudService<UserTreasureHunt
             'hunt.treasure_chest_id = treasure_chest.id')
         .getMany();
 
+
+    if(!hunts){
+      throw new NotFoundException({
+        errors:[{ message: 'User Treasure Hunt not Found!'}]
+      })
+    }
+
     const mappedHunts = hunts.map(hunt => {
       const mappedHunt = {
         id: hunt.id,
