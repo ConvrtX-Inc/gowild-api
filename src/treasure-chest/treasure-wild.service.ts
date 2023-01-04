@@ -63,7 +63,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
 
     const newRegister = await this.UserTreasureHuntService.saveOne(data);
     await this.NotificationService.createNotification(data.user_id, 'TreasureHunt created successfully!')
-    return { data: newRegister }
+    return { message : "Successfully Registered" , data: newRegister }
   }
 
   /*
