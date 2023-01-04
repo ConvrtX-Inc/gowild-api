@@ -15,11 +15,13 @@ import {SystemSupportAttachmentService} from "../system-support-attachment/syste
 import {SystemSupportAttachment} from "../system-support-attachment/system-support-attachment.entity";
 import {NotificationService} from "../notification/notification.service";
 import {Notification} from "../notification/notification.entity";
+import {TicketMessagesService} from "../ticket-messages/ticket-messages.service";
+import {TicketMessage} from "../ticket-messages/entities/ticket-message.entity";
 
 @Module({
   controllers: [TicketController],
-  providers: [TicketService, SystemSupportAttachmentService, NotificationService],
-  imports: [TypeOrmModule.forFeature([Ticket, SystemSupportAttachment, Notification]), FilesModule
+  providers: [TicketService, SystemSupportAttachmentService, NotificationService, TicketMessagesService],
+  imports: [TypeOrmModule.forFeature([Ticket, SystemSupportAttachment, Notification, TicketMessage]), FilesModule
     ,MulterModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

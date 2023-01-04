@@ -9,6 +9,7 @@ import {NotFoundException} from "../exceptions/not-found.exception";
 import {SystemSupportAttachmentService} from "../system-support-attachment/system-support-attachment.service";
 import {SystemSupportAttachment} from "../system-support-attachment/system-support-attachment.entity";
 import {NotificationService} from "../notification/notification.service";
+import {TicketMessagesService} from "../ticket-messages/ticket-messages.service";
 
 @Injectable()
 export class TicketService extends TypeOrmCrudService<Ticket> {
@@ -16,7 +17,8 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
     @InjectRepository(Ticket)
     private ticketRepository: Repository<Ticket>,
     private readonly systemSupportAttachmentService: SystemSupportAttachmentService,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NotificationService,
+    private readonly ticketMessageService: TicketMessagesService
   ) {
     super(ticketRepository);
   }
@@ -26,13 +28,15 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
     const newTicket = {
       user_id: req,
       subject: dto.subject,
-      message: dto.message,
     }
     const user = await UserEntity.findOne({
       id: req
     });
    const ticket = await this.saveEntity(newTicket);
+
+   await this.ticketMessageService.createTicketMessage(ticket.id, dto.message, ticket.user_id)
    ticket['user'] = user;
+
    await this.notificationService.createNotificationAdmin(
        `${user.firstName} ${user.lastName} created a notification!`,
        'support');
@@ -61,7 +65,7 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
     const tickets = await this.ticketRepository.createQueryBuilder('ticket')
         .where("ticket.user_id = :id",{id: id})
         .leftJoinAndMapOne('ticket.user', UserEntity, 'user', 'ticket.user_id = user.id')
-        .leftJoinAndMapMany('ticket.attachment', SystemSupportAttachment, 'attachment', 'ticket.id = attachment.ticket_id')
+        //.leftJoinAndMapMany('ticket.attachment', SystemSupportAttachment, 'attachment', 'ticket.id = attachment.ticket_id')
         .getMany()
 
     return {

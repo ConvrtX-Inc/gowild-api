@@ -31,12 +31,6 @@ export class Ticket extends AbstractBaseEntity {
   subject?: string;
 
   @IsOptional()
-  @ApiProperty({ example: 'Description' })
-  @Column({ type: 'text' })
-  message?: string;
-
-
-  @IsOptional()
   @ApiProperty({
     example: TicketStatusEnum.OnHold,
     nullable: true,
