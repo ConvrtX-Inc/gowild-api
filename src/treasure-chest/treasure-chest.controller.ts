@@ -26,7 +26,7 @@ import { Sponsor } from 'src/sponsor/entities/sponsor.entity';
 import {UserTreasureHuntService} from "../user-treasure-hunt/user-treasure-hunt.service";
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard,AdminRolesGuard)
 @ApiTags('Admin Treasure Chest')
 @Crud({
   model: {
