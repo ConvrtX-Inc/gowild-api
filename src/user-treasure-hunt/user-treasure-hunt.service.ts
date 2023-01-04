@@ -34,27 +34,31 @@ export class UserTreasureHuntService extends TypeOrmCrudService<UserTreasureHunt
     }
 
     const mappedHunts = hunts.map(hunt => {
-      const mappedHunt = {
-        id: hunt.id,
-        user_id:hunt.user_id,
-        treasure_chest_id: hunt.treasure_chest_id,
-        status: hunt.status,
-        user: {
-          id: hunt['user'].id,
-          firstName: hunt['user'].firstName,
-          lastName: hunt['user'].lastName,
-          username: hunt['user'].username,
-          email: hunt['user'].email,
-          picture: hunt['user'].picture,
-        },
-        treasure_chest: {
-          id: hunt['treasure_chest'].id,
-          title: hunt['treasure_chest'].title,
-          status: hunt['treasure_chest'].status,
-        },
-      };
-      return mappedHunt;
-    });
+
+      if ( hunt['user'] && hunt['treasure_chest']) {
+
+        const mappedHunt = {
+          id: hunt.id,
+          user_id: hunt.user_id,
+          treasure_chest_id: hunt.treasure_chest_id,
+          status: hunt.status,
+          user: {
+            id: hunt['user'].id,
+            firstName: hunt['user'].firstName,
+            lastName: hunt['user'].lastName,
+            username: hunt['user'].username,
+            email: hunt['user'].email,
+            picture: hunt['user'].picture,
+          },
+          treasure_chest: {
+            id: hunt['treasure_chest'].id,
+            title: hunt['treasure_chest'].title,
+            status: hunt['treasure_chest'].status,
+          },
+        };
+
+        return mappedHunt;
+      }});
 
     return mappedHunts;
   }
