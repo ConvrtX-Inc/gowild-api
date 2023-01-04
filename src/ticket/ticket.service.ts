@@ -103,7 +103,7 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
 
     const saveAttachment = await this.systemSupportAttachmentService.createSupportAttachment(image,id);
 
-    return{ message: "Ticket's Image Updated Successfully!", data: saveAttachment};
+    return saveAttachment;
   }
 
   async updateStatus(id){

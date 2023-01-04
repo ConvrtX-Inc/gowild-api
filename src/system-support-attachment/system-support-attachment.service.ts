@@ -19,7 +19,7 @@ export class SystemSupportAttachmentService extends TypeOrmCrudService<SystemSup
       attachment : picture
     }
     const data =  await this.saveOne(newAttachment);
-    return {data : data}
+    return data;
   }
 
   async findManyEntities(options: FindOptions<SystemSupportAttachment>) {
