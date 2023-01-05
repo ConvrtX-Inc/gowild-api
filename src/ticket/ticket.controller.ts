@@ -7,7 +7,6 @@ import {
   Param,
   Post,
   Request,
-  UploadedFile,
   UseGuards,
   UseInterceptors,
   UploadedFiles
@@ -18,13 +17,13 @@ import { Crud, CrudController, Override } from '@nestjsx/crud';
 import { Ticket } from './entities/ticket.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateTicketDto } from "./dto/create-ticket.dto";
-import { FileInterceptor } from "@nestjs/platform-express";
 import { FilesService } from "../files/files.service";
 import { ConfigService } from "@nestjs/config";
 import { Roles } from "../roles/roles.decorator";
 import { RolesGuard } from "../roles/roles.guard";
 import { RoleEnum } from "../roles/roles.enum";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
+import {AddMessageidTicketDto} from "./dto/add-messageid-ticket.dto";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -103,18 +102,22 @@ export class TicketController implements CrudController<Ticket> {
       },
     },
   })
-  @Post(':id/update-image')
+  @Post(':ticket_id/update-image')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(FileFieldsInterceptor([
     { name: 'attachment', maxCount: 3 },
   ]))
   public async updateImage(
-    @Param('id') id: string,
+    @Param('ticket_id',) id: string,
+    @Body() dto: AddMessageidTicketDto,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
 
-    var attachments = []
+
+    let attachments = []
     attachments = [...await files['attachment']]
+
+
     
    
     for (let i = 0; i < attachments.length; i++) {
@@ -124,7 +127,7 @@ export class TicketController implements CrudController<Ticket> {
         s3: files['attachment'][i].location,
         firebase: files['attachment'][i].publicUrl,
       };
-       await this.service.updateTicketPicture(id, picture[driver]);     
+       await this.service.updateTicketPicture(id, dto.message_id, picture[driver]);
     }
     return {message:"Ticket Created Successfully"};
   }
