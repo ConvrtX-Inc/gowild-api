@@ -43,7 +43,7 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
     }
   const messages = await this.saveOne(newMessage);
 
-    return messages
+    return {message: "Message Created", data: messages}
 
   }
   async getTicketMessages(ticketId: string, pageNo: number) {
