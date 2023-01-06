@@ -32,7 +32,7 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
    ticket['user'] = user;
 
    return {
-    message: "Ticket Created Successfully!"
+    message: "Ticket Created Successfully!",
     data: ticket
    }
   }
