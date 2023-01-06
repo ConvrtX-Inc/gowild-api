@@ -32,8 +32,8 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
    ticket['user'] = user;
 
    return {
-     status: HttpStatus.OK,
-     data: ticket
+    message: "Ticket Created Successfully!"
+    data: ticket
    }
   }
 
