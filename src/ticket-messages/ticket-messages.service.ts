@@ -56,6 +56,7 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
         .where('ticketMessage.ticket_id = :ticketId', {ticketId})
         .leftJoinAndMapMany('ticketMessage.attachment', SystemSupportAttachment, 'attachment', 'ticketMessage.id = attachment.message_id')
         .skip(skip).take(take)
+        .orderBy('ticketMessage.createdDate', 'ASC')
         .getManyAndCount();
 
     return paginateResponse(data, page, take)
