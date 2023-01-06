@@ -123,12 +123,12 @@ export class SubAdminService {
     }
 
     admin.firstName = dto.firstName,
-      admin.lastName = dto.lastName,
-      admin.addressOne = dto.addressOne;
-   // admin.addressTwo = dto.addressTwo;
+    admin.lastName = dto.lastName,
+    admin.birthDate = dto.birthDate,
+    admin.addressOne = dto.addressOne;
     admin.username = dto.username;
-    admin.email = dto.email;
-    admin.username = dto.email;
+   
+   
 
 
     await admin.save();
