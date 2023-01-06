@@ -11,11 +11,17 @@ import {randomStringGenerator} from "@nestjs/common/utils/random-string-generato
 import * as AWS from "aws-sdk";
 import * as multerS3 from 'multer-s3';
 import path from "path";
+import {SystemSupportAttachmentService} from "../system-support-attachment/system-support-attachment.service";
+import {SystemSupportAttachment} from "../system-support-attachment/system-support-attachment.entity";
+import {NotificationService} from "../notification/notification.service";
+import {Notification} from "../notification/notification.entity";
+import {TicketMessagesService} from "../ticket-messages/ticket-messages.service";
+import {TicketMessage} from "../ticket-messages/entities/ticket-message.entity";
 
 @Module({
   controllers: [TicketController],
-  providers: [TicketService],
-  imports: [TypeOrmModule.forFeature([Ticket]), FilesModule
+  providers: [TicketService, SystemSupportAttachmentService, NotificationService, TicketMessagesService],
+  imports: [TypeOrmModule.forFeature([Ticket, SystemSupportAttachment, Notification, TicketMessage]), FilesModule
     ,MulterModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

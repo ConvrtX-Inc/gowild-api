@@ -2,10 +2,10 @@ import {IsOptional} from "class-validator";
 import {ApiProperty} from "@nestjs/swagger";
 import {Column} from "typeorm";
 
-export class CreateTicketMessageDto {
+export class AddMessageidTicketDto {
 
     @IsOptional()
     @ApiProperty({ example: 'Description' })
-    @Column({ type: 'text' })
-    message?: string;
+    @Column({ type: 'uuid', nullable: true })
+    message_id?: string;
 }
