@@ -4,6 +4,7 @@ import { Notification } from './notification.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import {DeepPartial} from "../common/types/deep-partial.type";
+import {RoleEnum} from "../roles/roles.enum";
 
 @Injectable()
 export class NotificationService extends TypeOrmCrudService<Notification> {
@@ -22,6 +23,18 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
       data: addNotification
     }
   }
+
+  // create notification for admin
+   public async createNotificationAdmin(message: string, type){
+    let addAdminNotification = new Notification();
+     addAdminNotification.notification_msg = message
+     addAdminNotification.type = type
+     addAdminNotification.role = RoleEnum.ADMIN
+     addAdminNotification = await this.saveEntity(addAdminNotification)
+     return{
+      data: addAdminNotification
+     }
+   }
   // get notification by user id
   public async getNotificationByUserId(id: string) {
 
@@ -51,6 +64,21 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
     }
 
   }
+  // get Role.Admin notification
+  public async getAdminNotification(role){
+    const findNotifications = await this.destinationsRepository.find({
+      where:{
+        role: role
+      }
+    })
+    if(!findNotifications){
+      throw new NotFoundException({
+        error:[ {message: "Admin Notification Not Found!"} ]
+      })
+    }
+    return findNotifications
+  }
+
   // get all notification
   public async getAllNotifications(){
 

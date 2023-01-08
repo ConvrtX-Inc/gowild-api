@@ -30,7 +30,7 @@ import { AuthRefreshTokenDto } from './dtos/auth-refresh-token.dto';
 import { UserEntity } from '../users/user.entity';
 import { userTokenCookieKey } from '../common/constants/cookie.keys';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import {AuthVerifyUserDto} from "./dtos/auth-verify-user.dto";
+import { AuthVerifyUserDto } from "./dtos/auth-verify-user.dto";
 import { SuccessResponse } from './dtos/auth-response'
 
 @ApiTags('Auth')
@@ -39,7 +39,7 @@ import { SuccessResponse } from './dtos/auth-response'
   version: '1',
 })
 export class AuthController {
-  constructor(public service: AuthService) {}
+  constructor(public service: AuthService) { }
 
   @ApiResponse({ type: TokenResponse })
   @Post('login')
@@ -60,7 +60,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Register new account' })
   async register(
     @Body() createUserDto: AuthRegisterLoginDto,
-  ): Promise<UserEntity> {
+  ) {
     return this.service.register(createUserDto);
   }
 
@@ -77,7 +77,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Verify OTP code ' })
   async verifyMobile(
     @Body() verifyOTPDto: AuthVerifyOTPDto,
-  ):Promise<SuccessResponse> {
+  ): Promise<SuccessResponse> {
     return await this.service.verifyMobile(
       verifyOTPDto.emailPhone,
       verifyOTPDto.hash
@@ -86,8 +86,8 @@ export class AuthController {
 
   @Post('reset/password')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Reset user password'})
-  async resetPassword(@Body() resetPasswordDto: AuthResetPasswordDto ):Promise<SuccessResponse>{
+  @ApiOperation({ summary: 'Reset user password' })
+  async resetPassword(@Body() resetPasswordDto: AuthResetPasswordDto): Promise<SuccessResponse> {
     return await this.service.resetPassword(
       resetPasswordDto.hash,
       resetPasswordDto.emailPhone,
@@ -99,7 +99,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Verify Account' })
   async verify(
-      @Body() verifyUserDto: AuthVerifyUserDto,
+    @Body() verifyUserDto: AuthVerifyUserDto,
   ): Promise<TokenResponse> {
     return this.service.verifyOTP(verifyUserDto);
   }

@@ -140,34 +140,67 @@ export class AuthService {
     return response;
   }
 
-  public async register(dto: AuthRegisterLoginDto): Promise<UserEntity> {
+  public async register(dto: AuthRegisterLoginDto) {
+
 
     var isExist = await this.usersService.findOne({
-      where: { email: dto.email }
-    })
+      where: { phoneNo: dto.phoneNo }
+    });
+    console.log(isExist);
+    if (!isExist) {
+      isExist = await this.usersService.findOne({
+        where: { email: dto.email }
+      });
+    }
 
-    var phoneExist = await this.usersService.findOne({
-      where: { phoneNo: dto.phoneNo  }
-    })
     const hash = this.genHash();
-    if (isExist || phoneExist) {
-      isExist.firstName = dto.firstName;
-      isExist.lastName = dto.lastName;
-      isExist.gender = dto.gender;
-      isExist.email = dto.email;
-      isExist.username = null;
-      isExist.phoneNo = dto.phoneNo;
-      isExist.addressOne = dto.addressOne;
-      isExist.addressTwo = dto.addressTwo;
-      isExist.otp = '0000';
-      isExist.phoneVerified = false;
-      isExist.hash = hash;
+    if (isExist) {
+      if (isExist.phoneVerified == false) {
+        isExist.firstName = dto.firstName;
+        isExist.lastName = dto.lastName;
+        isExist.gender = dto.gender;
+        isExist.email = dto.email;
+        isExist.username = null;
+        isExist.phoneNo = dto.phoneNo;
+        isExist.addressOne = dto.addressOne;
+        isExist.addressTwo = dto.addressTwo;
+        isExist.otp = '0000';
+        isExist.phoneVerified = false;
+        isExist.hash = hash;
 
-      isExist.status = await this.statusService.findByEnum(StatusEnum.Active);
-      isExist.role = await this.roleService.findByEnum(RoleEnum.USER);
-      isExist = await this.usersService.saveEntity(isExist);
-      await this.passwordService.createPassword(isExist, dto.password);
-      return isExist;
+        isExist.status = await this.statusService.findByEnum(StatusEnum.Active);
+        isExist.role = await this.roleService.findByEnum(RoleEnum.USER);
+        isExist = await this.usersService.saveEntity(isExist);
+        await this.passwordService.createPassword(isExist, dto.password);
+        return isExist;
+      } else if (isExist.email == dto.email && isExist.phoneVerified == true) {
+        return {
+          "errors": [
+            {
+              message: "Email Already Exist",
+            }
+          ]
+        }
+      } else {
+        let entity = new UserEntity();
+        entity.firstName = dto.firstName;
+        entity.lastName = dto.lastName;
+        entity.gender = dto.gender;
+        entity.email = dto.email;
+        entity.username = null;
+        entity.phoneNo = dto.phoneNo;
+        entity.addressOne = dto.addressOne;
+        entity.addressTwo = dto.addressTwo;
+        entity.otp = '0000';
+        entity.phoneVerified = false;
+        entity.hash = hash;
+
+        entity.status = await this.statusService.findByEnum(StatusEnum.Active);
+        entity.role = await this.roleService.findByEnum(RoleEnum.USER);
+        entity = await this.usersService.saveEntity(entity);
+        await this.passwordService.createPassword(entity, dto.password);
+        return entity;
+      }
     } else {
       let entity = new UserEntity();
       entity.firstName = dto.firstName;
@@ -181,7 +214,6 @@ export class AuthService {
       entity.otp = '0000';
       entity.phoneVerified = false;
       entity.hash = hash;
-
 
       entity.status = await this.statusService.findByEnum(StatusEnum.Active);
       entity.role = await this.roleService.findByEnum(RoleEnum.USER);
@@ -228,8 +260,8 @@ export class AuthService {
         },
       });
 
-      if(!user){
-        throw new NotFoundException({message: "Please Enter correct email address!"})
+      if (!user) {
+        throw new NotFoundException({ message: "Please Enter correct email address!" })
       }
 
     } else {

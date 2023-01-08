@@ -1,33 +1,35 @@
-import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsOptional, Validate } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { IsExist } from 'src/common/validators/is-exists.validator';
-import { Transform } from 'class-transformer';
-import * as base64_arraybuffer from 'base64-arraybuffer-converter';
+
 
 @Entity('gw_system_support_attachments')
 export class SystemSupportAttachment extends AbstractBaseEntity {
   @IsOptional()
   @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
-  @Validate(IsExist, ['SystemSupport', 'id'], {
-    message: 'sys_support_id not Found',
+  @Validate(IsExist, ['Ticket', 'id'], {
+    message: 'ticket_id not Found',
   })
-  @Column({ nullable: true })
-  sys_support_id?: string | null;
+  @Column({
+    type: 'uuid',
+    nullable: false})
+  ticket_id?: string;
 
   @Allow()
   @IsOptional()
-  @ApiProperty({ example: 'byte64image' })
-  @Transform((value: Buffer | null | string) => (value == null ? '' : value))
-  @Column({
-    name: 'attachment',
-    type: 'bytea',
-    nullable: true,
-  })
-  attachment?: Buffer | null | string;
+  @ApiProperty({ example: 'Picture' })
+  //@Transform((value: Buffer | null | string) => (value == null ? '' : value))
+  @Column({ nullable: true })
+  attachment?: string | null;
 
-  @BeforeUpdate()
+  @Column({
+    type: 'uuid',
+    nullable: true})
+  message_id?: string;
+
+/*  @BeforeUpdate()
   @BeforeInsert()
   public encodeImage() {
     this.attachment = this.attachment
@@ -44,5 +46,5 @@ export class SystemSupportAttachment extends AbstractBaseEntity {
         );
       }
     } catch (e) {}
-  }
+  }*/
 }
