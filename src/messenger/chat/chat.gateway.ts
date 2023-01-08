@@ -15,7 +15,7 @@ import { RoomInfo } from './roomInfo';
 import { MessageDetail, MessageStatus } from '../message/messageDetail';
 import {convertToImage} from "../../common/constants/base64.image";
 
-@WebSocketGateway(5000,{ namespace:'/sockets',  cors: true})
+@WebSocketGateway(5000,{ namespace:'/chat',  cors: true})
 export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -44,8 +44,8 @@ export class ChatGateway
   }
 
   @SubscribeMessage('connect_users')
-  public async conect(client: Socket, payload: any): Promise<void> {
-    await this._roomService.insertRoom(payload.sender_id, payload.receiver_id);
+  public  conect(client: Socket, payload: any): void {
+    this._roomService.insertRoom(payload.sender_id, payload.receiver_id);
     this.logger.log(`Connect Conversation ` + this._roomService.newRoomID);
     this.addClient(client, payload.sender_id, this._roomService.newRoomID);
     this.joinRoom(client, this._roomService.newRoomID);

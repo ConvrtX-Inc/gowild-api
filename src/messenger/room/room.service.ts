@@ -57,7 +57,7 @@ export class RoomService extends TypeOrmCrudService<Room> {
     return this.newRoomID;
   }
 
-  async insertRoom(user_id, recipient_id): Promise<void> {
+  async insertRoom(user_id, recipient_id) {
     const query = this.roomRepository.createQueryBuilder('room');
     var roomid: any;
     query.select('room.*');
