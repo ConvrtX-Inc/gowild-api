@@ -7,8 +7,8 @@ import { RouteHistoricalEvent } from '../../route-historical-events/entities/rou
 import { AppPoint } from '../../common/lat-lng.embedded';
 import { Geometry } from 'geojson';
 import { UserEntity } from '../../users/user.entity';
-import {RoleEnum} from "../../roles/roles.enum";
-import {Coordinates} from "../../common/coordinates";
+import { RoleEnum } from "../../roles/roles.enum";
+import { Coordinates } from "../../common/coordinates";
 
 @Entity('gw_routes')
 export class Route extends AbstractBaseEntity {
@@ -26,6 +26,11 @@ export class Route extends AbstractBaseEntity {
     nullable: true,
   })
   title: string;
+
+  @IsOptional()
+  @ApiProperty({nullable: true })
+  @Column({nullable: true})
+  picture: string;
 
   @Allow()
   @ApiProperty({ type: () => Coordinates, nullable: false })
@@ -50,12 +55,6 @@ export class Route extends AbstractBaseEntity {
     orphanedRowAction: 'delete',
   })
   historicalEvents?: RouteHistoricalEvent[];
-
-  @Allow()
-  @ApiProperty({ nullable: true, type: () => FileEntity })
-  @ManyToOne(() => FileEntity, { nullable: true, cascade: false, eager: true })
-  @JoinColumn({ name: 'picture_id' })
-  picture: FileEntity;
 
   @IsOptional()
   @ApiProperty({ example: 'description', nullable: true })

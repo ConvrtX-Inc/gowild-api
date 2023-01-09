@@ -1,23 +1,27 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
-import {DeepPartial} from 'src/common/types/deep-partial.type';
-import {FindOptions} from 'src/common/types/find-options.type';
-import {Not, Repository} from 'typeorm';
-import {Route} from './entities/route.entity';
-import {FilesService} from '../files/files.service';
-import {CreateRouteDto} from "./dto/create-route.dto";
-import {RoleEnum} from "../roles/roles.enum";
-import {FileEntity} from "../files/file.entity";
-import {UserEntity} from "../users/user.entity";
-import {Status} from "../statuses/status.entity";
+import { Injectable, NotFoundException, HttpStatus } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
+import { DeepPartial } from 'src/common/types/deep-partial.type';
+import { FindOptions } from 'src/common/types/find-options.type';
+import { Not, Repository } from 'typeorm';
+import { Route } from './entities/route.entity';
+import { FilesService } from '../files/files.service';
+import { CreateRouteDto } from "./dto/create-route.dto";
+import { RoleEnum } from "../roles/roles.enum";
+import { FileEntity } from "../files/file.entity";
+import { UserEntity } from "../users/user.entity";
+import { Status } from "../statuses/status.entity";
+import { SaveRouteDto } from './dto/save-route-dto';
+import { SavedRoute, SavedRoutesStatusEnum } from './entities/saved-routs.entity';
+import { defaultPath } from 'tough-cookie';
 
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
   constructor(
     @InjectRepository(Route)
     private readonly routeRepository: Repository<Route>,
-    private readonly filesService: FilesService
+    @InjectRepository(SavedRoute)
+    private readonly saveRouteRepository: Repository<SavedRoute>,
   ) {
     super(routeRepository);
   }
@@ -51,66 +55,68 @@ export class RouteService extends TypeOrmCrudService<Route> {
   }
 
   // To Get Many Routes with user_id and saved = true/false
-  async getManyRoute(id:string, saved:any){
-    console.log(typeof(saved));
-    if(saved == "true"){
-      return await this.routeRepository.find({
+  async getManyRoute(id: string, saved: any) {
+    console.log(typeof (saved));
+    if (saved == "true") {
+      const saved = await this.routeRepository.find({
         user_id: id,
         saved: true
       });
+      return { data: saved }
 
-    }else if ( saved == "false"){
-
-      return await this.routeRepository.find({
+    } else if (saved == "false") {
+      const unsaved = await this.routeRepository.find({
         user_id: id,
         saved: false
       });
-    }else{
-      return await this.routeRepository.find({
+      return { data: unsaved }
+    } else {
+      const all = await this.routeRepository.find({
         user_id: id
       })
+      return { data: all }
     }
   }
 
   // Get All Admin Routes
-  public async getAdminRoutes(){
+  public async getAdminRoutes() {
     const routes = await this.routeRepository.find({
       role: Not(RoleEnum.USER)
     })
-    if(!routes){
-      return{
-        error : [{ message : "No routes found"}]
+    if (!routes) {
+      return {
+        error: [{ message: "No routes found" }]
       };
     }
     return {
 
-          message : "Admin routes successfully fetched!",
-          data: routes
-    };
-  }
-
-  public async getUserRoutes(){
-
-    const routes = await this.routeRepository.createQueryBuilder('route')
-        .where("route.role = role",{role: RoleEnum.USER})
-        .leftJoinAndMapOne('route.user', UserEntity, 'user', 'user.id = route.user_id')
-        .leftJoinAndMapOne('user.status', Status,'status', 'status.id = user.status_id')
-        .getMany()
-
-
-    if(!routes){
-      return{
-        error : [{ message : "No routes found"}]
-      };
-    }
-    return {
-
-      message : "Admin routes successfully fetched!",
+      message: "Admin routes successfully fetched!",
       data: routes
     };
   }
 
-  public async updatePicture(id: string, file: FileEntity) {
+  public async getUserRoutes() {
+
+    const routes = await this.routeRepository.createQueryBuilder('route')
+      .where("route.role = role", { role: RoleEnum.USER })
+      .leftJoinAndMapOne('route.user', UserEntity, 'user', 'user.id = route.user_id')
+      .leftJoinAndMapOne('user.status', Status, 'status', 'status.id = user.status_id')
+      .getMany()
+
+
+    if (!routes) {
+      return {
+        error: [{ message: "No routes found" }]
+      };
+    }
+    return {
+
+      message: "Admin routes successfully fetched!",
+      data: routes
+    };
+  }
+
+  public async updatePicture(id: string, file: string) {
     const route = await this.routeRepository.findOne({
       where: { id: id },
     });
@@ -124,13 +130,43 @@ export class RouteService extends TypeOrmCrudService<Route> {
         ],
       });
     }
-
+    console.log("Update Pic")
+    console.log(file);
     route.picture = file;
-    return await route.save();
+    const res = await route.save();
+    return { data: res }
   }
 
   public async create(userId: string, role: RoleEnum, dto: CreateRouteDto) {
     // @ts-ignore
-    return this.routeRepository.save(this.routeRepository.create({user_id: userId, role, ...dto}));
+    return this.routeRepository.save(this.routeRepository.create({ user_id: userId, role, ...dto }));
+  }
+
+  public async saveRoute(user: any, dto: SaveRouteDto) {
+    const data = {
+      user_id: user.sub,
+      route_id: dto.route_id,
+      status: SavedRoutesStatusEnum.PENDING
+    }
+    return await this.saveRouteRepository.save(this.saveRouteRepository.create(data));
+  }
+
+  public async getSaveRoute(id: string) {
+    const savedRoutes = await this.saveRouteRepository.find({});
+
+    if (!savedRoutes) {
+      return {
+        "errors": [
+          {
+            message: "No Saved Routes exist",
+          }
+        ]
+      }
+    }
+    var responseArray = [];
+    savedRoutes.forEach(routes => {
+      responseArray.push(routes.route_id)
+    })
+    return { data: responseArray };
   }
 }
