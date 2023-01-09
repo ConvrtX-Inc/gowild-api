@@ -75,6 +75,11 @@ export class AuthService {
     socialData: SocialInterface,
   ): Promise<UserAuthResponse> {
     let user: UserEntity;
+    if (!socialData.email) {
+      throw new NotFoundException({
+        message: `Please use Facebook account with email`,
+      });
+    }
     const socialEmail = socialData.email?.toLowerCase();
 
     const userByEmail = await this.usersService.findOneEntity({
