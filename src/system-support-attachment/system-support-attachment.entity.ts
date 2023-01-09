@@ -24,6 +24,11 @@ export class SystemSupportAttachment extends AbstractBaseEntity {
   @Column({ nullable: true })
   attachment?: string | null;
 
+  @Column({
+    type: 'uuid',
+    nullable: true})
+  message_id?: string;
+
 /*  @BeforeUpdate()
   @BeforeInsert()
   public encodeImage() {

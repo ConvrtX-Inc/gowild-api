@@ -13,12 +13,14 @@ export class SystemSupportAttachmentService extends TypeOrmCrudService<SystemSup
   ) {
     super(destinationsRepository);
   }
-  async createSupportAttachment(picture:string,ticket_id:string){
+  async createSupportAttachment(picture:string,ticket_id:string, message_id: string){
     const newAttachment = {
       ticket_id : ticket_id,
-      attachment : picture
+      attachment : picture,
+      message_id : message_id
     }
     const data =  await this.saveOne(newAttachment);
+
     return data;
   }
 

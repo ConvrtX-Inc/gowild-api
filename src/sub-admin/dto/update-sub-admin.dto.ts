@@ -16,14 +16,12 @@ export class UpdateSubAdminDto extends PartialType(CreateSubAdminDto) {
   email: string;
 
   @ApiProperty({ example: 'username', nullable: true })
-  @Transform((value: string) => value.toLowerCase().trim())
-  @Validate(IsNotExist, ['UserEntity'], {
-    message: 'usernameAlreadyExists',
-  })
+  @Allow()
   username: string;
   @ApiProperty({
     nullable: true
   })
+  
   @Allow()
   addressOne: string;
 
