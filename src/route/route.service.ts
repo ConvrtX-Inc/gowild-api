@@ -143,16 +143,36 @@ export class RouteService extends TypeOrmCrudService<Route> {
   }
 
   public async saveRoute(user: any, dto: SaveRouteDto) {
+    const isExist = await this.saveRouteRepository.findOne({
+      where: {
+        user_id: user.sub,
+        route_id: dto.route_id
+      }
+    });
+    if (isExist) {
+      return {
+        "errors": [
+          {
+            message: "You've Already Saved this Route",
+          }
+        ]
+      }
+    }
     const data = {
       user_id: user.sub,
       route_id: dto.route_id,
       status: SavedRoutesStatusEnum.PENDING
     }
-    return await this.saveRouteRepository.save(this.saveRouteRepository.create(data));
+    await this.saveRouteRepository.save(this.saveRouteRepository.create(data));
+    return { message: "Route Saved Successfully" };
   }
 
   public async getSaveRoute(id: string) {
-    const savedRoutes = await this.saveRouteRepository.find({});
+
+    const savedRoutes = await this.saveRouteRepository.createQueryBuilder('saved')
+      .where('saved.user_id = :id', { id: id })
+      .leftJoinAndMapOne('saved.route', Route, 'route', 'route.id = saved.route_id')
+      .getMany()
 
     if (!savedRoutes) {
       return {
@@ -165,8 +185,15 @@ export class RouteService extends TypeOrmCrudService<Route> {
     }
     var responseArray = [];
     savedRoutes.forEach(routes => {
-      responseArray.push(routes.route_id)
+      if (routes['route']) {
+        responseArray.push(routes['route']);
+      }
     })
     return { data: responseArray };
+  }
+
+  async deleteOneRoute(id: string) {
+    await this.routeRepository.delete(id);
+    return { message: "Route Deleted Successfully" };
   }
 }

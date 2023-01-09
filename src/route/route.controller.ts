@@ -26,6 +26,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { query } from 'express';
 import { FilesService } from "../files/files.service";
 import { ConfigService } from '@nestjs/config';
+import { SaveRouteDto } from './dto/save-route-dto';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -80,8 +81,8 @@ export class RouteController implements CrudController<Route> {
   }
 
   @Override('deleteOneBase')
-  async deleteOneRoute() {
-    console.log("Runnuing");
+  async deleteOneRoute(@Param('id') id:string) {
+   return await this.service.deleteOneRoute(id);
   }
 
   @ApiResponse({ type: Route })
@@ -139,5 +140,17 @@ export class RouteController implements CrudController<Route> {
   @ApiOperation({ summary: 'Get All Admin Routes' })
   async getAdminRoutes() {
     return await this.service.getAdminRoutes();
+  }
+
+  @Roles(RoleEnum.USER)
+  @Post('save')
+  async saveRoute(@Request() req , @Body() dto:SaveRouteDto) {
+    return await this.service.saveRoute(req.user,dto);
+  }
+
+  @Roles(RoleEnum.USER)
+  @Get('save')
+  async getSaveRoute(@Request() req) {
+    return await this.service.getSaveRoute(req.user.sub);
   }
 }
