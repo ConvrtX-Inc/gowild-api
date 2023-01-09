@@ -63,12 +63,8 @@ import {UserTreasureHuntModule} from "./user-treasure-hunt/user-treasure-hunt.mo
 import { CardsModule } from './cards/cards.module';
 import { PostFeedAttachmentModule } from './post-feed-attchment/post-feed-attachment.module';
 import {SystemSupportModule} from "./system-support/system-support.module";
-<<<<<<< HEAD
 import { cronJobModule } from './jobs/cronjob.module';
-=======
 import { LeaderBoardModule } from './leader-board/leader-board.module';
->>>>>>> e57ef69805b69333139cae81dd50171645fc8a9a
-
 
 @Module({
   imports: [
@@ -165,11 +161,8 @@ import { LeaderBoardModule } from './leader-board/leader-board.module';
     SystemSupportModule,
     CardsModule,
     PostFeedAttachmentModule,
-<<<<<<< HEAD
-    cronJobModule
-=======
+    cronJobModule,
     LeaderBoardModule
->>>>>>> e57ef69805b69333139cae81dd50171645fc8a9a
   ],
   providers: [
     {
