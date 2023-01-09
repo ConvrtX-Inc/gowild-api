@@ -76,7 +76,7 @@ export class AdminRouteController {
       local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
       s3: file.location,
       firebase: file.publicUrl,
-    };;
+    };
     return this.service.updatePicture(id, picture[driver]);
   }
 

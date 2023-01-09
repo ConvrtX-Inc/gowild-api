@@ -11,20 +11,21 @@ import {
   Query,
   Get
 } from '@nestjs/common';
-import {RouteService} from './route.service';
-import {ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
-import {Crud, CrudController, CrudRequestInterceptor, Override} from '@nestjsx/crud';
-import {Route} from './entities/route.entity';
-import {JwtAuthGuard} from '../auth/jwt-auth.guard';
-import {ImageUpdateDto} from '../users/dtos/image-update.dto';
-import {CreateRouteDto} from "./dto/create-route.dto";
-import {Roles} from "../roles/roles.decorator";
-import {RoleEnum} from "../roles/roles.enum";
-import {RolesGuard} from "../roles/roles.guard";
-import {FileInterceptor} from "@nestjs/platform-express";
+import { RouteService } from './route.service';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Crud, CrudController, CrudRequestInterceptor, Override } from '@nestjsx/crud';
+import { Route } from './entities/route.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ImageUpdateDto } from '../users/dtos/image-update.dto';
+import { CreateRouteDto } from "./dto/create-route.dto";
+import { Roles } from "../roles/roles.decorator";
+import { RoleEnum } from "../roles/roles.enum";
+import { RolesGuard } from "../roles/roles.guard";
+import { FileInterceptor } from "@nestjs/platform-express";
 // import { Query } from 'typeorm/driver/Query';
 import { query } from 'express';
-import {FilesService} from "../files/files.service";
+import { FilesService } from "../files/files.service";
+import { ConfigService } from '@nestjs/config';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -70,14 +71,16 @@ import {FilesService} from "../files/files.service";
   version: '1',
 })
 export class RouteController implements CrudController<Route> {
-  constructor(readonly service: RouteService, private readonly filesService: FilesService) {}
+  constructor(readonly service: RouteService,
+    private readonly filesService: FilesService,
+    private readonly configService: ConfigService) { }
 
   get base(): CrudController<Route> {
     return this;
   }
 
   @Override('deleteOneBase')
-  async deleteOneRoute(){
+  async deleteOneRoute() {
     console.log("Runnuing");
   }
 
@@ -87,8 +90,8 @@ export class RouteController implements CrudController<Route> {
   @HttpCode(HttpStatus.OK)
   @Roles(RoleEnum.USER)
   public async create(
-      @Request() request: Express.Request,
-      @Body() dto: CreateRouteDto,
+    @Request() request: Express.Request,
+    @Body() dto: CreateRouteDto,
   ) {
     return this.service.create(request.user.sub, RoleEnum.USER, dto);
   }
@@ -115,21 +118,26 @@ export class RouteController implements CrudController<Route> {
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const fileId = await this.filesService.uploadFile(file);
-    return this.service.updatePicture(id, fileId);
+    const driver = this.configService.get('file.driver');
+    var picture = {
+      local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
+      s3: file.location,
+      firebase: file.publicUrl,
+    };
+    return this.service.updatePicture(id, picture[driver]);
   }
   @Roles(RoleEnum.USER)
-  @ApiOperation({ summary: 'saved = true/false'})
+  @ApiOperation({ summary: 'saved = true/false' })
   @Override('getManyBase')
-  async getManyRoute(@Request() req,@Query() query ){
+  async getManyRoute(@Request() req, @Query() query) {
     const id = req.user.sub;
-    return await this.service.getManyRoute(id,query.saved)
+    return await this.service.getManyRoute(id, query.saved)
   }
 
   @Roles(RoleEnum.USER)
   @Get('admin')
-  @ApiOperation({ summary : 'Get All Admin Routes'})
-  async getAdminRoutes(){
+  @ApiOperation({ summary: 'Get All Admin Routes' })
+  async getAdminRoutes() {
     return await this.service.getAdminRoutes();
   }
 }
