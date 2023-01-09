@@ -1,34 +1,63 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
 import { LeaderBoardService } from './leader-board.service';
 import { CreateLeaderBoardDto } from './dto/create-leader-board.dto';
 import { UpdateLeaderBoardDto } from './dto/update-leader-board.dto';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Crud, CrudController } from '@nestjsx/crud';
+import { LeaderBoard } from './entities/leader-board.entity';
+import { Query } from '@nestjs/common/decorators';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@Controller('leader-board')
-export class LeaderBoardController {
-  constructor(private readonly leaderBoardService: LeaderBoardService) {}
 
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
+@ApiTags('Leader-Board')
+@Crud({
+  model: {
+    type: LeaderBoard,
+  },
+  routes: {
+    exclude: ['replaceOneBase', 'createManyBase'],
+  },
+  query: {
+    maxLimit: 50,
+    alwaysPaginate: true,
+  },
+  dto: {
+    create: CreateLeaderBoardDto,
+    update: UpdateLeaderBoardDto
+  },
+  params: {
+    id: {
+      type: 'uuid',
+      primary: true,
+      field: 'id',
+    },
+  },
+})
+@Controller({
+  path: 'leader-board',
+  version: '1',
+})
+export class LeaderBoardController implements CrudController<LeaderBoard> {
+  constructor(private readonly leaderBoardService: LeaderBoardService) { }
+
+  get base(): CrudController<LeaderBoard> {
+    return this;
+  }
+  service: LeaderBoardService = this.leaderBoardService;
+
+  @ApiOperation({ summary: 'Create Record' })
   @Post()
-  create(@Body() createLeaderBoardDto: CreateLeaderBoardDto) {
-    return this.leaderBoardService.create(createLeaderBoardDto);
-  }
+  public async create(@Request() req: Express.Request, @Body() dto:CreateLeaderBoardDto){
+    return this.service.create(req.user.sub, dto)
 
+  }
+  
+  @ApiOperation({ summary: 'Get Rankings' })
   @Get()
-  findAll() {
-    return this.leaderBoardService.findAll();
+  public async getAllRankings(@Query() query){
+    return this.service.getRankings(query.page)
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.leaderBoardService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLeaderBoardDto: UpdateLeaderBoardDto) {
-    return this.leaderBoardService.update(+id, updateLeaderBoardDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.leaderBoardService.remove(+id);
-  }
 }
