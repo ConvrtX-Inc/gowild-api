@@ -63,6 +63,7 @@ import {UserTreasureHuntModule} from "./user-treasure-hunt/user-treasure-hunt.mo
 import { CardsModule } from './cards/cards.module';
 import { PostFeedAttachmentModule } from './post-feed-attchment/post-feed-attachment.module';
 import {SystemSupportModule} from "./system-support/system-support.module";
+import { cronJobModule } from './jobs/cronjob.module';
 
 
 @Module({
@@ -159,7 +160,8 @@ import {SystemSupportModule} from "./system-support/system-support.module";
     CardsModule,
     SystemSupportModule,
     CardsModule,
-    PostFeedAttachmentModule
+    PostFeedAttachmentModule,
+    cronJobModule
   ],
   providers: [
     {

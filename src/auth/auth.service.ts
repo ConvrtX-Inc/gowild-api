@@ -47,23 +47,31 @@ export class AuthService {
     const user = await this.usersService.findOneEntity({
       where: {
         email: loginDto.email,
-        status: status.id
-
+        status: status.id,
       },
     });
+    if (user.phoneVerified == true) {
+      const isValidPassword = await this.passwordService.verifyPassword(
+        user,
+        loginDto.password,
+      );
 
-    const isValidPassword = await this.passwordService.verifyPassword(
-      user,
-      loginDto.password,
-    );
-
-    if (isValidPassword) {
-      return await this.tokenService.generateToken(user);
+      if (isValidPassword) {
+        return await this.tokenService.generateToken(user);
+      } else {
+        throw new UnprocessableEntityException({
+          errors: [
+            {
+              password: 'Email or Password is incorrect',
+            },
+          ],
+        });
+      }
     } else {
       throw new UnprocessableEntityException({
         errors: [
           {
-            password: 'Email or Password is incorrect',
+            messsage: 'Verify your Account to Proceed',
           },
         ],
       });

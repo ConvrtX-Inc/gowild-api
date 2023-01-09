@@ -12,11 +12,12 @@ import * as AWS from 'aws-sdk';
 import * as multerS3 from 'multer-s3';
 import path from "path";
 import {AdminRouteController} from "./admin.route.controller";
+import { SavedRoute } from './entities/saved-routs.entity';
 
 @Module({
   controllers: [RouteController, AdminRouteController],
   providers: [RouteService, ConfigModule, ConfigService,],
-  imports: [TypeOrmModule.forFeature([Route]), FilesModule,
+  imports: [TypeOrmModule.forFeature([Route,SavedRoute]), FilesModule,
     MulterModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

@@ -12,6 +12,7 @@ import { FilesService } from '../files/files.service';
 import { FileEntity } from "../files/file.entity";
 import { UpdateUserDto } from "./dtos/update-user.dto";
 import { RoleEnum } from 'src/roles/roles.enum';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class UsersService extends TypeOrmCrudService<UserEntity> {
