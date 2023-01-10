@@ -349,7 +349,6 @@ export class AuthService {
     }*/
     const user = await this.usersService.findOneEntity({
       where: {
-        otp: hash,
         phoneNo: emailPhone
       }
     });
@@ -359,7 +358,6 @@ export class AuthService {
       });
     }*/
 
-    //console.log(user);
     const passwordCheck = await this.passwordService.verifyPassword(user, password)
 
     if (passwordCheck) {
@@ -370,7 +368,7 @@ export class AuthService {
 
     //await this.forgotService.softDelete(forgot.id);
     await this.passwordService.createPassword(user, password);
-    //await user.save();
+    // await data.save();
     return {
       message: "Password Reset Successfully"
     }
