@@ -22,11 +22,11 @@ export class CreateRouteDto {
     @IsNotEmpty()
     end: Coordinates;
 
-    @ApiProperty({ type: 'string', nullable: false })
+    @ApiProperty({ type: "number", nullable: false })
     @IsNotEmpty()
     distance_miles: number;
 
-    @ApiProperty({ type: 'string', nullable: false })
+    @ApiProperty({ type: "number" , nullable: false })
     @IsNotEmpty()
     distance_meters: number;
 
