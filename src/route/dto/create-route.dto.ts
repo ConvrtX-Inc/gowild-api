@@ -24,16 +24,16 @@ export class CreateRouteDto {
 
     @ApiProperty({ type: 'string', nullable: false })
     @IsNotEmpty()
-    distanceInMiles: string;
+    distance_miles: string;
 
     @ApiProperty({ type: 'string', nullable: false })
     @IsNotEmpty()
-    distanceInMeters: string;
+    distance_meters: string;
 
     @ApiProperty({ example: '01:04:55' })
     @IsNotEmpty()
     @IsValidTime({ message: 'Completion time must be a valid time string (HH:mm:ss)' })
-    estimateTime: time;
+    estimate_time: time;
     
 
     
