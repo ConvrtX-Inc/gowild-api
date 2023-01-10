@@ -1,20 +1,17 @@
-import { Injectable, NotFoundException, HttpStatus } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { DeepPartial } from 'src/common/types/deep-partial.type';
-import { FindOptions } from 'src/common/types/find-options.type';
-import { Not, Repository } from 'typeorm';
-import { Route } from './entities/route.entity';
-import { FilesService } from '../files/files.service';
-import { CreateRouteDto } from "./dto/create-route.dto";
-import { RoleEnum } from "../roles/roles.enum";
-import { FileEntity } from "../files/file.entity";
-import { UserEntity } from "../users/user.entity";
-import { Status } from "../statuses/status.entity";
-import { SaveRouteDto } from './dto/save-route-dto';
-import { SavedRoute } from './entities/saved-routs.entity';
-import { defaultPath } from 'tough-cookie';
-import { UpdateRouteDto } from './dto/update-route.dto';
+import {Injectable, NotFoundException} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
+import {DeepPartial} from 'src/common/types/deep-partial.type';
+import {FindOptions} from 'src/common/types/find-options.type';
+import {Not, Repository} from 'typeorm';
+import {Route, RouteStatusEnum} from './entities/route.entity';
+import {CreateRouteDto} from "./dto/create-route.dto";
+import {RoleEnum} from "../roles/roles.enum";
+import {UserEntity} from "../users/user.entity";
+import {Status} from "../statuses/status.entity";
+import {SaveRouteDto} from './dto/save-route-dto';
+import {SavedRoute} from './entities/saved-routs.entity';
+import {UpdateRouteDto} from './dto/update-route.dto';
 
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
@@ -152,9 +149,18 @@ export class RouteService extends TypeOrmCrudService<Route> {
     return { data: res }
   }
 
+
+
+
   public async create(userId: string, role: RoleEnum, dto: CreateRouteDto) {
-    // @ts-ignore
-    return this.routeRepository.save(this.routeRepository.create({ user_id: userId, role, ...dto }));
+
+    if(role === RoleEnum.ADMIN || role == RoleEnum.SUPER_ADMIN){
+      return this.routeRepository.save(
+          this.routeRepository.create({ user_id: userId, status: RouteStatusEnum.Completed, role, ...dto }));
+    }else{
+      return this.routeRepository.save(
+          this.routeRepository.create({ user_id: userId,status: RouteStatusEnum.Pending, role, ...dto }));
+    }
   }
 
   public async saveRoute(user: any, dto: SaveRouteDto) {

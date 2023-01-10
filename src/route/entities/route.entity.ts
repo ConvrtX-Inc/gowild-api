@@ -11,6 +11,13 @@ import { RoleEnum } from "../../roles/roles.enum";
 import { Coordinates } from "../../common/coordinates";
 import { time } from 'aws-sdk/clients/frauddetector';
 
+export enum RouteStatusEnum {
+  Completed = 'completed',
+  Pending = 'pending',
+  OnHold = 'onhold',
+}
+
+
 @Entity('gw_routes')
 export class Route extends AbstractBaseEntity {
   @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
@@ -80,5 +87,16 @@ export class Route extends AbstractBaseEntity {
   @ApiProperty({ example: '500m' })
   @Column({ nullable: true, name: 'distance_meters' })
   distance_meters: string;
+
+  @IsOptional()
+  @ApiProperty({
+    example: RouteStatusEnum.OnHold,
+    nullable: true,
+    enum: RouteStatusEnum,
+    enumName: 'RouteStatusEnum',
+  })
+  @Column({ nullable: true, enum: RouteStatusEnum, enumName: 'RouteStatusEnum', default: RouteStatusEnum.Pending })
+  status: RouteStatusEnum
+
 }
 
