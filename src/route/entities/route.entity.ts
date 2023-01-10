@@ -71,7 +71,7 @@ export class Route extends AbstractBaseEntity {
 
   @ApiProperty({ example: '01:04:00' })
   @Column({ nullable: false, name: 'estimate_time' })
-  estimateTime: string;
+  estimate_time: string;
 
   @ApiProperty({ example: '2 Miles' })
   @Column({ nullable: false, name: 'distance_miles' })
