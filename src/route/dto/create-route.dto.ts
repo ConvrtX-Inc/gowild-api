@@ -1,5 +1,7 @@
 import {ApiProperty} from "@nestjs/swagger";
 import {IsNotEmpty, IsOptional} from "class-validator";
+import { time } from "aws-sdk/clients/frauddetector";
+import { IsValidTime } from "src/common/is_valid_time";
 import {Coordinates} from "../../common/coordinates";
 
 export class CreateRouteDto {
@@ -16,12 +18,24 @@ export class CreateRouteDto {
     @IsNotEmpty()
     start: Coordinates;
 
-    @ApiProperty({ type: 'boolean', nullable: false })
-    @IsNotEmpty()
-    saved: boolean;
-
     @ApiProperty({ nullable: false })
     @IsNotEmpty()
     end: Coordinates;
+
+    @ApiProperty({ type: 'string', nullable: false })
+    @IsNotEmpty()
+    distanceInMiles: string;
+
+    @ApiProperty({ type: 'string', nullable: false })
+    @IsNotEmpty()
+    distanceInMeters: string;
+
+    @ApiProperty({ example: '01:04:55' })
+    @IsNotEmpty()
+    @IsValidTime({ message: 'Completion time must be a valid time string (HH:mm:ss)' })
+    estimateTime: time;
+    
+
+    
 
 }
