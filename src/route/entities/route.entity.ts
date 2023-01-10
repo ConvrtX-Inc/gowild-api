@@ -9,6 +9,7 @@ import { Geometry } from 'geojson';
 import { UserEntity } from '../../users/user.entity';
 import { RoleEnum } from "../../roles/roles.enum";
 import { Coordinates } from "../../common/coordinates";
+import { time } from 'aws-sdk/clients/frauddetector';
 
 @Entity('gw_routes')
 export class Route extends AbstractBaseEntity {
@@ -68,9 +69,17 @@ export class Route extends AbstractBaseEntity {
   })
   role: RoleEnum;
 
-  @Column({
-    type: 'boolean',
-    default: false
-  })
-  saved: boolean;
+  @ApiProperty({ example: '01:04:00' })
+  @Column({ nullable: false, name: 'estimate_time' })
+  estimateTime: time;
+
+  @ApiProperty({ example: '2 Miles' })
+  @Column({ nullable: false, name: 'distance_in_miles' })
+  distanceInMiles: string;
+
+  @ApiProperty({ example: '500m' })
+  @Column({ nullable: false, name: 'distance_in_meters' })
+  distanceInMeters: string;
+
 }
+

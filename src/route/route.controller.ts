@@ -27,6 +27,7 @@ import { query } from 'express';
 import { FilesService } from "../files/files.service";
 import { ConfigService } from '@nestjs/config';
 import { SaveRouteDto } from './dto/save-route-dto';
+import { UpdateRouteDto } from './dto/update-route.dto';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -97,6 +98,10 @@ export class RouteController implements CrudController<Route> {
     return this.service.create(request.user.sub, RoleEnum.USER, dto);
   }
 
+@Override('updateOneBase')
+async updateOneRoute(@Param('id') id:string,@Body() dto: UpdateRouteDto){
+  return await this.service.updateOneRoute(id, dto)
+}
 
   @ApiResponse({ type: Route })
   @ApiConsumes('multipart/form-data')
@@ -127,13 +132,13 @@ export class RouteController implements CrudController<Route> {
     };
     return this.service.updatePicture(id, picture[driver]);
   }
-  @Roles(RoleEnum.USER)
-  @ApiOperation({ summary: 'saved = true/false' })
-  @Override('getManyBase')
-  async getManyRoute(@Request() req, @Query() query) {
-    const id = req.user.sub;
-    return await this.service.getManyRoute(id, query.saved)
-  }
+  // @Roles(RoleEnum.USER)
+  // @ApiOperation({ summary: 'saved = true/false' })
+  // @Override('getManyBase')
+  // async getManyRoute(@Request() req, @Query() query) {
+  //   const id = req.user.sub;
+  //   return await this.service.getManyRoute(id, query.saved)
+  // }
 
   @Roles(RoleEnum.USER)
   @Get('admin')

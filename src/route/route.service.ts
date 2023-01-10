@@ -12,8 +12,9 @@ import { FileEntity } from "../files/file.entity";
 import { UserEntity } from "../users/user.entity";
 import { Status } from "../statuses/status.entity";
 import { SaveRouteDto } from './dto/save-route-dto';
-import { SavedRoute, SavedRoutesStatusEnum } from './entities/saved-routs.entity';
+import { SavedRoute } from './entities/saved-routs.entity';
 import { defaultPath } from 'tough-cookie';
+import { UpdateRouteDto } from './dto/update-route.dto';
 
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
@@ -54,29 +55,43 @@ export class RouteService extends TypeOrmCrudService<Route> {
     await this.routeRepository.delete(id);
   }
 
-  // To Get Many Routes with user_id and saved = true/false
-  async getManyRoute(id: string, saved: any) {
-    console.log(typeof (saved));
-    if (saved == "true") {
-      const saved = await this.routeRepository.find({
-        user_id: id,
-        saved: true
-      });
-      return { data: saved }
+  async updateOneRoute(id: string, dto: UpdateRouteDto) {
+    await this.routeRepository.createQueryBuilder()
+    .update().set(dto).where('id = :id', {id}).execute()
 
-    } else if (saved == "false") {
-      const unsaved = await this.routeRepository.find({
-        user_id: id,
-        saved: false
-      });
-      return { data: unsaved }
-    } else {
-      const all = await this.routeRepository.find({
-        user_id: id
-      })
-      return { data: all }
+    const route = await this.routeRepository.findOne({
+      where:{id:id}
+    });
+    return{
+      message: "Route Updated Successfully",
+      route: route
+      
     }
   }
+
+  // To Get Many Routes with user_id and saved = true/false
+  // async getManyRoute(id: string, saved: any) {
+  //   console.log(typeof (saved));
+  //   if (saved == "true") {
+  //     const saved = await this.routeRepository.find({
+  //       user_id: id,
+  //       saved: true
+  //     });
+  //     return { data: saved }
+
+  //   } else if (saved == "false") {
+  //     const unsaved = await this.routeRepository.find({
+  //       user_id: id,
+  //       saved: false
+  //     });
+  //     return { data: unsaved }
+  //   } else {
+  //     const all = await this.routeRepository.find({
+  //       user_id: id
+  //     })
+  //     return { data: all }
+  //   }
+  // }
 
   // Get All Admin Routes
   public async getAdminRoutes() {
@@ -160,8 +175,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     }
     const data = {
       user_id: user.sub,
-      route_id: dto.route_id,
-      status: SavedRoutesStatusEnum.PENDING
+      route_id: dto.route_id,    
     }
     await this.saveRouteRepository.save(this.saveRouteRepository.create(data));
     return { message: "Route Saved Successfully" };
