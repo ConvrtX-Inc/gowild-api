@@ -70,16 +70,15 @@ export class Route extends AbstractBaseEntity {
   role: RoleEnum;
 
   @ApiProperty({ example: '01:04:00' })
-  @Column({ nullable: false, name: 'estimate_time' })
+  @Column({ nullable: true, name: 'estimate_time' })
   estimateTime: time;
 
   @ApiProperty({ example: '2 Miles' })
-  @Column({ nullable: false, name: 'distance_in_miles' })
-  distanceInMiles: string;
+  @Column({ nullable: true, name: 'distance_miles' })
+  distance_miles: string;
 
   @ApiProperty({ example: '500m' })
-  @Column({ nullable: false, name: 'distance_in_meters' })
-  distanceInMeters: string;
-
+  @Column({ nullable: true, name: 'distance_meters' })
+  distance_meters: string;
 }
 
