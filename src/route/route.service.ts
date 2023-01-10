@@ -12,7 +12,7 @@ import { FileEntity } from "../files/file.entity";
 import { UserEntity } from "../users/user.entity";
 import { Status } from "../statuses/status.entity";
 import { SaveRouteDto } from './dto/save-route-dto';
-import { SavedRoute, SavedRoutesStatusEnum } from './entities/saved-routs.entity';
+import { SavedRoute } from './entities/saved-routs.entity';
 import { defaultPath } from 'tough-cookie';
 
 @Injectable()
@@ -160,8 +160,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     }
     const data = {
       user_id: user.sub,
-      route_id: dto.route_id,
-      status: SavedRoutesStatusEnum.PENDING
+      route_id: dto.route_id,    
     }
     await this.saveRouteRepository.save(this.saveRouteRepository.create(data));
     return { message: "Route Saved Successfully" };
