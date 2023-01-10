@@ -1,9 +1,12 @@
-import { Controller, UseGuards } from '@nestjs/common';
+import {Body, Controller, Request, UseGuards} from '@nestjs/common';
 import { SystemSupportService } from './system-support.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {ApiBearerAuth, ApiOperation, ApiTags} from '@nestjs/swagger';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { SystemSupport } from './system-support.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import {Post} from "@nestjs/common/decorators";
+import {CreateRoomDto} from "../messenger/message/dto/create-room.dto";
+import {CreateSupportMessageDto} from "./dto/create-supportmessage.dto";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -36,5 +39,11 @@ export class SystemSupportController implements CrudController<SystemSupport> {
 
   get base(): CrudController<SystemSupport> {
     return this;
+  }
+
+  @ApiOperation({summary: 'Create System Support Message'})
+  @Post('message')
+  public async addOneMessage(@Body() payload: CreateSupportMessageDto){
+    return await this.service.addMessage(payload)
   }
 }

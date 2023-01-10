@@ -1,4 +1,4 @@
-import {Controller, Get, Param, Request, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, Param, Request, UseGuards} from '@nestjs/common';
 import { Post, Query } from '@nestjs/common/decorators';
 import {ApiBearerAuth, ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
 import {Crud, CrudController, Override} from '@nestjsx/crud';
@@ -10,6 +10,8 @@ import { ParticipantService } from '../participant/participant.service';
 import { DeleteMessageService } from './delete-message.service';
 import {Message} from "./message.entity";
 import {MessageService} from "./message.service";
+import {CreateRoomDto} from "./dto/create-room.dto";
+import {RoomService} from "../room/room.service";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -39,12 +41,23 @@ import {MessageService} from "./message.service";
 })
 export class MessageController implements CrudController<Message> {
   constructor(public service: MessageService, public participantService: ParticipantService,
+    public roomService: RoomService,
     public deleteMessageService: DeleteMessageService) {}
 
   get base(): CrudController<Message> {
     return this;
   }
-  
+
+  @ApiOperation({summary: 'Create Room Sender & Receiver'})
+  @Post('rooms')
+  public async createRoom(@Request() req,@Body() dto: CreateRoomDto){
+    return{
+      message: "Room Created Successfully!",
+      data: await this.roomService.ConnectConversation(req.user.sub, dto.recipient_id)
+    }
+  }
+
+
   @ApiResponse({ type: Message })
   @ApiOperation({ summary: 'Get User Messages' })
   @Get('/:roomId')
@@ -68,4 +81,6 @@ export class MessageController implements CrudController<Message> {
   public async deleteMessage(@Request() request: Express.Request, @Param('roomId') roomId, @Param('messageId') messageId) {
     return await this.deleteMessageService.deleteMessage(request.user.sub, roomId, messageId);
   }
+
+
 }
