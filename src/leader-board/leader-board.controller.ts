@@ -47,6 +47,7 @@ export class LeaderBoardController implements CrudController<LeaderBoard> {
   }
   service: LeaderBoardService = this.leaderBoardService;
 
+
   @ApiOperation({ summary: 'Create Record' })
   @Post()
   public async create(@Request() req: Express.Request, @Body() dto:CreateLeaderBoardDto){
@@ -58,6 +59,12 @@ export class LeaderBoardController implements CrudController<LeaderBoard> {
   @Get()
   public async getAllRankings(@Query() query){
     return this.service.getRankings(query.page)
+  }
+
+  @ApiOperation({ summary: 'Get Rankings By route id' })
+  @Get('/:route_id')
+  public async getByRoute(@Param('route_id') routeId,@Query() query){
+    return this.service.rankByRoute(routeId,query.page)
   }
 
 }

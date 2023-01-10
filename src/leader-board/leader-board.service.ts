@@ -54,6 +54,22 @@ export class LeaderBoardService extends TypeOrmCrudService<LeaderBoard> {
     return paginateResponse(data, page, take);
   }
 
-  
+  // Get by Route Id
+  async rankByRoute(routeId: string, pageNo: number){
+    const take = 10
+    const page = pageNo || 1;
+    const skip = (page - 1) * take;
+    
+    const data = await this.Repository.createQueryBuilder('leaderBoard')
+    .leftJoinAndMapOne('leaderBoard.user', UserEntity, 'user')
+    .where('user.id = user_id')
+    .andWhere('leaderBoard.route_id = :routeId', {routeId: routeId})
+    .orderBy('leaderBoard.completionTime', 'ASC')
+    .skip(skip).take(take)
+    .getManyAndCount();
+
+    return paginateResponse(data, page, take);
+
+  }
 
 }
