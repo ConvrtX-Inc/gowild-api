@@ -8,10 +8,10 @@ import { Column, Entity } from "typeorm";
 export class LeaderBoard extends AbstractBaseEntity {
     @ApiProperty({type: 'uuid', example: '08be3c69-5783-4a4f-95b3-5ee67c38ebb6' })
     @Column({ nullable: false })
-    treasure_chest_id: string
+    route_id: string
 
     @ApiProperty({type: 'uuid', example: '08be3c69-5783-4a4f-95b3-5ee67c38ebb6' })
-    @Column({ nullable: false })
+    @Column({ nullable: false, type:'uuid' })
     user_id: string
 
     @ApiProperty({ example: '2021/12/31' })
@@ -26,5 +26,5 @@ export class LeaderBoard extends AbstractBaseEntity {
     @Column({ nullable: false, name: 'completion_time' })
     completionTime: time;
 
-
 }
+
