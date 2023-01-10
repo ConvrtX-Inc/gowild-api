@@ -26,9 +26,7 @@ export class SavedRoute extends AbstractBaseEntity {
     user_id?: string;
 
 
-    @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
-    @ManyToOne(() => Route, { nullable: false, cascade: false, eager: true })
-    @JoinColumn({ name: 'route_id' })
+    @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })   
     @Column({
         type: 'uuid',
         nullable: false,
