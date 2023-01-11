@@ -15,6 +15,7 @@ export enum RouteStatusEnum {
   Completed = 'completed',
   Pending = 'pending',
   OnHold = 'onhold',
+  Reject = 'reject'
 }
 
 
@@ -78,19 +79,19 @@ export class Route extends AbstractBaseEntity {
 
   @ApiProperty({ example: '01:04:00' })
   @Column({ nullable: true, name: 'estimate_time' })
-  estimateTime: time;
+  estimate_time: string;
 
   @ApiProperty({ example: '2 Miles' })
   @Column({ nullable: true, name: 'distance_miles' })
-  distance_miles: string;
+  distance_miles: number;
 
   @ApiProperty({ example: '500m' })
   @Column({ nullable: true, name: 'distance_meters' })
-  distance_meters: string;
+  distance_meters: number;
 
   @IsOptional()
   @ApiProperty({
-    example: RouteStatusEnum.OnHold,
+    example: 'pending/completed',
     nullable: true,
     enum: RouteStatusEnum,
     enumName: 'RouteStatusEnum',

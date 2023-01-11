@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { RouteService } from './route.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Route } from './entities/route.entity';
+import {Route, RouteStatusEnum} from './entities/route.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateRouteDto } from "./dto/create-route.dto";
 import { RoleEnum } from "../roles/roles.enum";
@@ -47,7 +47,7 @@ export class AdminRouteController {
     @Request() request: Express.Request,
     @Body() dto: CreateRouteDto,
   ) {
-    return this.service.create(request.user.sub, request.user.user.role as RoleEnum, dto);
+    return await this.service.create(request.user.sub, request.user.user.role as RoleEnum, dto);
   }
 
 
@@ -89,5 +89,18 @@ export class AdminRouteController {
   @ApiOperation({ summary: 'Get Single Route' })
   async findOneRoute(@Param('id') id: string,) {
     return await this.service.findOneEntity({ where: { id: id } });
+  }
+
+
+  @Post(':id/completed')
+  @ApiOperation({ summary: "Change Status to COMPLETED" })
+  async routeCompleteStatus(@Param('id') id: string) {
+    return this.service.updateCompleteStatus(id);
+  }
+
+  @Post(':id/reject')
+  @ApiOperation({ summary: "Change Status to Reject" })
+  async routeRejectStatus(@Param('id') id: string) {
+    return this.service.updateRejectStatus(id);
   }
 }
