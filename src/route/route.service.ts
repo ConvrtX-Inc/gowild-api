@@ -155,7 +155,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     // @ts-ignore
     if(role === RoleEnum.ADMIN || role === RoleEnum.SUPER_ADMIN){
       return await this.routeRepository.save(
-          this.routeRepository.create({ user_id: userId, status: RouteStatusEnum.Completed, role, ...dto }));
+          this.routeRepository.create({ user_id: userId, status: RouteStatusEnum.Approved, role, ...dto }));
     }else{
       return await this.routeRepository.save(
           this.routeRepository.create({ user_id: userId, status: RouteStatusEnum.Pending, role, ...dto }));
@@ -216,7 +216,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     return { message: "Route Deleted Successfully" };
   }
 
-  async updateCompleteStatus(id){
+  async updateApprovedStatus(id){
     const status = await  this.routeRepository.findOne({
       where:{
         id: id
@@ -227,10 +227,10 @@ export class RouteService extends TypeOrmCrudService<Route> {
       throw new NotFoundException({ errors:[
           { message: 'Route not Found!' } ]})
     }
-    status.status = RouteStatusEnum.Completed;
+    status.status = RouteStatusEnum.Approved;
     await status.save();
     return{
-      message: 'Status Changed Successfully!'
+      message: 'Status Changed Successfully (Route Approved!)!'
     }
   }
 
@@ -248,7 +248,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     status.status = RouteStatusEnum.Reject;
     await status.save();
     return{
-      message: 'Status Changed Successfully!'
+      message: 'Status Changed Successfully (Route Rejected!)'
     }
   }
 }

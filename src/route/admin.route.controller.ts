@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { RouteService } from './route.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import {Route, RouteStatusEnum} from './entities/route.entity';
+import {Route} from './entities/route.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateRouteDto } from "./dto/create-route.dto";
 import { RoleEnum } from "../roles/roles.enum";
@@ -72,7 +72,7 @@ export class AdminRouteController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     const driver = this.configService.get('file.driver');
-    var picture = {
+    let picture = {
       local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
       s3: file.location,
       firebase: file.publicUrl,
@@ -92,10 +92,10 @@ export class AdminRouteController {
   }
 
 
-  @Post(':id/completed')
-  @ApiOperation({ summary: "Change Status to COMPLETED" })
+  @Post(':id/approve')
+  @ApiOperation({ summary: "Change Status to Approved" })
   async routeCompleteStatus(@Param('id') id: string) {
-    return this.service.updateCompleteStatus(id);
+    return this.service.updateApprovedStatus(id);
   }
 
   @Post(':id/reject')

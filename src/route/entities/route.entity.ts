@@ -12,9 +12,8 @@ import { Coordinates } from "../../common/coordinates";
 import { time } from 'aws-sdk/clients/frauddetector';
 
 export enum RouteStatusEnum {
-  Completed = 'completed',
+  Approved = 'approved',
   Pending = 'pending',
-  OnHold = 'onhold',
   Reject = 'reject'
 }
 
