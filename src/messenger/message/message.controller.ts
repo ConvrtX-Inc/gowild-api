@@ -1,10 +1,7 @@
 import {Body, Controller, Get, Param, Request, UseGuards} from '@nestjs/common';
 import { Post, Query } from '@nestjs/common/decorators';
 import {ApiBearerAuth, ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
-import {Crud, CrudController, Override} from '@nestjsx/crud';
-import { query } from 'express';
-import { string } from 'yargs';
-
+import {Crud, CrudController} from '@nestjsx/crud';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { ParticipantService } from '../participant/participant.service';
 import { DeleteMessageService } from './delete-message.service';
@@ -48,6 +45,11 @@ export class MessageController implements CrudController<Message> {
     return this;
   }
 
+  @ApiOperation({ summary: 'Get Inbox' })
+  @Get('/inbox')
+  public async inbox(@Request() request: Express.Request) {
+    return await this.service.inbox(request.user.sub);
+  }
   @ApiOperation({summary: 'Create Room Sender & Receiver'})
   @Post('rooms')
   public async createRoom(@Request() req,@Body() dto: CreateRoomDto){
@@ -64,11 +66,7 @@ export class MessageController implements CrudController<Message> {
   async getUserMessages(@Request() req, @Param('roomId') roomId, @Query() query){
     return await this.service.userMessages(req.user.sub, roomId, query.page)
   }
-  @ApiOperation({ summary: 'Get Inbox' })
-  @Get('/inbox')
-  public async inbox(@Request() request: Express.Request) {
-    return await this.service.inbox(request.user.sub);
-  }
+
  
   @ApiOperation({ summary: 'Clean Conversation' })
   @Post('/:roomId')

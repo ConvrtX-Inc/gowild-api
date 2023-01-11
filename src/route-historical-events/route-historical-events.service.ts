@@ -6,6 +6,9 @@ import { RouteHistoricalEvent } from './entities/route-historical-event.entity';
 import { FilesService } from '../files/files.service';
 import { RouteHistoricalEventMedias } from './entities/route-historical-event-medias.entity';
 import { RouteHistoricalEventMediasService } from './route-historical-events-medias.service';
+import {CreateRouteHistoricalEventDto} from "./dto/create-route-historical-event.dto";
+import {UpdateRouteDto} from "../route/dto/update-route.dto";
+import {UpdateRouteHistoricalEventDto} from "./dto/update-route-historical-event.dto";
 
 @Injectable()
 export class RouteHistoricalEventsService extends TypeOrmCrudService<RouteHistoricalEvent> {
@@ -16,6 +19,48 @@ export class RouteHistoricalEventsService extends TypeOrmCrudService<RouteHistor
   ) {
     super(routeHistoricalEventRepository);
   }
+
+  public async createHistoricalEvent(routeId: any, dto: CreateRouteHistoricalEventDto){
+    return await this.routeHistoricalEventRepository.save(this.routeHistoricalEventRepository.create({route: routeId,...dto }));
+  }
+
+  public async getAllHistoricalEvents(){
+    const hEvents = await this.routeHistoricalEventRepository.find({})
+
+    if(!hEvents){
+      throw new NotFoundException({
+        errors:[{
+          message: 'Historical Event Routes not found!'
+        }]
+      })
+    }
+    return hEvents
+  }
+
+  async getOneHistoricalEvent(id: string){
+    const getRoute = await this.routeHistoricalEventRepository.findOne({id})
+
+    if(!getRoute){
+      throw new NotFoundException({
+        errors:[{
+          message: 'Historical Event Route not found!'
+        }]
+      })
+    }
+    return getRoute
+  }
+
+  async updateOneHistoricalEvent(id: string, dto: UpdateRouteHistoricalEventDto) {
+    await this.routeHistoricalEventRepository.createQueryBuilder()
+        .update().set(dto).where('id = :id', {id}).execute()
+
+    const historicalRoute = await this.routeHistoricalEventRepository.findOne({
+      where:{id:id}
+    });
+    return historicalRoute
+
+  }
+
 
   public async updatePicture(id: string, image: string) {
     const route = await this.routeHistoricalEventRepository.findOne(id);

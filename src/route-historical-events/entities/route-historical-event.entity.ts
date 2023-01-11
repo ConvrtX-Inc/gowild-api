@@ -5,16 +5,13 @@ import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
   OneToMany,
 } from 'typeorm';
 import { Route } from '../../route/entities/route.entity';
-import { AppPoint } from '../../common/lat-lng.embedded';
-import { Geometry } from 'geojson';
 import { FileEntity } from '../../files/file.entity';
 import { RouteHistoricalEventMedias } from './route-historical-event-medias.entity';
+import {Coordinates} from "../../common/coordinates";
 
 @Entity('gw_route_historical_events')
 export class RouteHistoricalEvent extends AbstractBaseEntity {
@@ -30,22 +27,30 @@ export class RouteHistoricalEvent extends AbstractBaseEntity {
   @JoinColumn({ name: 'route_id' })
   route: Route;
 
-  @IsOptional()
+  @Allow()
+  @ApiProperty({ type: () => Coordinates, nullable: false })
+  @Column({
+    type: 'jsonb',
+    nullable: false,
+  })
+  historical_event: Coordinates;
+
+/*  @IsOptional()
   @ApiProperty({ example: '830759078-477', nullable: true })
   @Column({
     length: 50,
     nullable: true,
   })
-  closureUid?: string;
+  closureUid?: string;*/
 
-  @IsOptional()
+  /*@IsOptional()
   @Allow()
   @ApiProperty({ type: () => AppPoint, nullable: true })
   @Column({
     type: 'geometry',
     nullable: true,
   })
-  point?: Geometry;
+  point?: Geometry;*/
 
   @IsOptional()
   @ApiProperty({ example: 'First On the List', nullable: true })
