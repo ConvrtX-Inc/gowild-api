@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
 import { SocialInterface } from '../social/interfaces/social.interface';
-import { AuthGoogleLoginDto } from './dtos/auth-google-login.dto';
+import { AuthGoogleLoginDto, deviceTypeEnum } from './dtos/auth-google-login.dto';
 
 @Injectable()
 export class AuthGoogleService {
@@ -10,18 +10,27 @@ export class AuthGoogleService {
 
   constructor(private configService: ConfigService) {
     this.google = new OAuth2Client(
-      configService.get('google.clientId'),
+      configService.get('google.clientIdIos'),
       configService.get('google.clientSecret'),
+      configService.get('google.clientIdAndroid'),
     );
   }
 
   async getProfileByToken(
     loginDto: AuthGoogleLoginDto,
   ): Promise<SocialInterface> {
-    const ticket = await this.google.verifyIdToken({
-      idToken: loginDto.id_token,
-      audience: [this.configService.get('google.clientId')],
-    });
+    var ticket = undefined;
+    if (loginDto.device_type == deviceTypeEnum.IOS) {    
+      ticket = await this.google.verifyIdToken({
+        idToken: loginDto.id_token,
+        audience: [this.configService.get('google.clientIdIos')],
+      });
+    } else if (loginDto.device_type == deviceTypeEnum.ANDROID) {
+      ticket = await this.google.verifyIdToken({
+        idToken: loginDto.id_token,
+        audience: [this.configService.get('google.clientIdAndroid')],
+      });
+    }
 
     const data = ticket.getPayload();
 
