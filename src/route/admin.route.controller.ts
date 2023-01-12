@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { RouteService } from './route.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import {Route} from './entities/route.entity';
+import { Route } from './entities/route.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateRouteDto } from "./dto/create-route.dto";
 import { RoleEnum } from "../roles/roles.enum";
@@ -30,9 +30,9 @@ import { ConfigService } from '@nestjs/config';
   version: '1',
 })
 export class AdminRouteController {
-  constructor(readonly service: RouteService, 
+  constructor(readonly service: RouteService,
     private readonly filesService: FilesService,
-     private readonly configService: ConfigService) { }
+    private readonly configService: ConfigService) { }
 
   @Get('users')
   @ApiOperation({ summary: 'Get User Routes' })
@@ -80,11 +80,12 @@ export class AdminRouteController {
     return this.service.updatePicture(id, picture[driver]);
   }
 
-  // @Get()
-  // @ApiOperation({ summary: 'Get Routes' })
-  // async getAdminRoutes() {
-  //   return await this.service.getAdminRoutes();
-  // }
+  @Get()
+  @ApiOperation({ summary: 'Get Routes' })
+  async getAdminRoutes() {
+    return await this.service.getAdminRoutes();
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get Single Route' })
   async findOneRoute(@Param('id') id: string,) {
