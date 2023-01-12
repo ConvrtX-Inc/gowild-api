@@ -15,10 +15,13 @@ import { SaveRouteDto } from './dto/save-route-dto';
 import { SavedRoute, SavedRoutesStatusEnum } from './entities/saved-routs.entity';
 import { defaultPath } from 'tough-cookie';
 import { UpdateRouteDto } from './dto/update-route.dto';
+import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
 
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
   constructor(
+    @InjectRepository(LeaderBoard)
+    private readonly leaderBoardRepository: Repository<LeaderBoard>,
     @InjectRepository(Route)
     private readonly routeRepository: Repository<Route>,
     @InjectRepository(SavedRoute)
@@ -26,7 +29,14 @@ export class RouteService extends TypeOrmCrudService<Route> {
   ) {
     super(routeRepository);
   }
+// async suggestedRoutes(userId:string, routeId: string){
+//   const result = await this.routeRepository.createQueryBuilder('routes')
+//   .leftJoinAndMapMany('routes.leaderBoard', LeaderBoard, 'leaderBoard', 'leaderBoard.route_id = :route_id', {routeId})
+//   .getMany()
 
+//   return result;
+
+// }
   async findOneEntity(options: FindOptions<Route>) {
     return this.routeRepository.findOne({
       where: options.where,
@@ -94,21 +104,20 @@ export class RouteService extends TypeOrmCrudService<Route> {
   // }
 
   // Get All Admin Routes
-  public async getAdminRoutes() {
-    const routes = await this.routeRepository.find({
-      role: Not(RoleEnum.USER)
-    })
-    if (!routes) {
-      return {
-        error: [{ message: "No routes found" }]
-      };
-    }
-    return {
+  // public async getAdminRoutes() {
 
-      message: "Admin routes successfully fetched!",
-      data: routes
-    };
-  }
+    
+
+  //   const routes = await this.routeRepository.createQueryBuilder('route')
+  //   .where('route.role = :role', { role: RoleEnum.ADMIN })
+  //   .leftJoinAndMapMany('route.leaderboard', LeaderBoard, 'leaderboard', 'route.id = leaderboard.route_id')
+  //   .leftJoinAndMapMany('leaderboard.user', UserEntity, 'user', 'leaderboard.user_id = user.id')
+  //   .orderBy('leaderboard.completion_time', 'ASC')
+  //   // .limit(3)
+  //   .getManyAndCount()
+
+  //   return routes;
+  // }
 
   public async getUserRoutes() {
 

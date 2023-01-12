@@ -3,7 +3,7 @@ import { LeaderBoardService } from './leader-board.service';
 import { CreateLeaderBoardDto } from './dto/create-leader-board.dto';
 import { UpdateLeaderBoardDto } from './dto/update-leader-board.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Crud, CrudController } from '@nestjsx/crud';
+import { Crud, CrudController, Override } from '@nestjsx/crud';
 import { LeaderBoard } from './entities/leader-board.entity';
 import { Query } from '@nestjs/common/decorators';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -17,7 +17,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
     type: LeaderBoard,
   },
   routes: {
-    exclude: ['replaceOneBase', 'createManyBase'],
+    exclude: ['replaceOneBase', 'createManyBase','updateOneBase'],
   },
   query: {
     maxLimit: 50,
@@ -54,11 +54,10 @@ export class LeaderBoardController implements CrudController<LeaderBoard> {
     return this.service.create(req.user.sub, dto)
 
   }
-  
+@Override('getManyBase')
   @ApiOperation({ summary: 'Get Rankings' })
-  @Get()
-  public async getAllRankings(@Query() query){
-    return this.service.getRankings(query.page)
+  public async getAllRankings(@Request() req){
+    return this.service.getPosition(req.user.sub)
   }
 
   @ApiOperation({ summary: 'Get Rankings By route id' })

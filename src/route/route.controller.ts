@@ -80,6 +80,14 @@ export class RouteController implements CrudController<Route> {
   get base(): CrudController<Route> {
     return this;
   }
+  
+  // @Roles(RoleEnum.USER)
+  // @ApiResponse({ type: Route })
+  // @ApiOperation({ summary: 'Get Rankings' })
+  // @Get('/:routeId')
+  // public async suggestedRoutes(@Request() req, @Param('routId') routeId){
+  //   return this.service.suggestedRoutes(req.user.sub, routeId)
+  // }
 
   @Override('deleteOneBase')
   async deleteOneRoute(@Param('id') id:string) {
@@ -140,12 +148,12 @@ async updateOneRoute(@Param('id') id:string,@Body() dto: UpdateRouteDto){
   //   return await this.service.getManyRoute(id, query.saved)
   // }
 
-  @Roles(RoleEnum.USER)
-  @Get('admin')
-  @ApiOperation({ summary: 'Get All Admin Routes' })
-  async getAdminRoutes() {
-    return await this.service.getAdminRoutes();
-  }
+  // @Roles(RoleEnum.USER)
+  // @Get('admin')
+  // @ApiOperation({ summary: 'Get All Admin Routes' })
+  // async getAdminRoutes() {
+  //   return await this.service.getAdminRoutes();
+  // }
 
   @Roles(RoleEnum.USER)
   @Post('save')

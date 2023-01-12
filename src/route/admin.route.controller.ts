@@ -80,11 +80,11 @@ export class AdminRouteController {
     return this.service.updatePicture(id, picture[driver]);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Get Routes' })
-  async getAdminRoutes() {
-    return await this.service.getAdminRoutes();
-  }
+  // @Get()
+  // @ApiOperation({ summary: 'Get Routes' })
+  // async getAdminRoutes() {
+  //   return await this.service.getAdminRoutes();
+  // }
   @Get(':id')
   @ApiOperation({ summary: 'Get Single Route' })
   async findOneRoute(@Param('id') id: string,) {
