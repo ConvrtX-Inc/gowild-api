@@ -26,14 +26,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
   ) {
     super(routeRepository);
   }
-// async suggestedRoutes(userId:string, routeId: string){
-//   const result = await this.routeRepository.createQueryBuilder('routes')
-//   .leftJoinAndMapMany('routes.leaderBoard', LeaderBoard, 'leaderBoard', 'leaderBoard.route_id = :route_id', {routeId})
-//   .getMany()
-
-//   return result;
-
-// }
+  
   async findOneEntity(options: FindOptions<Route>) {
     return this.routeRepository.findOne({
       where: options.where,
