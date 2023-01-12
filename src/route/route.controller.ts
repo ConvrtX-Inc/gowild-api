@@ -147,7 +147,7 @@ async updateOneRoute(@Param('id') id:string,@Body() dto: UpdateRouteDto){
 
   @Roles(RoleEnum.USER)
   @Get('save')
-  async getSaveRoute(@Request() req) {
-    return await this.service.getSaveRoute(req.user.sub);
+  async getSaveRoute(@Request() req, @Query() query) {
+    return await this.service.getSaveRoute(req.user.sub, query.pageNo);
   }
 }
