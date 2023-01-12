@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,6 +9,7 @@ import { RouteHistoricalEventMediasService } from './route-historical-events-med
 import {CreateRouteHistoricalEventDto} from "./dto/create-route-historical-event.dto";
 import {UpdateRouteDto} from "../route/dto/update-route.dto";
 import {UpdateRouteHistoricalEventDto} from "./dto/update-route-historical-event.dto";
+import { NotFoundException } from 'src/exceptions/not-found.exception';
 
 @Injectable()
 export class RouteHistoricalEventsService extends TypeOrmCrudService<RouteHistoricalEvent> {
@@ -21,6 +22,10 @@ export class RouteHistoricalEventsService extends TypeOrmCrudService<RouteHistor
   }
 
   public async createHistoricalEvent(routeId: any, dto: CreateRouteHistoricalEventDto){
+    const route = await this.routeHistoricalEventRepository.findOne(routeId);
+    if (!route) {
+      throw new NotFoundException({ message: `Route with ID ${routeId} not found!` });
+    }
     return await this.routeHistoricalEventRepository.save(this.routeHistoricalEventRepository.create({route: routeId,...dto }));
   }
 

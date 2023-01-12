@@ -130,7 +130,8 @@ export class RouteService extends TypeOrmCrudService<Route> {
     */
   public async getAllAdminRoutes() {
     const routes = await this.routeRepository.find({
-      role: Not(RoleEnum.USER)
+      where:{ role: Not(RoleEnum.USER) },
+      order:{ createdDate: "DESC"}
     })
 
     if (!routes) {
