@@ -13,6 +13,8 @@ import {SaveRouteDto} from './dto/save-route-dto';
 import {SavedRoute} from './entities/saved-routs.entity';
 import {UpdateRouteDto} from './dto/update-route.dto';
 import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
+import { skip } from 'rxjs';
+import { paginateResponse } from 'src/common/paginate.response';
 
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
@@ -81,7 +83,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
         error: [{ message: "No routes found" }]
       };
     }
-
+console.log(routes);
     var results = [];
     for (let i = 0; i < routes.length; i++) {
 
@@ -121,7 +123,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
 
     return {
       message: "Admin routes successfully fetched!",
-      data: results
+      data: results,
     };
   }
 
@@ -261,12 +263,15 @@ export class RouteService extends TypeOrmCrudService<Route> {
     return { message: "Route Saved Successfully" };
   }
 
-  public async getSaveRoute(id: string) {
+  public async getSaveRoute(id: string, pageNo: number) {
 
-    const savedRoutes = await this.saveRouteRepository.createQueryBuilder('saved')
+    let page = pageNo || 1, limit = 10, skip = (page -1) * limit;
+
+    const [savedRoutes, total] = await this.saveRouteRepository.createQueryBuilder('saved')
       .where('saved.user_id = :id', { id: id })
       .leftJoinAndMapOne('saved.route', Route, 'route', 'route.id = saved.route_id')
-      .getMany()
+      .skip(skip).take(limit)
+      .getManyAndCount()
 
     if (!savedRoutes) {
       return {
@@ -277,14 +282,55 @@ export class RouteService extends TypeOrmCrudService<Route> {
         ]
       }
     }
-    var responseArray = [];
-    savedRoutes.forEach(routes => {
-      if (routes['route']) {
-        responseArray.push(routes['route']);
+
+    var results = [];
+    for (let i = 0; i < savedRoutes.length; i++) {
+
+      const user = []
+      const leaderStats = await LeaderBoard.createQueryBuilder('leader')
+        .where('leader.route_id = :id ', { id: savedRoutes[i].route_id })
+        .leftJoinAndMapOne('leader.user', UserEntity, 'user', 'leader.user_id = user.id')
+        .orderBy('leader.completionTime', 'ASC')
+        .limit(4)
+        .getMany();
+        
+        
+      if (leaderStats) {
+
+        leaderStats.forEach(state => {
+          const leaderboard = this.mapLeaderboard(state.id, state.user_id, state['user'].firstName, state['user'].picture)
+          user.push(leaderboard);
+          
+        })
       }
-    })
-    return { data: responseArray };
+      
+      savedRoutes[i]['leaderboard'] = user;
+      results.push(savedRoutes[i]);
+
+      
+    // var responseArray = [];
+    // savedRoutes.forEach(routes => {
+    //   if (routes['route']) {
+    //     responseArray.push(routes['route']);
+    //   }
+    // })
+    // return { data: responseArray };
   }
+
+  const totalPage = Math.ceil(total/limit);
+  const currentPage = parseInt(page);
+  const prevPage = page > 1 ? page -1 : null;
+
+  return {
+    message: "Saved routes successfully fetched!",
+    data: results,
+    count: total,
+    currentPage,
+    prevPage,
+    totalPage
+  
+  };
+}
 
   async deleteOneRoute(id: string) {
     await this.routeRepository.delete(id);
