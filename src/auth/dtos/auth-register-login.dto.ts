@@ -36,9 +36,6 @@ export class AuthRegisterLoginDto {
   @ApiProperty({ example: '+639506703401', nullable: true })
   @Allow()
   @Transform((value: string) => value.toLowerCase().trim())
-  // @Validate(IsNotExist, ['UserEntity'], {
-  //   message: 'Phone number is already registered',
-  // })
   phoneNo: string | null;
 
   @ApiProperty({

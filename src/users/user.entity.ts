@@ -72,8 +72,6 @@ export class UserEntity extends AbstractBaseEntity {
 
   @Allow()
   @ApiProperty({ example: '+639506703401', nullable: true })
-  @IsOptional({ groups: [CrudValidationGroups.UPDATE] })
-  @IsNotEmpty({ groups: [CrudValidationGroups.CREATE] })
   @Column({ nullable: true })
   phoneNo: string | null;
 

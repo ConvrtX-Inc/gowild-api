@@ -143,8 +143,8 @@ async updateOneRoute(@Param('id') id:string,@Body() dto: UpdateRouteDto){
   @Roles(RoleEnum.USER)
   @Get('admin')
   @ApiOperation({ summary: 'Get All Admin Routes' })
-  async getAdminRoutes() {
-    return await this.service.getAdminRoutes();
+  async getAdminRoutes(@Request() req ,@Query() query) {
+    return await this.service.getAdminRoutes(req.user.sub,query.lat, query.long);
   }
 
   @Roles(RoleEnum.USER)

@@ -15,6 +15,7 @@ import { SaveRouteDto } from './dto/save-route-dto';
 import { SavedRoute } from './entities/saved-routs.entity';
 import { defaultPath } from 'tough-cookie';
 import { UpdateRouteDto } from './dto/update-route.dto';
+import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
 
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
@@ -57,44 +58,23 @@ export class RouteService extends TypeOrmCrudService<Route> {
 
   async updateOneRoute(id: string, dto: UpdateRouteDto) {
     await this.routeRepository.createQueryBuilder()
-    .update().set(dto).where('id = :id', {id}).execute()
+      .update().set(dto).where('id = :id', { id }).execute()
 
     const route = await this.routeRepository.findOne({
-      where:{id:id}
+      where: { id: id }
     });
-    return{
+    return {
       message: "Route Updated Successfully",
       route: route
-      
+
     }
   }
 
-  // To Get Many Routes with user_id and saved = true/false
-  // async getManyRoute(id: string, saved: any) {
-  //   console.log(typeof (saved));
-  //   if (saved == "true") {
-  //     const saved = await this.routeRepository.find({
-  //       user_id: id,
-  //       saved: true
-  //     });
-  //     return { data: saved }
 
-  //   } else if (saved == "false") {
-  //     const unsaved = await this.routeRepository.find({
-  //       user_id: id,
-  //       saved: false
-  //     });
-  //     return { data: unsaved }
-  //   } else {
-  //     const all = await this.routeRepository.find({
-  //       user_id: id
-  //     })
-  //     return { data: all }
-  //   }
-  // }
-
-  // Get All Admin Routes
-  public async getAdminRoutes() {
+  /* 
+   * Get All Admin Routes
+   */
+  public async getAdminRoutes(id?: string, lat?: string, long?: string) {
     const routes = await this.routeRepository.find({
       role: Not(RoleEnum.USER)
     })
@@ -103,11 +83,86 @@ export class RouteService extends TypeOrmCrudService<Route> {
         error: [{ message: "No routes found" }]
       };
     }
-    return {
 
+    var results = [];
+    for (let i = 0; i < routes.length; i++) {
+
+      const user = []
+      const leaderStats = await LeaderBoard.createQueryBuilder('leader')
+        .where('leader.route_id = :id AND leader.user_id != :user ', { id: routes[i].id, user: id })
+        .leftJoinAndMapOne('leader.user', UserEntity, 'user', 'leader.user_id = user.id')
+        .orderBy('leader.completionTime', 'ASC')
+        .limit(4)
+        .getMany();
+      if (leaderStats) {
+
+        leaderStats.forEach(state => {
+          const leaderboard = this.mapLeaderboard(state.id, state.user_id, state['user'].firstName, state['user'].picture)
+          user.push(leaderboard);
+        })
+      }
+      routes[i]['leaderboard'] = user;
+
+      const current_user_leaderboard = await LeaderBoard.createQueryBuilder('leader')
+        .where('leader.route_id = :id AND leader.user_id = :user ', { id: routes[i].id, user: id })
+        .leftJoinAndMapOne('leader.user', UserEntity, 'user', 'leader.user_id = user.id')
+        .orderBy('leader.completionTime', 'ASC')
+        .getMany();
+      if (
+        this.closestLocation(
+          parseFloat(lat),
+          parseFloat(long),
+          routes[i].start.latitude,
+          routes[i].start.longitude,
+          'K',
+        ) <= 5
+      ) {
+        results.push(routes[i]);
+      }
+    }
+
+    return {
       message: "Admin routes successfully fetched!",
-      data: routes
+      data: results
     };
+  }
+
+  /*
+  Map Leader Board
+  */
+  mapLeaderboard(id: string, user_id: string, firstName: string, picture: string) {
+    let leaderboard: {
+      id: string,
+      user_id: string,
+      name: string,
+      image: string
+    } = {
+      id: id,
+      user_id: user_id,
+      name: firstName,
+      image: picture,
+    }
+    return leaderboard;
+  }
+
+  /*
+  Get Distance b/w Latitude and Longitude
+  */
+  closestLocation(lat1, lon1, lat2, lon2, unit) {
+    const R = 6371e3; // metres
+    const φ1 = lat1 * Math.PI / 180; // φ, λ in radians
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) *
+      Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c; // in metres
+    const km = Math.round(d / 1000);
+    console.log(km);
+    return km;
   }
 
   public async getUserRoutes() {
@@ -175,7 +230,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     }
     const data = {
       user_id: user.sub,
-      route_id: dto.route_id,    
+      route_id: dto.route_id,
     }
     await this.saveRouteRepository.save(this.saveRouteRepository.create(data));
     return { message: "Route Saved Successfully" };

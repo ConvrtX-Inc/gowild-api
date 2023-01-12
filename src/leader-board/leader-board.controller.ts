@@ -11,7 +11,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@ApiTags('Leader-Board')
+@ApiTags('Leaderboard')
 @Crud({
   model: {
     type: LeaderBoard,
@@ -36,7 +36,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   },
 })
 @Controller({
-  path: 'leader-board',
+  path: 'leaderboard',
   version: '1',
 })
 export class LeaderBoardController implements CrudController<LeaderBoard> {

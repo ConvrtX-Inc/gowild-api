@@ -150,9 +150,11 @@ export class AuthService {
 
   public async register(dto: AuthRegisterLoginDto) {
 
-
     var isExist = await this.usersService.findOne({
-      where: { phoneNo: dto.phoneNo }
+      where: {
+        phoneNo: dto.phoneNo,
+        phoneVerified: false
+      }
     });
     console.log(isExist);
     if (!isExist) {
