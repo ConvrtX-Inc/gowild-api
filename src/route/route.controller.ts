@@ -1,5 +1,5 @@
 import {
-  Body, ClassSerializerInterceptor,
+  Body,
   Controller,
   HttpCode,
   HttpStatus,
@@ -22,8 +22,7 @@ import { Roles } from "../roles/roles.decorator";
 import { RoleEnum } from "../roles/roles.enum";
 import { RolesGuard } from "../roles/roles.guard";
 import { FileInterceptor } from "@nestjs/platform-express";
-// import { Query } from 'typeorm/driver/Query';
-import { query } from 'express';
+
 import { FilesService } from "../files/files.service";
 import { ConfigService } from '@nestjs/config';
 import { SaveRouteDto } from './dto/save-route-dto';
@@ -137,7 +136,7 @@ async updateOneRoute(@Param('id') id:string,@Body() dto: UpdateRouteDto){
   @Get('admin')
   @ApiOperation({ summary: 'Get All Admin Routes' })
   async getAdminRoutes(@Request() req ,@Query() query) {
-    return await this.service.getAdminRoutes(req.user.sub,query.lat, query.long);
+    return await this.service.getAdminRoutes(req.user.sub,query.lat, query.long, query.pageNo);
   }
 
   @Roles(RoleEnum.USER)

@@ -13,6 +13,7 @@ import {SaveRouteDto} from './dto/save-route-dto';
 import {SavedRoute} from './entities/saved-routs.entity';
 import {UpdateRouteDto} from './dto/update-route.dto';
 import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
+import {paginateResponse} from "../common/paginate.response";
 
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
@@ -72,26 +73,32 @@ export class RouteService extends TypeOrmCrudService<Route> {
   /* 
    * Get All Admin Routes with leaderboard
    */
-  public async getAdminRoutes(id?: string, lat?: string, long?: string) {
-    const routes = await this.routeRepository.find({
-      role: Not(RoleEnum.USER)
-    })
+
+  public async getAdminRoutes(id?: string, lat?: string, long?: string, pageNo?: number) {
+
+    let page = pageNo || 1, limit = 10;
+    const [routes, total] = await this.routeRepository.findAndCount({
+      where:{role: Not(RoleEnum.USER)},
+      skip: (page - 1) * limit,
+      take: limit
+    });
+
     if (!routes) {
       return {
         error: [{ message: "No routes found" }]
       };
     }
-
     var results = [];
     for (let i = 0; i < routes.length; i++) {
 
       const user = []
       const leaderStats = await LeaderBoard.createQueryBuilder('leader')
-        .where('leader.route_id = :id AND leader.user_id != :user ', { id: routes[i].id, user: id })
-        .leftJoinAndMapOne('leader.user', UserEntity, 'user', 'leader.user_id = user.id')
-        .orderBy('leader.completionTime', 'ASC')
-        .limit(4)
-        .getMany();
+          .where('leader.route_id = :id', { id: routes[i].id })
+          .leftJoinAndMapOne('leader.user', UserEntity, 'user', 'leader.user_id = user.id')
+          .orderBy('leader.completionTime', 'ASC')
+          .limit(4)
+          .getMany();
+
       if (leaderStats) {
 
         leaderStats.forEach(state => {
@@ -102,32 +109,40 @@ export class RouteService extends TypeOrmCrudService<Route> {
       routes[i]['leaderboard'] = user;
 
       const current_user_leaderboard = await LeaderBoard.createQueryBuilder('leader')
-        .where('leader.route_id = :id AND leader.user_id = :user ', { id: routes[i].id, user: id })
-        .leftJoinAndMapOne('leader.user', UserEntity, 'user', 'leader.user_id = user.id')
-        .orderBy('leader.completionTime', 'ASC')
-        .getMany();
+          .where('leader.route_id = :id AND leader.user_id = :user ', { id: routes[i].id, user: id })
+          .leftJoinAndMapOne('leader.user', UserEntity, 'user', 'leader.user_id = user.id')
+          .orderBy('leader.completionTime', 'ASC')
+          .getMany();
       if (
-        this.closestLocation(
-          parseFloat(lat),
-          parseFloat(long),
-          routes[i].start.latitude,
-          routes[i].start.longitude,
-          'K',
-        ) <= 5
+          this.closestLocation(
+              parseFloat(lat),
+              parseFloat(long),
+              routes[i].start.latitude,
+              routes[i].start.longitude,
+              'K',
+          ) <= 5
       ) {
         results.push(routes[i]);
       }
     }
 
+    const totalPage = Math.ceil(total / limit);
+    const currentPage = parseInt(String(page));
+    const prevPage = page > 1 ? page - 1 : null;
     return {
       message: "Admin routes successfully fetched!",
-      data: results
+      data: results,
+      count: total,
+      currentPage,
+      prevPage,
+      totalPage,
     };
   }
 
-    /*
-    get all admin routes only
-    */
+
+  /*
+  get all admin routes only
+  */
   public async getAllAdminRoutes() {
     const routes = await this.routeRepository.find({
       where:{ role: Not(RoleEnum.USER) },
