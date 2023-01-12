@@ -1,20 +1,17 @@
-import { Injectable, NotFoundException, HttpStatus } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { DeepPartial } from 'src/common/types/deep-partial.type';
-import { FindOptions } from 'src/common/types/find-options.type';
-import { Not, Repository } from 'typeorm';
-import { Route } from './entities/route.entity';
-import { FilesService } from '../files/files.service';
-import { CreateRouteDto } from "./dto/create-route.dto";
-import { RoleEnum } from "../roles/roles.enum";
-import { FileEntity } from "../files/file.entity";
-import { UserEntity } from "../users/user.entity";
-import { Status } from "../statuses/status.entity";
-import { SaveRouteDto } from './dto/save-route-dto';
-import { SavedRoute } from './entities/saved-routs.entity';
-import { defaultPath } from 'tough-cookie';
-import { UpdateRouteDto } from './dto/update-route.dto';
+import {Injectable, NotFoundException} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
+import {DeepPartial} from 'src/common/types/deep-partial.type';
+import {FindOptions} from 'src/common/types/find-options.type';
+import {Not, Repository} from 'typeorm';
+import {Route, RouteStatusEnum} from './entities/route.entity';
+import {CreateRouteDto} from "./dto/create-route.dto";
+import {RoleEnum} from "../roles/roles.enum";
+import {UserEntity} from "../users/user.entity";
+import {Status} from "../statuses/status.entity";
+import {SaveRouteDto} from './dto/save-route-dto';
+import {SavedRoute} from './entities/saved-routs.entity';
+import {UpdateRouteDto} from './dto/update-route.dto';
 import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
 
 @Injectable()
@@ -207,9 +204,17 @@ export class RouteService extends TypeOrmCrudService<Route> {
     return { data: res }
   }
 
+
+
   public async create(userId: string, role: RoleEnum, dto: CreateRouteDto) {
     // @ts-ignore
-    return this.routeRepository.save(this.routeRepository.create({ user_id: userId, role, ...dto }));
+    if(role === RoleEnum.ADMIN || role === RoleEnum.SUPER_ADMIN){
+      return await this.routeRepository.save(
+          this.routeRepository.create({ user_id: userId, status: RouteStatusEnum.Approved, role, ...dto }));
+    }else{
+      return await this.routeRepository.save(
+          this.routeRepository.create({ user_id: userId, status: RouteStatusEnum.Pending, role, ...dto }));
+    }
   }
 
   public async saveRoute(user: any, dto: SaveRouteDto) {
@@ -264,5 +269,41 @@ export class RouteService extends TypeOrmCrudService<Route> {
   async deleteOneRoute(id: string) {
     await this.routeRepository.delete(id);
     return { message: "Route Deleted Successfully" };
+  }
+
+  async updateApprovedStatus(id){
+    const status = await  this.routeRepository.findOne({
+      where:{
+        id: id
+      }
+    })
+
+    if(!status){
+      throw new NotFoundException({ errors:[
+          { message: 'Route not Found!' } ]})
+    }
+    status.status = RouteStatusEnum.Approved;
+    await status.save();
+    return{
+      message: 'Status Changed Successfully (Route Approved!)!'
+    }
+  }
+
+  async updateRejectStatus(id){
+    const status = await  this.routeRepository.findOne({
+      where:{
+        id: id
+      }
+    })
+
+    if(!status){
+      throw new NotFoundException({ errors:[
+          { message: 'Route not Found!' } ]})
+    }
+    status.status = RouteStatusEnum.Reject;
+    await status.save();
+    return{
+      message: 'Status Changed Successfully (Route Rejected!)'
+    }
   }
 }

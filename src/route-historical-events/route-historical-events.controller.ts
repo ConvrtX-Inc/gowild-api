@@ -3,22 +3,21 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
-  Param, Request,
-  Post,UploadedFiles, UploadedFile,
+  Param,
+  Post, UploadedFile,
   UseGuards, UseInterceptors
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Crud, CrudController } from '@nestjsx/crud';
+import {Crud, CrudController, Override} from '@nestjsx/crud';
 import { RouteHistoricalEvent } from './entities/route-historical-event.entity';
 import { RouteHistoricalEventsService } from './route-historical-events.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { ImageUpdateDto } from '../users/dtos/image-update.dto';
 import {AdminRolesGuard} from "../roles/admin.roles.guard";
-import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
-import { Roles } from 'src/roles/roles.decorator';
-import { RoleEnum } from 'src/roles/roles.enum';
 import { RouteHistoricalEventMedias } from './entities/route-historical-event-medias.entity';
+import {CreateRouteHistoricalEventDto} from "./dto/create-route-historical-event.dto";
+import {UpdateRouteHistoricalEventDto} from "./dto/update-route-historical-event.dto";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, AdminRolesGuard)
@@ -28,7 +27,7 @@ import { RouteHistoricalEventMedias } from './entities/route-historical-event-me
     type: RouteHistoricalEvent,
   },
   routes: {
-    exclude: ['replaceOneBase', 'createManyBase'],
+    exclude: ['replaceOneBase', 'createManyBase', 'createOneBase'],
   },
   query: {
     maxLimit: 50,
@@ -53,6 +52,44 @@ export class RouteHistoricalEventsController
 
   get base(): CrudController<RouteHistoricalEvent> {
     return this;
+  }
+
+  @ApiOperation({ summary: 'Create Historical Events Routes' })
+  @Post('/:route_id')
+  @HttpCode(HttpStatus.OK)
+  public async create(@Param('route_id') route_id: string, @Body() dto: CreateRouteHistoricalEventDto) {
+    return{
+      message: 'Historical Event Routes created Successfully!',
+      data: await this.service.createHistoricalEvent(route_id, dto)
+    }
+  }
+
+  @ApiOperation({summary: 'Get all Historical Routes'})
+  @Override('getManyBase')
+  public async getHistoricalEvents(){
+    return{
+      message: "Historical Event Routes fetched Successfully!",
+      data: await this.service.getAllHistoricalEvents()
+    }
+  }
+
+  @ApiOperation({summary: 'Get one Historical Route'})
+  @Override('getOneBase')
+  public async getHistoricalEvent(@Param('id') id: string){
+    return{
+      message: "Historical Event Route fetched Successfully!",
+      data: await this.service.getOneHistoricalEvent(id)
+    }
+  }
+
+  @ApiOperation({summary: 'Update one Historical Route '})
+  @Override('updateOneBase')
+  public async updateHistoricalEvents(@Param('id') id: string, @Body() dto: UpdateRouteHistoricalEventDto)
+  {
+    return{
+      message: "Historical Event Route updated Successfully!",
+      data: await this.service.updateOneHistoricalEvent(id, dto)
+    }
   }
 
   @ApiResponse({ type: RouteHistoricalEvent })

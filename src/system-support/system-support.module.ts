@@ -8,7 +8,7 @@ import {TicketModule} from "../ticket/ticket.module";
 import {TicketMessagesModule} from "../ticket-messages/ticket-messages.module";
 
 @Module({
-  controllers: [],
+  controllers: [SystemSupportController],
   providers: [SystemSupportService, SupportGateway],
   exports: [SystemSupportService],
   imports: [TypeOrmModule.forFeature([SystemSupport]), TicketModule, TicketMessagesModule],

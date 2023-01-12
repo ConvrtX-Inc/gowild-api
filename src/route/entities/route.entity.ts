@@ -11,6 +11,13 @@ import { RoleEnum } from "../../roles/roles.enum";
 import { Coordinates } from "../../common/coordinates";
 import { time } from 'aws-sdk/clients/frauddetector';
 
+export enum RouteStatusEnum {
+  Approved = 'approved',
+  Pending = 'pending',
+  Reject = 'reject'
+}
+
+
 @Entity('gw_routes')
 export class Route extends AbstractBaseEntity {
   @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
@@ -70,15 +77,26 @@ export class Route extends AbstractBaseEntity {
   role: RoleEnum;
 
   @ApiProperty({ example: '01:04:00' })
-  @Column({ nullable: false, name: 'estimate_time' })
+  @Column({ nullable: true, name: 'estimate_time' })
   estimate_time: string;
 
   @ApiProperty({ example: '2 Miles' })
-  @Column({ nullable: false, name: 'distance_miles' })
+  @Column({ nullable: true, name: 'distance_miles' })
   distance_miles: number;
 
   @ApiProperty({ example: '500m' })
-  @Column({ nullable: false, name: 'distance_meters' })
+  @Column({ nullable: true, name: 'distance_meters' })
   distance_meters: number;
+
+  @IsOptional()
+  @ApiProperty({
+    example: 'pending/completed',
+    nullable: true,
+    enum: RouteStatusEnum,
+    enumName: 'RouteStatusEnum',
+  })
+  @Column({ nullable: true, enum: RouteStatusEnum, enumName: 'RouteStatusEnum', default: RouteStatusEnum.Pending })
+  status: RouteStatusEnum
+
 }
 
