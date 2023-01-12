@@ -29,7 +29,7 @@ export class CreateRouteDto {
     @IsNotEmpty()
     distance_miles: number;
 
-    @ApiProperty({ type: "number" , nullable: false })
+    @ApiProperty({ type: 'number', nullable: false })
     @IsNotEmpty()
     distance_meters: number;
 

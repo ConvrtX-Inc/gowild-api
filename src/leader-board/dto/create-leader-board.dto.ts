@@ -17,8 +17,4 @@ export class CreateLeaderBoardDto {
   @IsNotEmpty()
   endDate: Date;
 
-  @ApiProperty({ example: '01:04:55' })
-  @IsNotEmpty()
-  @IsValidTime({ message: 'Completion time must be a valid time string (HH:mm:ss)' })
-  completionTime: time;
 }

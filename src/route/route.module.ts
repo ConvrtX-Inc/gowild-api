@@ -13,11 +13,12 @@ import * as multerS3 from 'multer-s3';
 import path from "path";
 import {AdminRouteController} from "./admin.route.controller";
 import { SavedRoute } from './entities/saved-routs.entity';
+import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
 
 @Module({
   controllers: [RouteController, AdminRouteController],
   providers: [RouteService, ConfigModule, ConfigService,],
-  imports: [TypeOrmModule.forFeature([Route,SavedRoute]), FilesModule,
+  imports: [TypeOrmModule.forFeature([Route,SavedRoute, LeaderBoard]), FilesModule,
     MulterModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

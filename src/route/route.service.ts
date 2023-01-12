@@ -17,6 +17,8 @@ import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
   constructor(
+    @InjectRepository(LeaderBoard)
+    private readonly leaderBoardRepository: Repository<LeaderBoard>,
     @InjectRepository(Route)
     private readonly routeRepository: Repository<Route>,
     @InjectRepository(SavedRoute)
@@ -24,7 +26,14 @@ export class RouteService extends TypeOrmCrudService<Route> {
   ) {
     super(routeRepository);
   }
+// async suggestedRoutes(userId:string, routeId: string){
+//   const result = await this.routeRepository.createQueryBuilder('routes')
+//   .leftJoinAndMapMany('routes.leaderBoard', LeaderBoard, 'leaderBoard', 'leaderBoard.route_id = :route_id', {routeId})
+//   .getMany()
 
+//   return result;
+
+// }
   async findOneEntity(options: FindOptions<Route>) {
     return this.routeRepository.findOne({
       where: options.where,
@@ -66,7 +75,6 @@ export class RouteService extends TypeOrmCrudService<Route> {
 
     }
   }
-
 
   /* 
    * Get All Admin Routes

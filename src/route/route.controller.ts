@@ -132,13 +132,6 @@ async updateOneRoute(@Param('id') id:string,@Body() dto: UpdateRouteDto){
     };
     return this.service.updatePicture(id, picture[driver]);
   }
-  // @Roles(RoleEnum.USER)
-  // @ApiOperation({ summary: 'saved = true/false' })
-  // @Override('getManyBase')
-  // async getManyRoute(@Request() req, @Query() query) {
-  //   const id = req.user.sub;
-  //   return await this.service.getManyRoute(id, query.saved)
-  // }
 
   @Roles(RoleEnum.USER)
   @Get('admin')

@@ -7,7 +7,7 @@ import { Column, Entity } from "typeorm";
 @Entity('gw_leader_board')
 export class LeaderBoard extends AbstractBaseEntity {
     @ApiProperty({type: 'uuid', example: '08be3c69-5783-4a4f-95b3-5ee67c38ebb6' })
-    @Column({ nullable: false })
+    @Column({ nullable: false, type: 'uuid' })
     route_id: string
 
     @ApiProperty({type: 'uuid', example: '08be3c69-5783-4a4f-95b3-5ee67c38ebb6' })
