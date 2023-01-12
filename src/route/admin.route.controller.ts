@@ -41,6 +41,7 @@ export class AdminRouteController {
   }
 
   @ApiResponse({ type: Route })
+  @ApiOperation({ summary: 'Create Admin Route' })
   @Post()
   @HttpCode(HttpStatus.OK)
   public async create(
@@ -81,9 +82,9 @@ export class AdminRouteController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get Routes' })
+  @ApiOperation({ summary: 'Get all Admin Routes' })
   async getAdminRoutes() {
-    return await this.service.getAdminRoutes();
+    return await this.service.getAllAdminRoutes();
   }
 
   @Get(':id')

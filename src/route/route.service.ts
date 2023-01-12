@@ -70,7 +70,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
   }
 
   /* 
-   * Get All Admin Routes
+   * Get All Admin Routes with leaderboard
    */
   public async getAdminRoutes(id?: string, lat?: string, long?: string) {
     const routes = await this.routeRepository.find({
@@ -125,6 +125,25 @@ export class RouteService extends TypeOrmCrudService<Route> {
     };
   }
 
+    /*
+    get all admin routes only
+    */
+  public async getAllAdminRoutes() {
+    const routes = await this.routeRepository.find({
+      role: Not(RoleEnum.USER)
+    })
+
+    if (!routes) {
+      return {
+        error: [{message: "No routes found"}]
+      };
+    }
+    return{
+      message: "Admin Routes fetched Successfully!",
+      data: routes
+    }
+  }
+
   /*
   Map Leader Board
   */
@@ -166,7 +185,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
   public async getUserRoutes() {
 
     const routes = await this.routeRepository.createQueryBuilder('route')
-      .where("route.role = role", { role: RoleEnum.USER })
+      .where("route.role =:role", { role: RoleEnum.USER })
       .leftJoinAndMapOne('route.user', UserEntity, 'user', 'user.id = route.user_id')
       .leftJoinAndMapOne('user.status', Status, 'status', 'status.id = user.status_id')
       .getMany()
@@ -179,7 +198,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     }
     return {
 
-      message: "Admin routes successfully fetched!",
+      message: "User routes successfully fetched!",
       data: routes
     };
   }

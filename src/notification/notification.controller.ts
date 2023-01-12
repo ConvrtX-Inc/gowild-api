@@ -70,7 +70,7 @@ export class NotificationController implements CrudController<Notification> {
 
 
   @Get('user/:user_id')
-  @ApiOperation({summary: "Retrieve one Notification by user ID"})
+  @ApiOperation({summary: "Retrieve one user Notifications by user ID"})
   async getNotificationByUserId(@Param('user_id') UserId: string){
     return await this.service.getNotificationByUserId(UserId);
   }
