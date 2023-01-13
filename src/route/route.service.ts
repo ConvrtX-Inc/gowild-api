@@ -15,6 +15,8 @@ import {UpdateRouteDto} from './dto/update-route.dto';
 import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
 import { skip } from 'rxjs';
 import { paginateResponse } from 'src/common/paginate.response';
+import { Role } from 'src/roles/role.entity';
+import { StatusEnum } from 'src/auth/status.enum';
 
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
@@ -75,11 +77,11 @@ export class RouteService extends TypeOrmCrudService<Route> {
    * Get All Admin Routes with leaderboard
    */
 
-  public async getAdminRoutes(id?: string, lat?: string, long?: string, pageNo?: number) {
+  public async getApprovedRoutes(id?: string, lat?: string, long?: string, pageNo?: number) {
 
     let page = pageNo || 1, limit = 10;
     const [routes, total] = await this.routeRepository.findAndCount({
-      where:{role: Not(RoleEnum.USER)},
+      where:{status: StatusEnum.Approved},
       skip: (page - 1) * limit,
       take: limit
     });
@@ -127,12 +129,11 @@ export class RouteService extends TypeOrmCrudService<Route> {
         results.push(routes[i]);
       }
     }
-
     const totalPage = Math.ceil(total / limit);
     const currentPage = parseInt(String(page));
     const prevPage = page > 1 ? page - 1 : null;
     return {
-      message: "Admin routes successfully fetched!",
+      message: "Approved routes successfully fetched!",
       data: results,
       count: total,
       currentPage,
