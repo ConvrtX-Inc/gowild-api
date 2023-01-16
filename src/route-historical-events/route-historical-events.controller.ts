@@ -74,7 +74,7 @@ export class RouteHistoricalEventsController
   }
 
   @ApiOperation({summary: 'Get all Historical Routes through route ID'})
-  @Get(':route_id/events')
+  @Get('events/:route_id')
   public async getHistoricalEventsById(@Param('route_id') route_id: string){
     return{
       message: "Historical Event Routes fetched Successfully!",
