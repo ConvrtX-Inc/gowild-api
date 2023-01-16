@@ -31,11 +31,24 @@ export class RouteHistoricalEventsService extends TypeOrmCrudService<RouteHistor
     if (!route) {
       throw new NotFoundException({ message: `Route with ID ${routeId} not found!` });
     }
-    return await this.routeHistoricalEventRepository.save(this.routeHistoricalEventRepository.create({route: routeId,...dto }));
+    return await this.routeHistoricalEventRepository.save(this.routeHistoricalEventRepository.create({route_id: routeId,...dto }));
   }
 
   public async getAllHistoricalEvents(){
     const hEvents = await this.routeHistoricalEventRepository.find({})
+
+    if(!hEvents){
+      throw new NotFoundException({
+        errors:[{
+          message: 'Historical Event Routes not found!'
+        }]
+      })
+    }
+    return hEvents
+  }
+
+  public async getAllHistoricalEventsByRouteId(route_id: string){
+    const hEvents = await this.routeHistoricalEventRepository.find({where:{route_id: route_id}})
 
     if(!hEvents){
       throw new NotFoundException({

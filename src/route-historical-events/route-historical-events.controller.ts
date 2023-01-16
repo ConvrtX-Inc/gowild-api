@@ -1,6 +1,6 @@
 import {
   Body,
-  Controller,
+  Controller, Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -70,6 +70,15 @@ export class RouteHistoricalEventsController
     return{
       message: "Historical Event Routes fetched Successfully!",
       data: await this.service.getAllHistoricalEvents()
+    }
+  }
+
+  @ApiOperation({summary: 'Get all Historical Routes through route ID'})
+  @Get(':route_id/events')
+  public async getHistoricalEventsById(@Param('route_id') route_id: string){
+    return{
+      message: "Historical Event Routes fetched Successfully!",
+      data: await this.service.getAllHistoricalEventsByRouteId(route_id)
     }
   }
 
