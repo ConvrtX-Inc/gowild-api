@@ -4,8 +4,15 @@ import { Allow, IsOptional, Validate } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { IsExist } from 'src/common/validators/is-exists.validator';
 import appConfig from 'src/config/app.config';
-import {AfterLoad, AfterUpdate, Column, Entity, JoinColumn, ManyToOne} from 'typeorm';
-import {FileEntity} from "../../files/file.entity";
+import {
+  AfterLoad,
+  AfterUpdate,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
+import { FileEntity } from '../../files/file.entity';
 
 @Entity('gw_post_feeds')
 export class PostFeed extends AbstractBaseEntity {
@@ -48,7 +55,7 @@ export class PostFeed extends AbstractBaseEntity {
   @Column({
     type: 'integer',
     nullable: false,
-    default: 0
+    default: 0,
   })
   views?: number;
 
@@ -57,15 +64,15 @@ export class PostFeed extends AbstractBaseEntity {
   @Column({
     type: 'integer',
     nullable: false,
-    default: 0
+    default: 0,
   })
   share?: number;
 
-//   @AfterLoad()
-//   @AfterUpdate()
-//   updatePicture() {
-//     if (this.picture && this.picture.indexOf('/') === 0) {
-//       this.picture = appConfig().backendDomain + this.picture;
-//     }
-// }
+  //   @AfterLoad()
+  //   @AfterUpdate()
+  //   updatePicture() {
+  //     if (this.picture && this.picture.indexOf('/') === 0) {
+  //       this.picture = appConfig().backendDomain + this.picture;
+  //     }
+  // }
 }

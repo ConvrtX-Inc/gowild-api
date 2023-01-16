@@ -10,8 +10,11 @@ import { PostFeedAttachmentService } from 'src/post-feed-attchment/post-feed-att
 import { PostFeedAttachment } from 'src/post-feed-attchment/post-feed-attachment.entity';
 
 @Module({
-    //   controllers: [NotificationController],
-    imports: [TypeOrmModule.forFeature([PostFeedAttachment]),ScheduleModule.forRoot()],
-    providers: [bulkMailService,PostFeedAttachmentService],
+  //   controllers: [NotificationController],
+  imports: [
+    TypeOrmModule.forFeature([PostFeedAttachment]),
+    ScheduleModule.forRoot(),
+  ],
+  providers: [bulkMailService, PostFeedAttachmentService],
 })
-export class cronJobModule { }
+export class cronJobModule {}

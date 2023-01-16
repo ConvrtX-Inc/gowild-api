@@ -22,7 +22,7 @@ import { AuthForgotPasswordDto } from './dtos/auth-forgot-password.dto';
 import {
   AuthResetPasswordAdminDto,
   AuthResetPasswordDto,
-  AuthVerifyOTPDto
+  AuthVerifyOTPDto,
 } from './dtos/auth-reset-password.dto';
 import { AuthRegisterLoginDto } from './dtos/auth-register-login.dto';
 import { TokenResponse } from './dtos/token';
@@ -30,8 +30,8 @@ import { AuthRefreshTokenDto } from './dtos/auth-refresh-token.dto';
 import { UserEntity } from '../users/user.entity';
 import { userTokenCookieKey } from '../common/constants/cookie.keys';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { AuthVerifyUserDto } from "./dtos/auth-verify-user.dto";
-import { SuccessResponse } from './dtos/auth-response'
+import { AuthVerifyUserDto } from './dtos/auth-verify-user.dto';
+import { SuccessResponse } from './dtos/auth-response';
 
 @ApiTags('Auth')
 @Controller({
@@ -39,7 +39,7 @@ import { SuccessResponse } from './dtos/auth-response'
   version: '1',
 })
 export class AuthController {
-  constructor(public service: AuthService) { }
+  constructor(public service: AuthService) {}
 
   @ApiResponse({ type: TokenResponse })
   @Post('login')
@@ -58,17 +58,14 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register new account' })
-  async register(
-    @Body() createUserDto: AuthRegisterLoginDto,
-  ) {
+  async register(@Body() createUserDto: AuthRegisterLoginDto) {
     return this.service.register(createUserDto);
   }
 
   @Post('forgot/password')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Request forgot password' })
-  async forgotPassword(
-    @Body() forgotPasswordDto: AuthForgotPasswordDto,) {
+  async forgotPassword(@Body() forgotPasswordDto: AuthForgotPasswordDto) {
     return this.service.forgotPassword(forgotPasswordDto);
   }
 
@@ -80,18 +77,20 @@ export class AuthController {
   ): Promise<SuccessResponse> {
     return await this.service.verifyMobile(
       verifyOTPDto.emailPhone,
-      verifyOTPDto.hash
+      verifyOTPDto.hash,
     );
   }
 
   @Post('reset/password')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Reset user password' })
-  async resetPassword(@Body() resetPasswordDto: AuthResetPasswordDto): Promise<SuccessResponse> {
+  async resetPassword(
+    @Body() resetPasswordDto: AuthResetPasswordDto,
+  ): Promise<SuccessResponse> {
     return await this.service.resetPassword(
       resetPasswordDto.hash,
       resetPasswordDto.emailPhone,
-      resetPasswordDto.password
+      resetPasswordDto.password,
     );
   }
 

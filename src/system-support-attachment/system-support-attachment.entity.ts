@@ -4,7 +4,6 @@ import { Allow, IsOptional, Validate } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { IsExist } from 'src/common/validators/is-exists.validator';
 
-
 @Entity('gw_system_support_attachments')
 export class SystemSupportAttachment extends AbstractBaseEntity {
   @IsOptional()
@@ -14,7 +13,8 @@ export class SystemSupportAttachment extends AbstractBaseEntity {
   })
   @Column({
     type: 'uuid',
-    nullable: false})
+    nullable: false,
+  })
   ticket_id?: string;
 
   @Allow()
@@ -26,10 +26,11 @@ export class SystemSupportAttachment extends AbstractBaseEntity {
 
   @Column({
     type: 'uuid',
-    nullable: true})
+    nullable: true,
+  })
   message_id?: string;
 
-/*  @BeforeUpdate()
+  /*  @BeforeUpdate()
   @BeforeInsert()
   public encodeImage() {
     this.attachment = this.attachment

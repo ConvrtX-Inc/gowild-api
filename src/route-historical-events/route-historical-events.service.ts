@@ -6,9 +6,9 @@ import { RouteHistoricalEvent } from './entities/route-historical-event.entity';
 import { FilesService } from '../files/files.service';
 import { RouteHistoricalEventMedias } from './entities/route-historical-event-medias.entity';
 import { RouteHistoricalEventMediasService } from './route-historical-events-medias.service';
-import {CreateRouteHistoricalEventDto} from "./dto/create-route-historical-event.dto";
-import {UpdateRouteDto} from "../route/dto/update-route.dto";
-import {UpdateRouteHistoricalEventDto} from "./dto/update-route-historical-event.dto";
+import { CreateRouteHistoricalEventDto } from './dto/create-route-historical-event.dto';
+import { UpdateRouteDto } from '../route/dto/update-route.dto';
+import { UpdateRouteHistoricalEventDto } from './dto/update-route-historical-event.dto';
 import { NotFoundException } from 'src/exceptions/not-found.exception';
 
 @Injectable()
@@ -21,51 +21,67 @@ export class RouteHistoricalEventsService extends TypeOrmCrudService<RouteHistor
     super(routeHistoricalEventRepository);
   }
 
-  public async createHistoricalEvent(routeId: any, dto: CreateRouteHistoricalEventDto){
+  public async createHistoricalEvent(
+    routeId: any,
+    dto: CreateRouteHistoricalEventDto,
+  ) {
     const route = await this.routeHistoricalEventRepository.findOne(routeId);
     if (!route) {
-      throw new NotFoundException({ message: `Route with ID ${routeId} not found!` });
-    }
-    return await this.routeHistoricalEventRepository.save(this.routeHistoricalEventRepository.create({route: routeId,...dto }));
-  }
-
-  public async getAllHistoricalEvents(){
-    const hEvents = await this.routeHistoricalEventRepository.find({})
-
-    if(!hEvents){
       throw new NotFoundException({
-        errors:[{
-          message: 'Historical Event Routes not found!'
-        }]
-      })
+        message: `Route with ID ${routeId} not found!`,
+      });
     }
-    return hEvents
+    return await this.routeHistoricalEventRepository.save(
+      this.routeHistoricalEventRepository.create({ route: routeId, ...dto }),
+    );
   }
 
-  async getOneHistoricalEvent(id: string){
-    const getRoute = await this.routeHistoricalEventRepository.findOne({id})
+  public async getAllHistoricalEvents() {
+    const hEvents = await this.routeHistoricalEventRepository.find({});
 
-    if(!getRoute){
+    if (!hEvents) {
       throw new NotFoundException({
-        errors:[{
-          message: 'Historical Event Route not found!'
-        }]
-      })
+        errors: [
+          {
+            message: 'Historical Event Routes not found!',
+          },
+        ],
+      });
     }
-    return getRoute
+    return hEvents;
   }
 
-  async updateOneHistoricalEvent(id: string, dto: UpdateRouteHistoricalEventDto) {
-    await this.routeHistoricalEventRepository.createQueryBuilder()
-        .update().set(dto).where('id = :id', {id}).execute()
+  async getOneHistoricalEvent(id: string) {
+    const getRoute = await this.routeHistoricalEventRepository.findOne({ id });
+
+    if (!getRoute) {
+      throw new NotFoundException({
+        errors: [
+          {
+            message: 'Historical Event Route not found!',
+          },
+        ],
+      });
+    }
+    return getRoute;
+  }
+
+  async updateOneHistoricalEvent(
+    id: string,
+    dto: UpdateRouteHistoricalEventDto,
+  ) {
+    await this.routeHistoricalEventRepository
+      .createQueryBuilder()
+      .update()
+      .set(dto)
+      .where('id = :id', { id })
+      .execute();
 
     const historicalRoute = await this.routeHistoricalEventRepository.findOne({
-      where:{id:id}
+      where: { id: id },
     });
-    return historicalRoute
-
+    return historicalRoute;
   }
-
 
   public async updatePicture(id: string, image: string) {
     const route = await this.routeHistoricalEventRepository.findOne(id);
@@ -81,7 +97,10 @@ export class RouteHistoricalEventsService extends TypeOrmCrudService<RouteHistor
     }
 
     route.image = image;
-    return{ message: "Picture Updated Successfully!", data: await route.save()};
+    return {
+      message: 'Picture Updated Successfully!',
+      data: await route.save(),
+    };
   }
 
   public async updateMedias(id: string, picture: string) {

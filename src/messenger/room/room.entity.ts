@@ -1,8 +1,8 @@
-import {Column, Entity, ManyToOne, OneToMany} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
-import {Participant} from "../participant/participant.entity";
+import { Participant } from '../participant/participant.entity';
 
 @Entity('gw_rooms')
 export class Room extends AbstractBaseEntity {
@@ -17,5 +17,5 @@ export class Room extends AbstractBaseEntity {
   type?: string;
 
   @OneToMany(() => Participant, (participant) => participant.room)
-  participant: Participant
+  participant: Participant;
 }

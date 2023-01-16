@@ -12,8 +12,8 @@ import { MessageService } from '../message/message.service';
 import { Message } from '../message/message.entity';
 
 import { classToPlain } from 'class-transformer';
-import {MessageInterface} from "../message/messageDetail";
-import {convertToImage} from "../../common/constants/base64.image";
+import { MessageInterface } from '../message/messageDetail';
+import { convertToImage } from '../../common/constants/base64.image';
 
 @Injectable()
 export class RoomService extends TypeOrmCrudService<Room> {
@@ -52,14 +52,17 @@ export class RoomService extends TypeOrmCrudService<Room> {
     await this.roomRepository.delete(id);
   }
 
-  async ConnectConversation(user_id: string, recipient_id: string): Promise<string> {
+  async ConnectConversation(
+    user_id: string,
+    recipient_id: string,
+  ): Promise<string> {
     await this.insertRoom(user_id, recipient_id);
     return this.newRoomID;
   }
 
   async insertRoom(user_id, recipient_id) {
     const query = this.roomRepository.createQueryBuilder('room');
-    var roomid: any;
+    let roomid: any;
     query.select('room.*');
     query.innerJoin(
       'room.participant',
@@ -84,12 +87,12 @@ export class RoomService extends TypeOrmCrudService<Room> {
       room.type = 'conversation';
       this.newRoomID = (await room.save()).id;
 
-      let data1 = new Participant();
+      const data1 = new Participant();
       data1.user_id = user_id;
       data1.room = this.newRoomID;
       await data1.save();
 
-      let data2 = new Participant();
+      const data2 = new Participant();
       data2.user_id = recipient_id;
       data2.room = this.newRoomID;
       await data2.save();
@@ -98,14 +101,17 @@ export class RoomService extends TypeOrmCrudService<Room> {
 
   public async saveMessagesofRoom(room_id: string, msg: any) {
     let attachment = null;
-    if (msg.attachment){
-      attachment = convertToImage(msg.attachment.base64, msg.attachment.extension);
+    if (msg.attachment) {
+      attachment = convertToImage(
+        msg.attachment.base64,
+        msg.attachment.extension,
+      );
     }
     return await this.messageService.saveOne({
       room_id: room_id,
       user_id: msg.user_id,
       message: msg.message,
-      attachment: attachment
-    })
+      attachment: attachment,
+    });
   }
 }

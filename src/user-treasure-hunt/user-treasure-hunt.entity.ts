@@ -2,18 +2,18 @@ import { Column, Entity } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
-import {Exclude} from "class-transformer";
+import { Exclude } from 'class-transformer';
 
 export enum UserTreasureHuntStatusEnum {
-  APPROVED= 'approved',
+  APPROVED = 'approved',
   PROCESSING = 'processing',
   PENDING = 'pending',
-  DISAPPROVE= 'disapprove'
+  DISAPPROVE = 'disapprove',
 }
 export enum UserTreasureHuntWinningEnum {
-  WON= 'won',
+  WON = 'won',
   PENDING = 'pending',
-  LOST= 'lost'
+  LOST = 'lost',
 }
 @Entity('gw_user_treasure_hunts')
 export class UserTreasureHuntEntity extends AbstractBaseEntity {
@@ -35,12 +35,21 @@ export class UserTreasureHuntEntity extends AbstractBaseEntity {
 
   @IsOptional()
   @ApiProperty({ example: 'pending' })
-  @Column({ type : "enum", enum: UserTreasureHuntStatusEnum, default: UserTreasureHuntStatusEnum.PENDING })
+  @Column({
+    type: 'enum',
+    enum: UserTreasureHuntStatusEnum,
+    default: UserTreasureHuntStatusEnum.PENDING,
+  })
   status: UserTreasureHuntStatusEnum;
 
   @IsOptional()
   @ApiProperty({ example: 'pending' })
-  @Column({ name:'win_status', type : "enum", enum: UserTreasureHuntWinningEnum, default: UserTreasureHuntWinningEnum.PENDING })
+  @Column({
+    name: 'win_status',
+    type: 'enum',
+    enum: UserTreasureHuntWinningEnum,
+    default: UserTreasureHuntWinningEnum.PENDING,
+  })
   winStatus: UserTreasureHuntWinningEnum;
 
   @IsOptional()

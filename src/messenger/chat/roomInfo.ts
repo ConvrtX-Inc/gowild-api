@@ -1,4 +1,3 @@
-
 export class RoomInfo {
   public UserMessages = [];
   private _roomID: string;

@@ -11,7 +11,6 @@ import { paginateResponse } from 'src/common/paginate.response';
 import { Participant } from '../participant/participant.entity';
 import { DeletedMessage } from './delete.message.entity';
 
-
 @Injectable()
 export class MessageService extends TypeOrmCrudService<Message> {
   public newRoomID: any;
@@ -23,9 +22,6 @@ export class MessageService extends TypeOrmCrudService<Message> {
   ) {
     super(messageRepository);
   }
-
-
-
 
   async findOneEntity(options: FindOptions<Message>) {
     return this.messageRepository.findOne({
@@ -56,26 +52,43 @@ export class MessageService extends TypeOrmCrudService<Message> {
   }
   // Messages
   async userMessages(userId: string, roomId: string, pageNo: number) {
-    const take = 20
+    const take = 20;
     const page = pageNo || 1;
     const skip = (page - 1) * take;
 
+    const data = await this.messageRepository
+      .createQueryBuilder('message')
 
-   const data = await this.messageRepository.createQueryBuilder('message')
+      .leftJoinAndMapMany(
+        'message.deletedmessage',
+        DeletedMessage,
+        'deletedmessage',
+        'message.id = deletedmessage.message_id AND deletedmessage.user_id = :userId',
+        { userId: userId },
+      )
+      .leftJoinAndMapMany(
+        'message.participants',
+        Participant,
+        'participants',
+        'message.room_id = participants.room_id AND participants.user_id = :userId',
+        { userId: userId },
+      )
+      .where('message.room_id = :roomId', { roomId: roomId })
+      .andWhere('deletedmessage.message_id IS Null')
+      .andWhere(
+        'participants.last_deleted_at IS NULL OR (participants.last_deleted_at IS NOT NULL AND participants.create_date > participants.last_deleted_at)',
+      )
+      .select([
+        'message.id',
+        'message.room_id',
+        'message.user_id',
+        'message.message',
+        'message.attachment',
+      ])
+      .skip(skip)
+      .take(take)
+      .getManyAndCount();
 
-        .leftJoinAndMapMany('message.deletedmessage', DeletedMessage, 'deletedmessage', 'message.id = deletedmessage.message_id AND deletedmessage.user_id = :userId', {userId: userId})
-        .leftJoinAndMapMany('message.participants', Participant, 'participants', 'message.room_id = participants.room_id AND participants.user_id = :userId', {userId: userId})
-        .where('message.room_id = :roomId', {roomId: roomId})
-        .andWhere('deletedmessage.message_id IS Null')
-        .andWhere('participants.last_deleted_at IS NULL OR (participants.last_deleted_at IS NOT NULL AND participants.create_date > participants.last_deleted_at)')
-        .select(['message.id', 'message.room_id', 'message.user_id', 'message.message', 'message.attachment'])
-        .skip(skip).take(take)
-        .getManyAndCount()
-
-        
-
-    return paginateResponse(data, page, take)
+    return paginateResponse(data, page, take);
   }
-
-
 }

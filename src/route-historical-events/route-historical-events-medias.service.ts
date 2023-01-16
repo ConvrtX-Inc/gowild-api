@@ -6,26 +6,21 @@ import { RouteHistoricalEventMedias } from './entities/route-historical-event-me
 import { RouteHistoricalEvent } from './entities/route-historical-event.entity';
 
 @Injectable()
-export class RouteHistoricalEventMediasService extends TypeOrmCrudService<RouteHistoricalEventMedias>{
-    constructor(
-        @InjectRepository(RouteHistoricalEventMedias)
-        private readonly Repository: Repository<RouteHistoricalEventMedias>,
-        
-      ) {
-        super(Repository);
-      }
+export class RouteHistoricalEventMediasService extends TypeOrmCrudService<RouteHistoricalEventMedias> {
+  constructor(
+    @InjectRepository(RouteHistoricalEventMedias)
+    private readonly Repository: Repository<RouteHistoricalEventMedias>,
+  ) {
+    super(Repository);
+  }
 
-
-      public async updatePicture(
-        routeHistoricalEvent: RouteHistoricalEvent,
-        picture: string
-      ): Promise<RouteHistoricalEventMedias>{
-        const entity = new RouteHistoricalEventMedias();
-        entity.picture = picture
-        entity.routeHistoricalEvent = routeHistoricalEvent
-        return await this.Repository.save(entity);
-        
-
-
-      }
+  public async updatePicture(
+    routeHistoricalEvent: RouteHistoricalEvent,
+    picture: string,
+  ): Promise<RouteHistoricalEventMedias> {
+    const entity = new RouteHistoricalEventMedias();
+    entity.picture = picture;
+    entity.routeHistoricalEvent = routeHistoricalEvent;
+    return await this.Repository.save(entity);
+  }
 }

@@ -14,14 +14,16 @@ import { Route } from '../../route/entities/route.entity';
 import { RouteHistoricalEvent } from './route-historical-event.entity';
 
 @Entity('gw_route_historical_event_medias')
-export class RouteHistoricalEventMedias extends AbstractBaseEntity{
+export class RouteHistoricalEventMedias extends AbstractBaseEntity {
+  @Allow()
+  @ApiProperty({ nullable: true, type: () => RouteHistoricalEventMedias })
+  @Column({ nullable: true })
+  picture: string;
 
-    @Allow()
-    @ApiProperty({ nullable: true, type: () => RouteHistoricalEventMedias })
-    @Column({nullable:true})
-    picture: string;
-
-    @ManyToOne(() => RouteHistoricalEvent, (RouteHistoricalEvent: RouteHistoricalEvent) => RouteHistoricalEvent.medias)
-   @JoinColumn({ name: 'routeHistoricalEvent_id' })
-   routeHistoricalEvent: RouteHistoricalEvent;
+  @ManyToOne(
+    () => RouteHistoricalEvent,
+    (RouteHistoricalEvent: RouteHistoricalEvent) => RouteHistoricalEvent.medias,
+  )
+  @JoinColumn({ name: 'routeHistoricalEvent_id' })
+  routeHistoricalEvent: RouteHistoricalEvent;
 }

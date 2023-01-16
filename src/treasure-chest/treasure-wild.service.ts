@@ -1,10 +1,20 @@
-import { Body, HttpCode, Injectable, NotFoundException, Post, Request } from '@nestjs/common';
+import {
+  Body,
+  HttpCode,
+  Injectable,
+  NotFoundException,
+  Post,
+  Request,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
 import { TreasureChest } from './entities/treasure-chest.entity';
 import { RegisterTreasureHuntDto } from './dto/register-treasure-hunt.dto';
-import { UserTreasureHuntEntity, UserTreasureHuntStatusEnum } from 'src/user-treasure-hunt/user-treasure-hunt.entity';
+import {
+  UserTreasureHuntEntity,
+  UserTreasureHuntStatusEnum,
+} from 'src/user-treasure-hunt/user-treasure-hunt.entity';
 import { UserTreasureHuntService } from 'src/user-treasure-hunt/user-treasure-hunt.service';
 import { isBigInt64Array } from 'util/types';
 import { HttpStatus } from '@nestjs/common/enums';
@@ -13,7 +23,7 @@ import { UserEntity } from 'src/users/user.entity';
 import { title } from 'process';
 import { stringify } from 'querystring';
 import { type } from 'os';
-import { NotificationService } from "../notification/notification.service";
+import { NotificationService } from '../notification/notification.service';
 import { paginateResponse } from 'src/common/paginate.response';
 
 @Injectable()
@@ -22,7 +32,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     @InjectRepository(TreasureChest)
     private treasureChestRepository: Repository<TreasureChest>,
     private readonly UserTreasureHuntService: UserTreasureHuntService,
-    private readonly NotificationService: NotificationService
+    private readonly NotificationService: NotificationService,
   ) {
     super(treasureChestRepository);
   }
@@ -34,36 +44,40 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     const isExist = await this.UserTreasureHuntService.findOne({
       where: {
         user_id: req.user.sub,
-        status: UserTreasureHuntStatusEnum.PENDING || UserTreasureHuntStatusEnum.PROCESSING
-      }
+        status:
+          UserTreasureHuntStatusEnum.PENDING ||
+          UserTreasureHuntStatusEnum.PROCESSING,
+      },
     });
     if (isExist) {
       var eventDate = await this.treasureChestRepository.findOne({
         where: {
           id: isExist.treasure_chest_id,
-
-        }
+        },
       });
     }
 
     if (isExist && eventDate.eventDate.getDate < Date.now) {
       return {
-        "errors": [
+        errors: [
           {
             message: "You're Already Register in a Hunt",
-          }
-        ]
-      }
+          },
+        ],
+      };
     }
     const data = {
       treasure_chest_id: dto.treasure_chest_id,
       user_id: req.user.sub,
-      status: UserTreasureHuntStatusEnum.PENDING
-    }
+      status: UserTreasureHuntStatusEnum.PENDING,
+    };
 
     const newRegister = await this.UserTreasureHuntService.saveOne(data);
-    await this.NotificationService.createNotification(data.user_id, 'TreasureHunt created successfully!')
-    return { message : "Successfully Registered" , data: newRegister }
+    await this.NotificationService.createNotification(
+      data.user_id,
+      'TreasureHunt created successfully!',
+    );
+    return { message: 'Successfully Registered', data: newRegister };
   }
 
   /*
@@ -71,38 +85,68 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     */
   async getManyUserTreasureHunt() {
     const all = await UserTreasureHuntEntity.find({});
-    return { data: all }
+    return { data: all };
   }
 
   async getTreasureWild(pageNo: number, id: string) {
-    const take = 10
+    const take = 10;
     const page = pageNo || 1;
     const skip = (page - 1) * take;
 
-    let currentDate = new Date();
-    currentDate.setUTCHours(0,0,0,0);
-    
-    const data = await this.treasureChestRepository.createQueryBuilder('treasureChest')      
-      .where('treasureChest.eventDate >= :currentDate', {currentDate: currentDate})
-      .leftJoinAndMapMany("treasureChest.treasureHunts", UserTreasureHuntEntity, 'treasureHunts', 'treasureChest.id = treasure_chest_id')
-      .leftJoinAndMapMany('treasureChest.sponsors', Sponsor, 'sponsors', 'treasureChest.id = treasure_chest')
-      .leftJoinAndMapOne('treasureHunts.user', UserEntity, 'user', 'treasureHunts.user_id = user.id')
-      .skip(skip).take(take)
+    const currentDate = new Date();
+    currentDate.setUTCHours(0, 0, 0, 0);
+
+    const data = await this.treasureChestRepository
+      .createQueryBuilder('treasureChest')
+      .where('treasureChest.eventDate >= :currentDate', {
+        currentDate: currentDate,
+      })
+      .leftJoinAndMapMany(
+        'treasureChest.treasureHunts',
+        UserTreasureHuntEntity,
+        'treasureHunts',
+        'treasureChest.id = treasure_chest_id',
+      )
+      .leftJoinAndMapMany(
+        'treasureChest.sponsors',
+        Sponsor,
+        'sponsors',
+        'treasureChest.id = treasure_chest',
+      )
+      .leftJoinAndMapOne(
+        'treasureHunts.user',
+        UserEntity,
+        'user',
+        'treasureHunts.user_id = user.id',
+      )
+      .skip(skip)
+      .take(take)
       .getManyAndCount();
 
-    const crrUser = await this.treasureChestRepository.createQueryBuilder('treasureChest')
-      .leftJoinAndMapMany("treasureChest.treasureHunts", UserTreasureHuntEntity, 'treasureHunts', 'treasureChest.id = treasure_chest_id AND user_id = :user ', { user: id })
-      .leftJoinAndMapOne('treasureHunts.user', UserEntity, 'user', 'treasureHunts.user_id = user.id')
-      .getManyAndCount()
+    const crrUser = await this.treasureChestRepository
+      .createQueryBuilder('treasureChest')
+      .leftJoinAndMapMany(
+        'treasureChest.treasureHunts',
+        UserTreasureHuntEntity,
+        'treasureHunts',
+        'treasureChest.id = treasure_chest_id AND user_id = :user ',
+        { user: id },
+      )
+      .leftJoinAndMapOne(
+        'treasureHunts.user',
+        UserEntity,
+        'user',
+        'treasureHunts.user_id = user.id',
+      )
+      .getManyAndCount();
 
-
-    const parrentArray = []
+    const parrentArray = [];
     const customArray = [];
 
     data[0].map((chest, index) => {
       const userHunt = crrUser[0];
       if (userHunt[index]['treasureHunts'][0]) {
-        var userHuntid = userHunt[index]['treasureHunts'][0];
+        const userHuntid = userHunt[index]['treasureHunts'][0];
         if (userHuntid.treasure_chest_id == chest.id) {
           console.log('If condition is true');
           chest['current_user_hunt'] = userHunt[index]['treasureHunts'][0];
@@ -115,13 +159,11 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
         chest['current_user_hunt'] = null;
         customArray.push(chest);
       }
-
-    })
+    });
     parrentArray.push(customArray);
     parrentArray.push(data[1]);
-    return paginateResponse(parrentArray, page, take)
+    return paginateResponse(parrentArray, page, take);
   }
-
 
   /*
    Verify OTP code for User Treasure Hunt 
@@ -130,57 +172,60 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     const hunt = await this.UserTreasureHuntService.findOne({
       where: {
         treasure_chest_id: dto.treasure_chest_id,
-        user_id: user.sub
-      }
+        user_id: user.sub,
+      },
     });
 
     if (hunt) {
       if (hunt.code == dto.code) {
         hunt.status = UserTreasureHuntStatusEnum.APPROVED;
-        let updated = await hunt.save();
-        return { data: updated }
+        const updated = await hunt.save();
+        return { data: updated };
       } else {
         return {
-          "errors": [
+          errors: [
             {
-              message: "Verification Failed",
-            }
-          ]
-        }
+              message: 'Verification Failed',
+            },
+          ],
+        };
       }
     } else {
       return {
-        "errors": [
+        errors: [
           {
-            message: "No User Treasure Hunt Found",
-          }
-        ]
-      }
+            message: 'No User Treasure Hunt Found',
+          },
+        ],
+      };
     }
   }
 
   /*
-   * Resent Treasure Hunt OTP 
+   * Resent Treasure Hunt OTP
    */
   async resendCode(dto: RegisterTreasureHuntDto, id: string) {
     const hunt = await this.UserTreasureHuntService.findOne({
       where: {
         treasure_chest_id: dto.treasure_chest_id,
         user_id: id,
-        status : UserTreasureHuntStatusEnum.PROCESSING
-      }
-    })
+        status: UserTreasureHuntStatusEnum.PROCESSING,
+      },
+    });
     if (!hunt) {
       return {
-        "errors": [
+        errors: [
           {
-            message: "No User Treasure Hunt Found",
-          }
-        ]
-      }
+            message: 'No User Treasure Hunt Found',
+          },
+        ],
+      };
     }
     hunt.code = '000000';
     await hunt.save();
-    return { message : "A fresh registereation number has been sent to your registered mobile number"}
+    return {
+      message:
+        'A fresh registereation number has been sent to your registered mobile number',
+    };
   }
 }

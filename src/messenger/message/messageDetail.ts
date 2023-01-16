@@ -14,7 +14,7 @@ export interface MessageInterface {
 export class MessageDetail {
   private userid: string;
   private message: string;
-  private attachment?: string| null;
+  private attachment?: string | null;
   private status: number;
   private dateCreate: Date;
 
@@ -23,7 +23,7 @@ export class MessageDetail {
     msg: string,
     status: number,
     dateCreate: Date,
-    attachment?: string| null,
+    attachment?: string | null,
   ) {
     this.userid = userid;
     this.message = msg;

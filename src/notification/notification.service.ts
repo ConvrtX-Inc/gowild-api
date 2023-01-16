@@ -1,10 +1,10 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Notification } from './notification.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import {DeepPartial} from "../common/types/deep-partial.type";
-import {RoleEnum} from "../roles/roles.enum";
+import { DeepPartial } from '../common/types/deep-partial.type';
+import { RoleEnum } from '../roles/roles.enum';
 
 @Injectable()
 export class NotificationService extends TypeOrmCrudService<Notification> {
@@ -19,26 +19,27 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
     addNotification.user_id = UserId;
     addNotification.notification_msg = message;
     addNotification = await this.saveEntity(addNotification);
-    return{
-      data: addNotification
-    }
+    return {
+      data: addNotification,
+    };
   }
 
   // create notification for admin
-   public async createNotificationAdmin(message: string, type){
+  public async createNotificationAdmin(message: string, type) {
     let addAdminNotification = new Notification();
-     addAdminNotification.notification_msg = message
-     addAdminNotification.type = type
-     addAdminNotification.role = RoleEnum.ADMIN
-     addAdminNotification = await this.saveEntity(addAdminNotification)
-     return{
-      data: addAdminNotification
-     }
-   }
+    addAdminNotification.notification_msg = message;
+    addAdminNotification.type = type;
+    addAdminNotification.role = RoleEnum.ADMIN;
+    addAdminNotification = await this.saveEntity(addAdminNotification);
+    return {
+      data: addAdminNotification,
+    };
+  }
   // get notification by user id
   public async getNotificationByUserId(id: string) {
-
-    const getNotifications = await this.destinationsRepository.find({ where:{ user_id: id } });
+    const getNotifications = await this.destinationsRepository.find({
+      where: { user_id: id },
+    });
 
     if (!getNotifications) {
       throw new NotFoundException({
@@ -49,46 +50,51 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
         ],
       });
     }
-    await this.destinationsRepository.update({user_id: id},{is_seen: true})
+    await this.destinationsRepository.update(
+      { user_id: id },
+      { is_seen: true },
+    );
 
-    return{
-      data: getNotifications
-    }
+    return {
+      data: getNotifications,
+    };
   }
   // get notifications by id
-  public async getNotification(id: string){
-    const notification = await this.destinationsRepository.findOne({ where:{ id: id } })
+  public async getNotification(id: string) {
+    const notification = await this.destinationsRepository.findOne({
+      where: { id: id },
+    });
 
-    return{
-      data: notification
-    }
-
+    return {
+      data: notification,
+    };
   }
   // get Role.Admin notification
-  public async getAdminNotification(role){
+  public async getAdminNotification(role) {
     const findNotifications = await this.destinationsRepository.find({
-      where:{
-        role: role
-      }
-    })
-    if(!findNotifications){
+      where: {
+        role: role,
+      },
+    });
+    if (!findNotifications) {
       throw new NotFoundException({
-        error:[ {message: "Admin Notification Not Found!"} ]
-      })
+        error: [{ message: 'Admin Notification Not Found!' }],
+      });
     }
-    return findNotifications
+    return findNotifications;
   }
 
   // get all notification
-  public async getAllNotifications(){
-
-    const allNotifications = await this.destinationsRepository.find({})
-    return{
-      data: allNotifications
-    }
+  public async getAllNotifications() {
+    const allNotifications = await this.destinationsRepository.find({});
+    return {
+      data: allNotifications,
+    };
   }
 
   async saveEntity(data: DeepPartial<Notification>) {
-    return this.destinationsRepository.save(this.destinationsRepository.create(data));
+    return this.destinationsRepository.save(
+      this.destinationsRepository.create(data),
+    );
   }
 }

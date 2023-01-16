@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { SystemSupportAttachment } from './system-support-attachment.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import {FindOptions} from "../common/types/find-options.type";
+import { FindOptions } from '../common/types/find-options.type';
 
 @Injectable()
 export class SystemSupportAttachmentService extends TypeOrmCrudService<SystemSupportAttachment> {
@@ -13,13 +13,17 @@ export class SystemSupportAttachmentService extends TypeOrmCrudService<SystemSup
   ) {
     super(destinationsRepository);
   }
-  async createSupportAttachment(picture:string,ticket_id:string, message_id: string){
+  async createSupportAttachment(
+    picture: string,
+    ticket_id: string,
+    message_id: string,
+  ) {
     const newAttachment = {
-      ticket_id : ticket_id,
-      attachment : picture,
-      message_id : message_id
-    }
-    const data =  await this.saveOne(newAttachment);
+      ticket_id: ticket_id,
+      attachment: picture,
+      message_id: message_id,
+    };
+    const data = await this.saveOne(newAttachment);
 
     return data;
   }
@@ -31,6 +35,8 @@ export class SystemSupportAttachmentService extends TypeOrmCrudService<SystemSup
   }
 
   async saveOne(data) {
-    return await this.destinationsRepository.save(this.destinationsRepository.create(data))
+    return await this.destinationsRepository.save(
+      this.destinationsRepository.create(data),
+    );
   }
 }

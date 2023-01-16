@@ -1,10 +1,13 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { time } from "aws-sdk/clients/frauddetector";
-import { IsNotEmpty, IsUUID, } from "class-validator";
-import { IsValidTime } from "src/common/is_valid_time";
+import { ApiProperty } from '@nestjs/swagger';
+import { time } from 'aws-sdk/clients/frauddetector';
+import { IsNotEmpty, IsUUID } from 'class-validator';
+import { IsValidTime } from 'src/common/is_valid_time';
 
 export class CreateLeaderBoardDto {
-  @ApiProperty({type: 'uuid', example: '08be3c69-5783-4a4f-95b3-5ee67c38ebb6' })
+  @ApiProperty({
+    type: 'uuid',
+    example: '08be3c69-5783-4a4f-95b3-5ee67c38ebb6',
+  })
   @IsNotEmpty()
   @IsUUID()
   route_id: string;
@@ -16,5 +19,4 @@ export class CreateLeaderBoardDto {
   @ApiProperty({ example: '2023-01-09T12:33:36.404Z' })
   @IsNotEmpty()
   endDate: Date;
-
 }

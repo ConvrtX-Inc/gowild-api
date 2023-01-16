@@ -10,13 +10,12 @@ import {
   UpdateDateColumn,
   OneToOne,
   JoinColumn,
-  ManyToOne
+  ManyToOne,
 } from 'typeorm';
-import {UserEntity} from "../../users/user.entity";
+import { UserEntity } from '../../users/user.entity';
 
 @Entity('gw_comments')
 export class Comment extends AbstractBaseEntity {
-
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -24,13 +23,11 @@ export class Comment extends AbstractBaseEntity {
   @Validate(IsExist, ['UserEntity', 'id'], {
     message: 'User Not Found',
   })
-
-
   @ApiProperty({ nullable: true })
   @ManyToOne(() => UserEntity, { nullable: false, cascade: false, eager: true })
   @JoinColumn({ name: 'user_id' })
   user_id: UserEntity;
- 
+
   @ApiProperty({ example: '56320f5c-9236-424c-9eb2-339fa9dbb3cb' })
   @Validate(IsExist, ['PostFeed', 'id'], {
     message: 'Post Feed id not Found',

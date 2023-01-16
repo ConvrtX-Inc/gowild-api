@@ -1,4 +1,13 @@
-import {AfterInsert, AfterLoad, AfterUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany} from 'typeorm';
+import {
+  AfterInsert,
+  AfterLoad,
+  AfterUpdate,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { Exclude, Transform } from 'class-transformer';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import {
@@ -15,8 +24,8 @@ import { Status } from 'src/statuses/status.entity';
 import { Password } from './password.entity';
 import { FileEntity } from '../files/file.entity';
 import { GenderEnum } from './gender.enum';
-import {Role} from "../roles/role.entity";
-import appConfig from "../config/app.config";
+import { Role } from '../roles/role.entity';
+import appConfig from '../config/app.config';
 import { time } from 'console';
 
 @Entity('gw_users')
@@ -100,13 +109,13 @@ export class UserEntity extends AbstractBaseEntity {
   @IsOptional()
   @ApiProperty({ nullable: true })
   @Column({ nullable: true })
-  frontImage: string| null;
+  frontImage: string | null;
 
   @Allow()
   @IsOptional()
   @ApiProperty({ nullable: true })
   @Column({ nullable: true })
-  backImage: string| null;
+  backImage: string | null;
 
   @ApiProperty({ nullable: true })
   @ManyToOne(() => Status, { nullable: false, cascade: false, eager: true })
@@ -120,7 +129,7 @@ export class UserEntity extends AbstractBaseEntity {
 
   @ApiHideProperty()
   @Exclude()
-  @Column('jsonb',{nullable: true, default : [] })
+  @Column('jsonb', { nullable: true, default: [] })
   removed_suggested_friends?: string[];
 
   @ApiHideProperty()
@@ -137,12 +146,11 @@ export class UserEntity extends AbstractBaseEntity {
   })
   otp: string;
 
-
   @ApiProperty()
   @Column({
     nullable: true,
     name: 'phone_verified',
-    default: false
+    default: false,
   })
   phoneVerified: boolean;
 
@@ -150,7 +158,6 @@ export class UserEntity extends AbstractBaseEntity {
   @OneToMany(() => Password, (p) => p.user, { cascade: ['remove'] })
   @Exclude()
   passwords: Password[];
-
 
   @Exclude()
   get fullName(): string {
@@ -161,9 +168,7 @@ export class UserEntity extends AbstractBaseEntity {
 
   @Exclude()
   get getTemporaryPassword(): string {
-    return (
-      `gowild@${Math.floor(1000 + Math.random() * 9000)}`
-    );
+    return `gowild@${Math.floor(1000 + Math.random() * 9000)}`;
   }
 
   // @AfterLoad()

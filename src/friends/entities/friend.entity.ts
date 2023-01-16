@@ -1,8 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, Validate , IsOptional} from 'class-validator';
+import { Allow, Validate, IsOptional } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { IsExist } from 'src/common/validators/is-exists.validator';
-import { Column, Entity, PrimaryGeneratedColumn , CreateDateColumn , UpdateDateColumn , DeleteDateColumn} from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 
 @Entity('gw_friends')
 export class Friends extends AbstractBaseEntity {

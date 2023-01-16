@@ -9,17 +9,24 @@ import {
   Request,
   UploadedFile,
   UseGuards,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
 import { RouteService } from './route.service';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Route } from './entities/route.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreateRouteDto } from "./dto/create-route.dto";
-import { RoleEnum } from "../roles/roles.enum";
-import { FileInterceptor } from "@nestjs/platform-express";
-import { FilesService } from "../files/files.service";
-import { AdminRolesGuard } from "../roles/admin.roles.guard";
+import { CreateRouteDto } from './dto/create-route.dto';
+import { RoleEnum } from '../roles/roles.enum';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesService } from '../files/files.service';
+import { AdminRolesGuard } from '../roles/admin.roles.guard';
 import { ConfigService } from '@nestjs/config';
 
 @ApiBearerAuth()
@@ -30,9 +37,11 @@ import { ConfigService } from '@nestjs/config';
   version: '1',
 })
 export class AdminRouteController {
-  constructor(readonly service: RouteService,
+  constructor(
+    readonly service: RouteService,
     private readonly filesService: FilesService,
-    private readonly configService: ConfigService) { }
+    private readonly configService: ConfigService,
+  ) {}
 
   @Get('users')
   @ApiOperation({ summary: 'Get User Routes' })
@@ -48,9 +57,12 @@ export class AdminRouteController {
     @Request() request: Express.Request,
     @Body() dto: CreateRouteDto,
   ) {
-    return await this.service.create(request.user.sub, request.user.user.role as RoleEnum, dto);
+    return await this.service.create(
+      request.user.sub,
+      request.user.user.role as RoleEnum,
+      dto,
+    );
   }
-
 
   @ApiResponse({ type: Route })
   @ApiConsumes('multipart/form-data')
@@ -73,7 +85,7 @@ export class AdminRouteController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     const driver = this.configService.get('file.driver');
-    let picture = {
+    const picture = {
       local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
       s3: file.location,
       firebase: file.publicUrl,
@@ -89,19 +101,18 @@ export class AdminRouteController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get Single Route' })
-  async findOneRoute(@Param('id') id: string,) {
+  async findOneRoute(@Param('id') id: string) {
     return await this.service.findOneEntity({ where: { id: id } });
   }
 
-
   @Post(':id/approve')
-  @ApiOperation({ summary: "Change Status to Approved" })
+  @ApiOperation({ summary: 'Change Status to Approved' })
   async routeCompleteStatus(@Param('id') id: string) {
     return this.service.updateApprovedStatus(id);
   }
 
   @Post(':id/reject')
-  @ApiOperation({ summary: "Change Status to Reject" })
+  @ApiOperation({ summary: 'Change Status to Reject' })
   async routeRejectStatus(@Param('id') id: string) {
     return this.service.updateRejectStatus(id);
   }

@@ -12,15 +12,15 @@ export const validationOptions: ValidationPipeOptions = {
   exceptionFactory: (errors: ValidationError[]) =>
     new UnprocessableEntityException({
       errors: [
-          errors.reduce(
-              (accumulator, currentValue) => ({
-                  ...accumulator,
-                  [currentValue.property]: Object.values(currentValue.constraints).join(
-                      ', ',
-                  ),
-              }),
-              {},
-          )
+        errors.reduce(
+          (accumulator, currentValue) => ({
+            ...accumulator,
+            [currentValue.property]: Object.values(
+              currentValue.constraints,
+            ).join(', '),
+          }),
+          {},
+        ),
       ],
     }),
 };

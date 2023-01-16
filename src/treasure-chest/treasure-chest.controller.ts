@@ -8,25 +8,32 @@ import {
   UseGuards,
   UseInterceptors,
   Body,
-  Get
+  Get,
 } from '@nestjs/common';
 import { TreasureChestService } from './treasure-chest.service';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { TreasureChest } from './entities/treasure-chest.entity';
-import {ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import {Route} from "../route/entities/route.entity";
-import {FileInterceptor} from "@nestjs/platform-express";
-import {FilesService} from "../files/files.service";
-import {AdminRolesGuard} from "../roles/admin.roles.guard";
-import {CreateTreasureChestDto} from "./dto/create-treasure-chest.dto";
+import { Route } from '../route/entities/route.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesService } from '../files/files.service';
+import { AdminRolesGuard } from '../roles/admin.roles.guard';
+import { CreateTreasureChestDto } from './dto/create-treasure-chest.dto';
 import { ChangeHuntStatusDto } from './dto/change-hunt-status';
 import { ConfigService } from '@nestjs/config';
 import { Sponsor } from 'src/sponsor/entities/sponsor.entity';
-import {UserTreasureHuntService} from "../user-treasure-hunt/user-treasure-hunt.service";
+import { UserTreasureHuntService } from '../user-treasure-hunt/user-treasure-hunt.service';
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard,AdminRolesGuard)
+@UseGuards(JwtAuthGuard, AdminRolesGuard)
 @ApiTags('Admin Treasure Chest')
 @Crud({
   model: {
@@ -36,7 +43,7 @@ import {UserTreasureHuntService} from "../user-treasure-hunt/user-treasure-hunt.
     exclude: ['replaceOneBase', 'createManyBase'],
   },
   dto: {
-    create: CreateTreasureChestDto
+    create: CreateTreasureChestDto,
   },
   query: {
     maxLimit: 50,
@@ -61,12 +68,12 @@ import {UserTreasureHuntService} from "../user-treasure-hunt/user-treasure-hunt.
   version: '1',
 })
 export class TreasureChestController implements CrudController<TreasureChest> {
-  constructor(readonly service: TreasureChestService,
-              private readonly filesService: FilesService,
-              private readonly configService: ConfigService,
-              private readonly userTreasureHuntService: UserTreasureHuntService
-
-              ) {}
+  constructor(
+    readonly service: TreasureChestService,
+    private readonly filesService: FilesService,
+    private readonly configService: ConfigService,
+    private readonly userTreasureHuntService: UserTreasureHuntService,
+  ) {}
 
   get base(): CrudController<TreasureChest> {
     return this;
@@ -89,26 +96,26 @@ export class TreasureChestController implements CrudController<TreasureChest> {
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(FileInterceptor('file'))
   public async updatePicture(
-      @Param('id') id: string,
-      @UploadedFile() file: Express.Multer.File,
-  ){
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
     const driver = this.configService.get('file.driver');
-    const picture =  {
+    const picture = {
       local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
       s3: file.location,
       firebase: file.publicUrl,
     };
-    return this.service.updatePicture(id, picture[driver] );
+    return this.service.updatePicture(id, picture[driver]);
   }
 
   @Post('hunt/status/:id')
-  async huntStatus(@Param('id') id:string , @Body() dto :ChangeHuntStatusDto){
-    return this.service.huntStatus(id,dto);
+  async huntStatus(@Param('id') id: string, @Body() dto: ChangeHuntStatusDto) {
+    return this.service.huntStatus(id, dto);
   }
 
   @Get('user-hunts')
-  @ApiOperation({summary: 'Retrieve all user Hunts!'})
-  async getAllUserHunts(){
+  @ApiOperation({ summary: 'Retrieve all user Hunts!' })
+  async getAllUserHunts() {
     return await this.userTreasureHuntService.getAllHunts();
   }
 }

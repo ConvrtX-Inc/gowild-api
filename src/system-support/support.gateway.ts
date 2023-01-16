@@ -8,11 +8,10 @@ import {
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import {SystemSupportService} from "./system-support.service";
-import {RoleEnum} from "../roles/roles.enum";
+import { SystemSupportService } from './system-support.service';
+import { RoleEnum } from '../roles/roles.enum';
 
-
-@WebSocketGateway({ namespace:'/support',  cors: true})
+@WebSocketGateway({ namespace: '/support', cors: true })
 export class SupportGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -40,12 +39,11 @@ export class SupportGateway
       ticket_id: payload.ticket_id,
       message: payload.message,
       role: RoleEnum.USER,
-      attachment: payload.attachment
+      attachment: payload.attachment,
     };
     const message = await this.supportService.addMessage(ticketMessage);
     this.wss.emit('msgSupport', message);
   }
-
 
   @SubscribeMessage('msgToUser')
   public async userMessage(client: Socket, payload: any): Promise<void> {
@@ -54,7 +52,7 @@ export class SupportGateway
       ticket_id: payload.ticket_id,
       message: payload.message,
       role: RoleEnum.ADMIN,
-      attachment: payload.attachment
+      attachment: payload.attachment,
     };
     const message = await this.supportService.addMessage(ticketMessage);
     this.wss.emit('msgSupport', message);

@@ -7,7 +7,7 @@ import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 export class PostFeedAttachment extends AbstractBaseEntity {
   @IsOptional()
   @ApiProperty({ example: 'uuid' })
-  @Column({ nullable: true ,type: 'uuid',name: 'postfeed_id' })
+  @Column({ nullable: true, type: 'uuid', name: 'postfeed_id' })
   postfeed_id?: string | null;
 
   @Allow()

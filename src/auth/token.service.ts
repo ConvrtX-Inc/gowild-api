@@ -129,7 +129,7 @@ export class TokenService {
       fullName: user.fullName,
       picture: user.picture,
       status: user.status.statusName,
-      role: user.role.name
+      role: user.role.name,
     };
   }
 

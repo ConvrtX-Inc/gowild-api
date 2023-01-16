@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { LeaderBoardService } from './leader-board.service';
 import { CreateLeaderBoardDto } from './dto/create-leader-board.dto';
 import { UpdateLeaderBoardDto } from './dto/update-leader-board.dto';
@@ -8,7 +18,6 @@ import { LeaderBoard } from './entities/leader-board.entity';
 import { Query } from '@nestjs/common/decorators';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @ApiTags('Leaderboard')
@@ -17,7 +26,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
     type: LeaderBoard,
   },
   routes: {
-    exclude: ['replaceOneBase', 'createManyBase','updateOneBase'],
+    exclude: ['replaceOneBase', 'createManyBase', 'updateOneBase'],
   },
   query: {
     maxLimit: 50,
@@ -25,7 +34,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   },
   dto: {
     create: CreateLeaderBoardDto,
-    update: UpdateLeaderBoardDto
+    update: UpdateLeaderBoardDto,
   },
   params: {
     id: {
@@ -40,30 +49,30 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
   version: '1',
 })
 export class LeaderBoardController implements CrudController<LeaderBoard> {
-  constructor(private readonly leaderBoardService: LeaderBoardService) { }
+  constructor(private readonly leaderBoardService: LeaderBoardService) {}
 
   get base(): CrudController<LeaderBoard> {
     return this;
   }
   service: LeaderBoardService = this.leaderBoardService;
 
-
   @ApiOperation({ summary: 'Create Record' })
   @Post()
-  public async create(@Request() req: Express.Request, @Body() dto:CreateLeaderBoardDto){
-    return this.service.create(req.user.sub, dto)
-
+  public async create(
+    @Request() req: Express.Request,
+    @Body() dto: CreateLeaderBoardDto,
+  ) {
+    return this.service.create(req.user.sub, dto);
   }
-@Override('getManyBase')
+  @Override('getManyBase')
   @ApiOperation({ summary: 'Get Rankings' })
-  public async getAllRankings(@Request() req){
-    return this.service.getPosition(req.user.sub)
+  public async getAllRankings(@Request() req) {
+    return this.service.getPosition(req.user.sub);
   }
 
   @ApiOperation({ summary: 'Get Rankings By route id' })
   @Get('/:route_id')
-  public async getByRoute(@Param('route_id') routeId,@Query() query){
-    return this.service.rankByRoute(routeId,query.page)
+  public async getByRoute(@Param('route_id') routeId, @Query() query) {
+    return this.service.rankByRoute(routeId, query.page);
   }
-
 }

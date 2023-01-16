@@ -29,6 +29,6 @@ export class Message extends AbstractBaseEntity {
 
   @IsOptional()
   @ApiProperty({ example: 'url' })
-  @Column({ type: 'text', nullable:true })
+  @Column({ type: 'text', nullable: true })
   attachment?: string;
 }

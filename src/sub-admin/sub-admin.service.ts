@@ -9,10 +9,10 @@ import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
 import { PasswordService } from 'src/users/password.service';
 import { UserEntity } from 'src/users/user.entity';
 import { UsersService } from 'src/users/users.service';
-import {FindConditions, getConnection, ObjectID, Repository} from 'typeorm';
+import { FindConditions, getConnection, ObjectID, Repository } from 'typeorm';
 import { CreateSubAdminDto } from './dto/create-sub-admin.dto';
 import { UpdateSubAdminDto } from './dto/update-sub-admin.dto';
-import {Password} from "../users/password.entity";
+import { Password } from '../users/password.entity';
 
 @Injectable()
 export class SubAdminService {
@@ -23,14 +23,14 @@ export class SubAdminService {
     private readonly passwordService: PasswordService,
     private readonly statusService: StatusService,
     private readonly roleService: RoleService,
-  ) { }
+  ) {}
 
   async mapListingsData(dataArray) {
-    let tenMinutesBefore = new Date();
+    const tenMinutesBefore = new Date();
     tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
 
     const data = dataArray.map((obj) => {
-      let container: {
+      const container: {
         id: string;
         username: string;
         firstName: string;
@@ -51,7 +51,7 @@ export class SubAdminService {
         onlineStatus: obj.updatedDate > tenMinutesBefore ? true : false,
         picture: obj.picture,
         location: `${obj.addressOne},${obj.addressTwo}`,
-        accountStatus: obj.status.statusName
+        accountStatus: obj.status.statusName,
       };
       return container;
     });
@@ -59,18 +59,16 @@ export class SubAdminService {
   }
 
   public async registerSubAdmin(dto: CreateSubAdminDto) {
-
     let entity = new UserEntity();
-    entity.firstName = dto.firstName,
-        entity.lastName = dto.lastName,
-      entity.gender = dto.gender;
+    (entity.firstName = dto.firstName),
+      (entity.lastName = dto.lastName),
+      (entity.gender = dto.gender);
     entity.email = dto.email;
     entity.username = dto.username;
     entity.phoneNo = dto.phoneNo;
     entity.addressOne = dto.addressOne;
-    entity.birthDate = dto.birthDate
+    entity.birthDate = dto.birthDate;
     entity.phoneVerified = false;
-
 
     entity.status = await this.statusService.findByEnum(StatusEnum.Active);
     entity.role = await this.roleService.findByEnum(RoleEnum.ADMIN);
@@ -80,38 +78,44 @@ export class SubAdminService {
     await this.passwordService.createPassword(entity, temporaryPassword);
 
     return {
-      temporaryPassword: temporaryPassword, userData: entity
+      temporaryPassword: temporaryPassword,
+      userData: entity,
     };
   }
 
-  async regeneratePassword(id: string){
-    const admin = await this.usersRepository.findOne({
-      where:{id:id}
-    });
-  
-    if (!admin) {
-      throw new NotFoundException({
-        errors: [
-          {
-            user: 'Admin do not exist',
-          },
-        ],
-      });
-    }
-    const temporaryPassword = `gowild@${Math.floor(1000 + Math.random() * 9000)}`
-    await this.passwordService.createPassword(admin, temporaryPassword);
-    
-
-    return {
-      temporaryPassword: temporaryPassword, userData: admin
-    };
-  }
-
-  public async updateSubAdmin(id: string, dto: UpdateUserDto): Promise<UserEntity> {
+  async regeneratePassword(id: string) {
     const admin = await this.usersRepository.findOne({
       where: { id: id },
     });
-    
+
+    if (!admin) {
+      throw new NotFoundException({
+        errors: [
+          {
+            user: 'Admin do not exist',
+          },
+        ],
+      });
+    }
+    const temporaryPassword = `gowild@${Math.floor(
+      1000 + Math.random() * 9000,
+    )}`;
+    await this.passwordService.createPassword(admin, temporaryPassword);
+
+    return {
+      temporaryPassword: temporaryPassword,
+      userData: admin,
+    };
+  }
+
+  public async updateSubAdmin(
+    id: string,
+    dto: UpdateUserDto,
+  ): Promise<UserEntity> {
+    const admin = await this.usersRepository.findOne({
+      where: { id: id },
+    });
+
     if (!admin) {
       throw new NotFoundException({
         errors: [
@@ -122,28 +126,24 @@ export class SubAdminService {
       });
     }
 
-    admin.firstName = dto.firstName,
-    admin.lastName = dto.lastName,
-    admin.birthDate = dto.birthDate,
-    admin.addressOne = dto.addressOne;
+    (admin.firstName = dto.firstName),
+      (admin.lastName = dto.lastName),
+      (admin.birthDate = dto.birthDate),
+      (admin.addressOne = dto.addressOne);
     admin.username = dto.username;
-   
-   
-
 
     await admin.save();
     return admin;
-
   }
 
   async findOneSubAdmin(id: string) {
     const admin = await this.usersRepository.findOne({
-      where: { id: id }
+      where: { id: id },
     });
-    let tenMinutesBefore = new Date();
+    const tenMinutesBefore = new Date();
     tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
-    let container: {
-      id: string,
+    const container: {
+      id: string;
       firstName: string;
       lastName: string;
       username: string;
@@ -161,15 +161,14 @@ export class SubAdminService {
       dateOfBirth: admin.birthDate,
       onlineStatus: admin.updatedDate > tenMinutesBefore ? true : false,
       location: `${admin.addressOne}`,
-      accountStatus: admin.status.statusName
+      accountStatus: admin.status.statusName,
     };
     return container;
   }
 
   async findAllSubAdmin() {
-    let tenMinutesBefore = new Date();
+    const tenMinutesBefore = new Date();
     tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
-
 
     const admins = await this.usersRepository.find({
       relations: ['role'],
@@ -177,53 +176,57 @@ export class SubAdminService {
         role: {
           name: RoleEnum.ADMIN,
         },
-
-      }
+      },
     });
     return await this.mapListingsData(admins);
-
   }
 
   async deleteSubAdmin(id: string) {
-
     const userData = await this.usersRepository.findOne(id);
-    if(userData){
-    await getConnection()
+    if (userData) {
+      await getConnection()
         .createQueryBuilder()
         .delete()
         .from(Password)
-        .where("user_id = :id", { id: userData.id })
+        .where('user_id = :id', { id: userData.id })
         .execute();
 
       await getConnection()
-          .createQueryBuilder()
-          .delete()
-          .from(UserEntity)
-          .where("id = :id", { id: userData.id })
-          .execute();
+        .createQueryBuilder()
+        .delete()
+        .from(UserEntity)
+        .where('id = :id', { id: userData.id })
+        .execute();
 
       return {
-        message: "User deleted"
-      }
-    }else{
-      return { message: "User not deleted" }
+        message: 'User deleted',
+      };
+    } else {
+      return { message: 'User not deleted' };
     }
   }
 
   async fiterSubAdmin(filter: string) {
+    const admins = await this.usersRepository
+      .createQueryBuilder('user')
 
-    let admins = await this.usersRepository.createQueryBuilder("user")
-
-      .select(['user.email', 'user.username', 'user.updatedDate', 'user.firstName', 'user.lastName', 'user.addressOne', 'user.addressTwo'])
+      .select([
+        'user.email',
+        'user.username',
+        'user.updatedDate',
+        'user.firstName',
+        'user.lastName',
+        'user.addressOne',
+        'user.addressTwo',
+      ])
       .innerJoin('user.role', 'role', 'role.name = :name', {
-        name: RoleEnum.ADMIN
+        name: RoleEnum.ADMIN,
       })
       .leftJoinAndSelect('user.status', 'status')
       .orWhere("user.firstName like '%' || :filter || '%'", { filter: filter })
       .orWhere("user.lastName like '%' || :filter || '%'", { filter: filter })
       .orWhere("user.email like '%' || :filter || '%'", { filter: filter })
       .getMany();
-
 
     return await this.mapListingsData(admins);
   }
@@ -236,14 +239,11 @@ export class SubAdminService {
           name: RoleEnum.ADMIN,
         },
         status: {
-          statusName: key === true ? StatusEnum.Active : StatusEnum.Inactive
-        }
-
-
-      }
+          statusName: key === true ? StatusEnum.Active : StatusEnum.Inactive,
+        },
+      },
     });
 
     return await this.mapListingsData(admins);
   }
-
 }

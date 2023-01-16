@@ -94,9 +94,7 @@ export class MailService {
       subject: await this.i18n.t('common.resetPassword'),
       text: `${this.configService.get(
         'app.frontendDomain',
-      )}/password-change?hash${await this.i18n.t(
-        'common.resetPassword',
-      )}`,
+      )}/password-change?hash${await this.i18n.t('common.resetPassword')}`,
       template: process.cwd() + '/mail-templates/reset-password',
       context: {
         title: await this.i18n.t('common.resetPassword'),
@@ -108,5 +106,4 @@ export class MailService {
       },
     });
   }
-
 }

@@ -1,7 +1,7 @@
 import { Factory, Seeder } from 'typeorm-seeding';
 import { Connection } from 'typeorm';
-import {Role} from "../../roles/role.entity";
-import {roleEnumsNames} from "../../roles/roles.enum";
+import { Role } from '../../roles/role.entity';
+import { roleEnumsNames } from '../../roles/roles.enum';
 
 export default class RolesSeed implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<void> {

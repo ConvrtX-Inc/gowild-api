@@ -1,14 +1,14 @@
-import {HttpStatus, Injectable, NotFoundException} from '@nestjs/common';
-import {Repository} from 'typeorm';
-import {InjectRepository} from '@nestjs/typeorm';
-import {FindOptions} from '../common/types/find-options.type';
-import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
-import {DeepPartial} from '../common/types/deep-partial.type';
-import {Guideline} from './guideline.entity';
-import {GuidelineLogsService} from 'src/guideline-logs/guideline-logs.service';
-import {GuidelineLog} from 'src/guideline-logs/guideline-log.entity';
-import {CreateGuidelineDto} from './dtos/Create.dto';
-import {GuidelineTypesEnum} from './guideline.enum';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FindOptions } from '../common/types/find-options.type';
+import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
+import { DeepPartial } from '../common/types/deep-partial.type';
+import { Guideline } from './guideline.entity';
+import { GuidelineLogsService } from 'src/guideline-logs/guideline-logs.service';
+import { GuidelineLog } from 'src/guideline-logs/guideline-log.entity';
+import { CreateGuidelineDto } from './dtos/Create.dto';
+import { GuidelineTypesEnum } from './guideline.enum';
 
 @Injectable()
 export class GuidelineService extends TypeOrmCrudService<Guideline> {
@@ -20,23 +20,22 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
     super(guidelinesRepository);
   }
 
-  async createOneGuideline(dto:CreateGuidelineDto, req: any){
+  async createOneGuideline(dto: CreateGuidelineDto, req: any) {
+    const entity = new Guideline();
+    entity.type = dto.type;
+    entity.description = dto.description;
+    entity.last_updated_user = req;
 
-    let entity = new Guideline()
-    entity.type = dto.type
-        entity.description = dto.description
-        entity.last_updated_user = req
-
-    if( dto.type === GuidelineTypesEnum.FAQ ||
-        GuidelineTypesEnum.HUNT_E_WAIVER ||
-        GuidelineTypesEnum.E_WAIVER ||
-        GuidelineTypesEnum.TERMS_CONDITIONS ) {
-
-    }else{
+    if (
+      dto.type === GuidelineTypesEnum.FAQ ||
+      GuidelineTypesEnum.HUNT_E_WAIVER ||
+      GuidelineTypesEnum.E_WAIVER ||
+      GuidelineTypesEnum.TERMS_CONDITIONS
+    ) {
+    } else {
       throw new NotFoundException({
         message: `Admin Guideline cannot be added!`,
       });
-
     }
 
     await this.guidelinesRepository.upsert([entity], ['type']);
@@ -48,10 +47,8 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
     return {
       status: HttpStatus.OK,
       message: 'Admin Guideline added successfully!',
-      data: saveLog
-    }
-
-
+      data: saveLog,
+    };
   }
   async findOneEntity(options: FindOptions<Guideline>) {
     return this.guidelinesRepository.findOne({
@@ -76,7 +73,7 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
 
   async saveEntity(data: DeepPartial<Guideline>) {
     return this.guidelinesRepository.save(
-      this.guidelinesRepository.create(data)
+      this.guidelinesRepository.create(data),
     );
   }
 
@@ -88,7 +85,6 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
     await this.guidelinesRepository.delete(id);
   }
 
-
   async getTermsByType(type: string) {
     /*const result = */
     return {
@@ -96,10 +92,12 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
         where: {
           type: type,
         },
-      })
-    }
+      }),
+    };
   }
   public async findByEnum(guidelineEnum: GuidelineTypesEnum) {
-    return this.guidelinesRepository.findOne({ where: { type: guidelineEnum } });
+    return this.guidelinesRepository.findOne({
+      where: { type: guidelineEnum },
+    });
   }
 }

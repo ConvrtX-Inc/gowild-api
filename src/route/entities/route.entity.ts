@@ -3,15 +3,14 @@ import { Allow, IsOptional } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { RouteHistoricalEvent } from '../../route-historical-events/entities/route-historical-event.entity';
-import { RoleEnum } from "../../roles/roles.enum";
-import { Coordinates } from "../../common/coordinates";
+import { RoleEnum } from '../../roles/roles.enum';
+import { Coordinates } from '../../common/coordinates';
 
 export enum RouteStatusEnum {
   Approved = 'approved',
   Pending = 'pending',
-  Reject = 'reject'
+  Reject = 'reject',
 }
-
 
 @Entity('gw_routes')
 export class Route extends AbstractBaseEntity {
@@ -31,8 +30,8 @@ export class Route extends AbstractBaseEntity {
   title: string;
 
   @IsOptional()
-  @ApiProperty({nullable: true })
-  @Column({nullable: true})
+  @ApiProperty({ nullable: true })
+  @Column({ nullable: true })
   picture: string;
 
   @Allow()
@@ -65,9 +64,9 @@ export class Route extends AbstractBaseEntity {
   description?: string;
 
   @Column({
-    type: "enum",
+    type: 'enum',
     enum: RoleEnum,
-    default: RoleEnum.USER
+    default: RoleEnum.USER,
   })
   role: RoleEnum;
 
@@ -90,8 +89,11 @@ export class Route extends AbstractBaseEntity {
     enum: RouteStatusEnum,
     enumName: 'RouteStatusEnum',
   })
-  @Column({ nullable: true, enum: RouteStatusEnum, enumName: 'RouteStatusEnum', default: RouteStatusEnum.Pending })
-  status: RouteStatusEnum
-
+  @Column({
+    nullable: true,
+    enum: RouteStatusEnum,
+    enumName: 'RouteStatusEnum',
+    default: RouteStatusEnum.Pending,
+  })
+  status: RouteStatusEnum;
 }
-

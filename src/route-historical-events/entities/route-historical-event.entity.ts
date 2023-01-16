@@ -1,17 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsOptional } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Route } from '../../route/entities/route.entity';
 import { FileEntity } from '../../files/file.entity';
 import { RouteHistoricalEventMedias } from './route-historical-event-medias.entity';
-import {Coordinates} from "../../common/coordinates";
+import { Coordinates } from '../../common/coordinates';
 
 @Entity('gw_route_historical_events')
 export class RouteHistoricalEvent extends AbstractBaseEntity {
@@ -35,7 +29,7 @@ export class RouteHistoricalEvent extends AbstractBaseEntity {
   })
   historical_event: Coordinates;
 
-/*  @IsOptional()
+  /*  @IsOptional()
   @ApiProperty({ example: '830759078-477', nullable: true })
   @Column({
     length: 50,
@@ -75,11 +69,13 @@ export class RouteHistoricalEvent extends AbstractBaseEntity {
 
   @Allow()
   @ApiProperty({ nullable: true, type: () => FileEntity })
-  @Column({nullable:true})
+  @Column({ nullable: true })
   image: string;
 
- 
- @OneToMany(() => RouteHistoricalEventMedias, (medias) => medias.routeHistoricalEvent, { cascade: ['remove'] })
+  @OneToMany(
+    () => RouteHistoricalEventMedias,
+    (medias) => medias.routeHistoricalEvent,
+    { cascade: ['remove'] },
+  )
   medias: RouteHistoricalEventMedias[];
-
 }

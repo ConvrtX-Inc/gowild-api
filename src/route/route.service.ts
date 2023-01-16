@@ -1,17 +1,17 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
-import {DeepPartial} from 'src/common/types/deep-partial.type';
-import {FindOptions} from 'src/common/types/find-options.type';
-import {Not, Repository} from 'typeorm';
-import {Route, RouteStatusEnum} from './entities/route.entity';
-import {CreateRouteDto} from "./dto/create-route.dto";
-import {RoleEnum} from "../roles/roles.enum";
-import {UserEntity} from "../users/user.entity";
-import {Status} from "../statuses/status.entity";
-import {SaveRouteDto} from './dto/save-route-dto';
-import {SavedRoute} from './entities/saved-routs.entity';
-import {UpdateRouteDto} from './dto/update-route.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
+import { DeepPartial } from 'src/common/types/deep-partial.type';
+import { FindOptions } from 'src/common/types/find-options.type';
+import { Not, Repository } from 'typeorm';
+import { Route, RouteStatusEnum } from './entities/route.entity';
+import { CreateRouteDto } from './dto/create-route.dto';
+import { RoleEnum } from '../roles/roles.enum';
+import { UserEntity } from '../users/user.entity';
+import { Status } from '../statuses/status.entity';
+import { SaveRouteDto } from './dto/save-route-dto';
+import { SavedRoute } from './entities/saved-routs.entity';
+import { UpdateRouteDto } from './dto/update-route.dto';
 import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
 import { skip } from 'rxjs';
 import { paginateResponse } from 'src/common/paginate.response';
@@ -30,7 +30,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
   ) {
     super(routeRepository);
   }
-  
+
   async findOneEntity(options: FindOptions<Route>) {
     return this.routeRepository.findOne({
       where: options.where,
@@ -60,71 +60,97 @@ export class RouteService extends TypeOrmCrudService<Route> {
   }
 
   async updateOneRoute(id: string, dto: UpdateRouteDto) {
-    await this.routeRepository.createQueryBuilder()
-      .update().set(dto).where('id = :id', { id }).execute()
+    await this.routeRepository
+      .createQueryBuilder()
+      .update()
+      .set(dto)
+      .where('id = :id', { id })
+      .execute();
 
     const route = await this.routeRepository.findOne({
-      where: { id: id }
+      where: { id: id },
     });
     return {
-      message: "Route Updated Successfully",
-      route: route
-
-    }
+      message: 'Route Updated Successfully',
+      route: route,
+    };
   }
 
-  /* 
+  /*
    * Get All Admin Routes with leaderboard
    */
 
-  public async getApprovedRoutes(id?: string, lat?: string, long?: string, pageNo?: number) {
-
-    let page = pageNo || 1, limit = 10;
+  public async getApprovedRoutes(
+    id?: string,
+    lat?: string,
+    long?: string,
+    pageNo?: number,
+  ) {
+    const page = pageNo || 1,
+      limit = 10;
     const [routes, total] = await this.routeRepository.findAndCount({
-      where:{status: StatusEnum.Approved},
+      where: { status: StatusEnum.Approved },
       skip: (page - 1) * limit,
-      take: limit
+      take: limit,
     });
 
     if (!routes) {
       return {
-        error: [{ message: "No routes found" }]
+        error: [{ message: 'No routes found' }],
       };
     }
 
-    var results = [];
+    const results = [];
     for (let i = 0; i < routes.length; i++) {
-
-      const user = []
+      const user = [];
       const leaderStats = await LeaderBoard.createQueryBuilder('leader')
-          .where('leader.route_id = :id', { id: routes[i].id })
-          .leftJoinAndMapOne('leader.user', UserEntity, 'user', 'leader.user_id = user.id')
-          .orderBy('leader.completionTime', 'ASC')
-          .limit(4)
-          .getMany();
+        .where('leader.route_id = :id', { id: routes[i].id })
+        .leftJoinAndMapOne(
+          'leader.user',
+          UserEntity,
+          'user',
+          'leader.user_id = user.id',
+        )
+        .orderBy('leader.completionTime', 'ASC')
+        .limit(4)
+        .getMany();
 
       if (leaderStats) {
-
-        leaderStats.forEach(state => {
-          const leaderboard = this.mapLeaderboard(state.id, state.user_id, state['user'].firstName, state['user'].picture)
+        leaderStats.forEach((state) => {
+          const leaderboard = this.mapLeaderboard(
+            state.id,
+            state.user_id,
+            state['user'].firstName,
+            state['user'].picture,
+          );
           user.push(leaderboard);
-        })
+        });
       }
       routes[i]['leaderboard'] = user;
 
-      const current_user_leaderboard = await LeaderBoard.createQueryBuilder('leader')
-          .where('leader.route_id = :id AND leader.user_id = :user ', { id: routes[i].id, user: id })
-          .leftJoinAndMapOne('leader.user', UserEntity, 'user', 'leader.user_id = user.id')
-          .orderBy('leader.completionTime', 'ASC')
-          .getMany();
+      const current_user_leaderboard = await LeaderBoard.createQueryBuilder(
+        'leader',
+      )
+        .where('leader.route_id = :id AND leader.user_id = :user ', {
+          id: routes[i].id,
+          user: id,
+        })
+        .leftJoinAndMapOne(
+          'leader.user',
+          UserEntity,
+          'user',
+          'leader.user_id = user.id',
+        )
+        .orderBy('leader.completionTime', 'ASC')
+        .getMany();
       if (
-          this.closestLocation(
-              parseFloat(lat),
-              parseFloat(long),
-              routes[i].start.latitude,
-              routes[i].start.longitude,
-              'K',
-          ) <= 5
+        this.closestLocation(
+          parseFloat(lat),
+          parseFloat(long),
+          routes[i].start.latitude,
+          routes[i].start.longitude,
+          'K',
+        ) <= 5
       ) {
         results.push(routes[i]);
       }
@@ -133,7 +159,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     const currentPage = parseInt(String(page));
     const prevPage = page > 1 ? page - 1 : null;
     return {
-      message: "Approved routes successfully fetched!",
+      message: 'Approved routes successfully fetched!',
       data: results,
       count: total,
       currentPage,
@@ -142,42 +168,46 @@ export class RouteService extends TypeOrmCrudService<Route> {
     };
   }
 
-
   /*
   get all admin routes only
   */
   public async getAllAdminRoutes() {
     const routes = await this.routeRepository.find({
-      where:{ role: Not(RoleEnum.USER) },
-      order:{ createdDate: "DESC"}
-    })
+      where: { role: Not(RoleEnum.USER) },
+      order: { createdDate: 'DESC' },
+    });
 
     if (!routes) {
       return {
-        error: [{message: "No routes found"}]
+        error: [{ message: 'No routes found' }],
       };
     }
-    return{
-      message: "Admin Routes fetched Successfully!",
-      data: routes
-    }
+    return {
+      message: 'Admin Routes fetched Successfully!',
+      data: routes,
+    };
   }
 
   /*
   Map Leader Board
   */
-  mapLeaderboard(id: string, user_id: string, firstName: string, picture: string) {
-    let leaderboard: {
-      id: string,
-      user_id: string,
-      name: string,
-      image: string
+  mapLeaderboard(
+    id: string,
+    user_id: string,
+    firstName: string,
+    picture: string,
+  ) {
+    const leaderboard: {
+      id: string;
+      user_id: string;
+      name: string;
+      image: string;
     } = {
       id: id,
       user_id: user_id,
       name: firstName,
       image: picture,
-    }
+    };
     return leaderboard;
   }
 
@@ -186,14 +216,14 @@ export class RouteService extends TypeOrmCrudService<Route> {
   */
   closestLocation(lat1, lon1, lat2, lon2, unit) {
     const R = 6371e3; // metres
-    const φ1 = lat1 * Math.PI / 180; // φ, λ in radians
-    const φ2 = lat2 * Math.PI / 180;
-    const Δφ = (lat2 - lat1) * Math.PI / 180;
-    const Δλ = (lon2 - lon1) * Math.PI / 180;
+    const φ1 = (lat1 * Math.PI) / 180; // φ, λ in radians
+    const φ2 = (lat2 * Math.PI) / 180;
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
 
-    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) *
-      Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const d = R * c; // in metres
     const km = Math.round(d / 1000);
@@ -202,23 +232,31 @@ export class RouteService extends TypeOrmCrudService<Route> {
   }
 
   public async getUserRoutes() {
-
-    const routes = await this.routeRepository.createQueryBuilder('route')
-      .where("route.role =:role", { role: RoleEnum.USER })
-      .leftJoinAndMapOne('route.user', UserEntity, 'user', 'user.id = route.user_id')
-      .leftJoinAndMapOne('user.status', Status, 'status', 'status.id = user.status_id')
-      .getMany()
-
+    const routes = await this.routeRepository
+      .createQueryBuilder('route')
+      .where('route.role =:role', { role: RoleEnum.USER })
+      .leftJoinAndMapOne(
+        'route.user',
+        UserEntity,
+        'user',
+        'user.id = route.user_id',
+      )
+      .leftJoinAndMapOne(
+        'user.status',
+        Status,
+        'status',
+        'status.id = user.status_id',
+      )
+      .getMany();
 
     if (!routes) {
       return {
-        error: [{ message: "No routes found" }]
+        error: [{ message: 'No routes found' }],
       };
     }
     return {
-
-      message: "User routes successfully fetched!",
-      data: routes
+      message: 'User routes successfully fetched!',
+      data: routes,
     };
   }
 
@@ -236,23 +274,33 @@ export class RouteService extends TypeOrmCrudService<Route> {
         ],
       });
     }
-    console.log("Update Pic")
+    console.log('Update Pic');
     console.log(file);
     route.picture = file;
     const res = await route.save();
-    return { data: res }
+    return { data: res };
   }
-
-
 
   public async create(userId: string, role: RoleEnum, dto: CreateRouteDto) {
     // @ts-ignore
-    if(role === RoleEnum.ADMIN || role === RoleEnum.SUPER_ADMIN){
+    if (role === RoleEnum.ADMIN || role === RoleEnum.SUPER_ADMIN) {
       return await this.routeRepository.save(
-          this.routeRepository.create({ user_id: userId, status: RouteStatusEnum.Approved, role, ...dto }));
-    }else{
+        this.routeRepository.create({
+          user_id: userId,
+          status: RouteStatusEnum.Approved,
+          role,
+          ...dto,
+        }),
+      );
+    } else {
       return await this.routeRepository.save(
-          this.routeRepository.create({ user_id: userId, status: RouteStatusEnum.Pending, role, ...dto }));
+        this.routeRepository.create({
+          user_id: userId,
+          status: RouteStatusEnum.Pending,
+          role,
+          ...dto,
+        }),
+      );
     }
   }
 
@@ -260,133 +308,147 @@ export class RouteService extends TypeOrmCrudService<Route> {
     const isExist = await this.saveRouteRepository.findOne({
       where: {
         user_id: user.sub,
-        route_id: dto.route_id
-      }
+        route_id: dto.route_id,
+      },
     });
     if (isExist) {
       return {
-        "errors": [
+        errors: [
           {
             message: "You've Already Saved this Route",
-          }
-        ]
-      }
+          },
+        ],
+      };
     }
     const data = {
       user_id: user.sub,
       route_id: dto.route_id,
-    }
+    };
     await this.saveRouteRepository.save(this.saveRouteRepository.create(data));
-    return { message: "Route Saved Successfully" };
+    return { message: 'Route Saved Successfully' };
   }
 
   public async getSaveRoute(id: string, pageNo: number) {
+    const page = pageNo || 1,
+      limit = 10,
+      skip = (page - 1) * limit;
 
-    let page = pageNo || 1, limit = 10, skip = (page -1) * limit;
-
-    const [savedRoutes, total] = await this.saveRouteRepository.createQueryBuilder('saved')
+    const [savedRoutes, total] = await this.saveRouteRepository
+      .createQueryBuilder('saved')
       .where('saved.user_id = :id', { id: id })
-      .leftJoinAndMapOne('saved.route', Route, 'route', 'route.id = saved.route_id')
-      .skip(skip).take(limit)
-      .getManyAndCount()
+      .leftJoinAndMapOne(
+        'saved.route',
+        Route,
+        'route',
+        'route.id = saved.route_id',
+      )
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
 
     if (!savedRoutes) {
       return {
-        "errors": [
+        errors: [
           {
-            message: "No Saved Routes exist",
-          }
-        ]
-      }
+            message: 'No Saved Routes exist',
+          },
+        ],
+      };
     }
 
-    var results = [];
+    const results = [];
     for (let i = 0; i < savedRoutes.length; i++) {
-
-      const user = []
+      const user = [];
       const leaderStats = await LeaderBoard.createQueryBuilder('leader')
         .where('leader.route_id = :id ', { id: savedRoutes[i].route_id })
-        .leftJoinAndMapOne('leader.user', UserEntity, 'user', 'leader.user_id = user.id')
+        .leftJoinAndMapOne(
+          'leader.user',
+          UserEntity,
+          'user',
+          'leader.user_id = user.id',
+        )
         .orderBy('leader.completionTime', 'ASC')
         .limit(4)
         .getMany();
 
-
       if (leaderStats) {
-
-        leaderStats.forEach(state => {
-          const leaderboard = this.mapLeaderboard(state.id, state.user_id, state['user'].firstName, state['user'].picture)
+        leaderStats.forEach((state) => {
+          const leaderboard = this.mapLeaderboard(
+            state.id,
+            state.user_id,
+            state['user'].firstName,
+            state['user'].picture,
+          );
           user.push(leaderboard);
-
-        })
+        });
       }
 
       savedRoutes[i]['leaderboard'] = user;
       results.push(savedRoutes[i]);
 
+      // var responseArray = [];
+      // savedRoutes.forEach(routes => {
+      //   if (routes['route']) {
+      //     responseArray.push(routes['route']);
+      //   }
+      // })
+      // return { data: responseArray };
+    }
 
-    // var responseArray = [];
-    // savedRoutes.forEach(routes => {
-    //   if (routes['route']) {
-    //     responseArray.push(routes['route']);
-    //   }
-    // })
-    // return { data: responseArray };
+    const totalPage = Math.ceil(total / limit);
+    const currentPage = parseInt(String(page));
+    const prevPage = page > 1 ? page - 1 : null;
+
+    return {
+      message: 'Saved routes successfully fetched!',
+      data: results,
+      count: total,
+      currentPage,
+      prevPage,
+      totalPage,
+    };
   }
-
-  const totalPage = Math.ceil(total/limit);
-  const currentPage = parseInt(String(page));
-  const prevPage = page > 1 ? page -1 : null;
-
-  return {
-    message: "Saved routes successfully fetched!",
-    data: results,
-    count: total,
-    currentPage,
-    prevPage,
-    totalPage
-
-  };
-}
 
   async deleteOneRoute(id: string) {
     await this.routeRepository.delete(id);
-    return { message: "Route Deleted Successfully" };
+    return { message: 'Route Deleted Successfully' };
   }
 
-  async updateApprovedStatus(id){
-    const status = await  this.routeRepository.findOne({
-      where:{
-        id: id
-      }
-    })
+  async updateApprovedStatus(id) {
+    const status = await this.routeRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
 
-    if(!status){
-      throw new NotFoundException({ errors:[
-          { message: 'Route not Found!' } ]})
+    if (!status) {
+      throw new NotFoundException({
+        errors: [{ message: 'Route not Found!' }],
+      });
     }
     status.status = RouteStatusEnum.Approved;
     await status.save();
-    return{
-      message: 'Status Changed Successfully (Route Approved!)!'
-    }
+    return {
+      message: 'Status Changed Successfully (Route Approved!)!',
+    };
   }
 
-  async updateRejectStatus(id){
-    const status = await  this.routeRepository.findOne({
-      where:{
-        id: id
-      }
-    })
+  async updateRejectStatus(id) {
+    const status = await this.routeRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
 
-    if(!status){
-      throw new NotFoundException({ errors:[
-          { message: 'Route not Found!' } ]})
+    if (!status) {
+      throw new NotFoundException({
+        errors: [{ message: 'Route not Found!' }],
+      });
     }
     status.status = RouteStatusEnum.Reject;
     await status.save();
-    return{
-      message: 'Status Changed Successfully (Route Rejected!)'
-    }
+    return {
+      message: 'Status Changed Successfully (Route Rejected!)',
+    };
   }
 }

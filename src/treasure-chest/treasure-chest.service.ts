@@ -1,9 +1,12 @@
-import {Injectable, NotFoundException, HttpStatus} from '@nestjs/common';
+import { Injectable, NotFoundException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
 import { TreasureChest } from './entities/treasure-chest.entity';
-import { UserTreasureHuntEntity, UserTreasureHuntStatusEnum } from 'src/user-treasure-hunt/user-treasure-hunt.entity';
+import {
+  UserTreasureHuntEntity,
+  UserTreasureHuntStatusEnum,
+} from 'src/user-treasure-hunt/user-treasure-hunt.entity';
 import { Http2ServerRequest } from 'http2';
 
 @Injectable()
@@ -32,46 +35,48 @@ export class TreasureChestService extends TypeOrmCrudService<TreasureChest> {
 
     user.picture = picture;
 
-    return { message: "Treasure Chest Image Updated Successfully!", user : await user.save() };
+    return {
+      message: 'Treasure Chest Image Updated Successfully!',
+      user: await user.save(),
+    };
   }
 
-  async huntStatus(id,dto){
-    
+  async huntStatus(id, dto) {
     const hunt = await UserTreasureHuntEntity.findOne({
-      where:{
-        id : id,
-        status : UserTreasureHuntStatusEnum.PENDING
-      }
+      where: {
+        id: id,
+        status: UserTreasureHuntStatusEnum.PENDING,
+      },
     });
 
-    if(!hunt){
-      return{
-        errors : [
+    if (!hunt) {
+      return {
+        errors: [
           {
-            message : "No User Treasure Hunt Found",
-            status : HttpStatus.BAD_GATEWAY
-          }
-        ]
-      }
+            message: 'No User Treasure Hunt Found',
+            status: HttpStatus.BAD_GATEWAY,
+          },
+        ],
+      };
     }
-    if(dto.status == UserTreasureHuntStatusEnum.PROCESSING ){
+    if (dto.status == UserTreasureHuntStatusEnum.PROCESSING) {
       hunt.status = UserTreasureHuntStatusEnum.PROCESSING;
-      hunt.code = '000000'
+      hunt.code = '000000';
       const updated = await hunt.save();
-      return { data : updated}
-    }else if(dto.status == UserTreasureHuntStatusEnum.DISAPPROVE){
+      return { data: updated };
+    } else if (dto.status == UserTreasureHuntStatusEnum.DISAPPROVE) {
       hunt.status = UserTreasureHuntStatusEnum.DISAPPROVE;
       const updated = await hunt.save();
-      return { data : updated}
-    }else{
-      return{
-        errors : [
+      return { data: updated };
+    } else {
+      return {
+        errors: [
           {
-            message : "Invalid Status",
-            status : HttpStatus.BAD_GATEWAY
-          }
-        ]
-      }
+            message: 'Invalid Status',
+            status: HttpStatus.BAD_GATEWAY,
+          },
+        ],
+      };
     }
   }
 }

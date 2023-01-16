@@ -1,4 +1,4 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
@@ -13,19 +13,20 @@ export class PostFeedAttachmentService extends TypeOrmCrudService<PostFeedAttach
     super(destinationsRepository);
   }
 
-  async createAttachment(picture:string,postfeed_id:string){
+  async createAttachment(picture: string, postfeed_id: string) {
     const newAttachment = {
-      postfeed_id : postfeed_id,
-      attachment : picture
-    } 
-    const data =  await this.saveOne(newAttachment);  
-    return {data : data} 
+      postfeed_id: postfeed_id,
+      attachment: picture,
+    };
+    const data = await this.saveOne(newAttachment);
+    return { data: data };
   }
   /*
-   * Save One 
+   * Save One
    */
-  async saveOne(data) {    
-    return await this.destinationsRepository.save(this.destinationsRepository.create(data))
+  async saveOne(data) {
+    return await this.destinationsRepository.save(
+      this.destinationsRepository.create(data),
+    );
   }
-
 }

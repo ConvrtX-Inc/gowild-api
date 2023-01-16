@@ -7,6 +7,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   controllers: [LeaderBoardController],
   providers: [LeaderBoardService],
-  imports:[TypeOrmModule.forFeature([LeaderBoard])]
+  imports: [TypeOrmModule.forFeature([LeaderBoard])],
 })
 export class LeaderBoardModule {}

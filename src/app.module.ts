@@ -59,10 +59,10 @@ import {
 import { DashboardController } from './dashboard/dashboard.controller';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { SubAdminModule } from './sub-admin/sub-admin.module';
-import {UserTreasureHuntModule} from "./user-treasure-hunt/user-treasure-hunt.module";
+import { UserTreasureHuntModule } from './user-treasure-hunt/user-treasure-hunt.module';
 import { CardsModule } from './cards/cards.module';
 import { PostFeedAttachmentModule } from './post-feed-attchment/post-feed-attachment.module';
-import {SystemSupportModule} from "./system-support/system-support.module";
+import { SystemSupportModule } from './system-support/system-support.module';
 import { cronJobModule } from './jobs/cronjob.module';
 import { LeaderBoardModule } from './leader-board/leader-board.module';
 
@@ -162,7 +162,7 @@ import { LeaderBoardModule } from './leader-board/leader-board.module';
     CardsModule,
     PostFeedAttachmentModule,
     cronJobModule,
-    LeaderBoardModule
+    LeaderBoardModule,
   ],
   providers: [
     {

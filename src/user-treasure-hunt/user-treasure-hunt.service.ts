@@ -1,12 +1,12 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
 import { UserTreasureHuntEntity } from './user-treasure-hunt.entity';
 import { DeepPartial } from '../common/types/deep-partial.type';
 import { FindOptions } from '../common/types/find-options.type';
-import {UserEntity} from "../users/user.entity";
-import {TreasureChest} from "../treasure-chest/entities/treasure-chest.entity";
+import { UserEntity } from '../users/user.entity';
+import { TreasureChest } from '../treasure-chest/entities/treasure-chest.entity';
 
 @Injectable()
 export class UserTreasureHuntService extends TypeOrmCrudService<UserTreasureHuntEntity> {
@@ -17,24 +17,32 @@ export class UserTreasureHuntService extends TypeOrmCrudService<UserTreasureHunt
     super(UserTreasureHuntRepository);
   }
 
-  async getAllHunts(){
+  async getAllHunts() {
+    const hunts = await this.UserTreasureHuntRepository.createQueryBuilder(
+      'hunt',
+    )
+      .leftJoinAndMapOne(
+        'hunt.user',
+        'UserEntity',
+        'user',
+        'hunt.user_id = user.id',
+      )
+      .leftJoinAndMapOne(
+        'hunt.treasure_chest',
+        'TreasureChest',
+        'treasure_chest',
+        'hunt.treasure_chest_id = treasure_chest.id',
+      )
+      .getMany();
 
-    const hunts = await this.UserTreasureHuntRepository
-        .createQueryBuilder('hunt')
-        .leftJoinAndMapOne('hunt.user','UserEntity', 'user','hunt.user_id = user.id')
-        .leftJoinAndMapOne('hunt.treasure_chest', 'TreasureChest','treasure_chest',
-            'hunt.treasure_chest_id = treasure_chest.id')
-        .getMany();
-
-
-    if(!hunts){
+    if (!hunts) {
       throw new NotFoundException({
-        errors:[{ message: 'User Treasure Hunt not Found!'}]
-      })
+        errors: [{ message: 'User Treasure Hunt not Found!' }],
+      });
     }
 
-    const mappedHunts = hunts.map(hunt => {
-      if ( hunt['user'] && hunt['treasure_chest']) {
+    const mappedHunts = hunts.map((hunt) => {
+      if (hunt['user'] && hunt['treasure_chest']) {
         const mappedHunt = {
           id: hunt.id,
           user_id: hunt.user_id,
@@ -55,8 +63,7 @@ export class UserTreasureHuntService extends TypeOrmCrudService<UserTreasureHunt
           },
         };
         return mappedHunt;
-      }else if(!hunt['user']){
-
+      } else if (!hunt['user']) {
         const mappedHunt = {
           id: hunt.id,
           user_id: hunt.user_id,
@@ -70,8 +77,7 @@ export class UserTreasureHuntService extends TypeOrmCrudService<UserTreasureHunt
           },
         };
         return mappedHunt;
-      }else if(!hunt['treasure_chest']){
-
+      } else if (!hunt['treasure_chest']) {
         const mappedHunt = {
           id: hunt.id,
           user_id: hunt.user_id,
@@ -88,8 +94,7 @@ export class UserTreasureHuntService extends TypeOrmCrudService<UserTreasureHunt
           treasure_chest: {},
         };
         return mappedHunt;
-      }else{
-
+      } else {
         const mappedHunt = {
           id: hunt.id,
           user_id: hunt.user_id,
@@ -100,7 +105,6 @@ export class UserTreasureHuntService extends TypeOrmCrudService<UserTreasureHunt
         };
         return mappedHunt;
       }
-
     });
 
     return mappedHunts;

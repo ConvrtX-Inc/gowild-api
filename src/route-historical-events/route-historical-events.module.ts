@@ -8,7 +8,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { diskStorage } from 'multer';
-import * as AWS from "aws-sdk";
+import * as AWS from 'aws-sdk';
 import * as multerS3 from 'multer-s3';
 import path from 'path';
 import { UnprocessableEntityException } from '@nestjs/common/exceptions';
@@ -18,26 +18,31 @@ import { RouteHistoricalEventMedias } from './entities/route-historical-event-me
 @Module({
   controllers: [RouteHistoricalEventsController],
   providers: [RouteHistoricalEventsService, RouteHistoricalEventMediasService],
-  imports: [TypeOrmModule.forFeature([RouteHistoricalEvent, RouteHistoricalEventMedias]), FilesModule
-  ,MulterModule.registerAsync({
-    imports: [ConfigModule],
-    inject: [ConfigService],
-    useFactory: (configService: ConfigService) => {
-      const storages: Record<files.FileType, files.VoidStorageEngineConfig> =
+  imports: [
+    TypeOrmModule.forFeature([
+      RouteHistoricalEvent,
+      RouteHistoricalEventMedias,
+    ]),
+    FilesModule,
+    MulterModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const storages: Record<files.FileType, files.VoidStorageEngineConfig> =
           {
             local: () =>
-                diskStorage({
-                  destination: './files',
-                  filename: (request, file, callback) => {
-                    callback(
-                        null,
-                        `${randomStringGenerator()}.${file.originalname
-                            .split('.')
-                            .pop()
-                            .toLowerCase()}`,
-                    );
-                  },
-                }),
+              diskStorage({
+                destination: './files',
+                filename: (request, file, callback) => {
+                  callback(
+                    null,
+                    `${randomStringGenerator()}.${file.originalname
+                      .split('.')
+                      .pop()
+                      .toLowerCase()}`,
+                  );
+                },
+              }),
             s3: () => {
               const s3 = new AWS.S3();
               AWS.config.update({
@@ -53,11 +58,11 @@ import { RouteHistoricalEventMedias } from './entities/route-historical-event-me
                 contentType: multerS3.AUTO_CONTENT_TYPE,
                 key: (request, file, callback) => {
                   callback(
-                      null,
-                      `${randomStringGenerator()}.${file.originalname
-                          .split('.')
-                          .pop()
-                          .toLowerCase()}`,
+                    null,
+                    `${randomStringGenerator()}.${file.originalname
+                      .split('.')
+                      .pop()
+                      .toLowerCase()}`,
                   );
                 },
               });
@@ -65,8 +70,8 @@ import { RouteHistoricalEventMedias } from './entities/route-historical-event-me
             firebase: () => {
               const FirebaseStorage = require('multer-firebase-storage');
               const googleFileConfig = path.join(
-                  process.cwd(),
-                  configService.get('file.firebaseConfigFilePath'),
+                process.cwd(),
+                configService.get('file.firebaseConfigFilePath'),
               );
               const googleConfigFile = require(googleFileConfig);
 
@@ -86,10 +91,10 @@ import { RouteHistoricalEventMedias } from './entities/route-historical-event-me
             },
           };
 
-      return {
-        fileFilter: (request, file, callback) => {
-          if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
-            return callback(
+        return {
+          fileFilter: (request, file, callback) => {
+            if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
+              return callback(
                 new UnprocessableEntityException({
                   errors: [
                     {
@@ -98,17 +103,18 @@ import { RouteHistoricalEventMedias } from './entities/route-historical-event-me
                   ],
                 }),
                 false,
-            );
-          }
+              );
+            }
 
-          callback(null, true);
-        },
-        storage: storages[configService.get('file.driver')](),
-        limits: {
-          fileSize: configService.get('file.maxFileSize'),
-        },
-      };
-    },
-  })],
+            callback(null, true);
+          },
+          storage: storages[configService.get('file.driver')](),
+          limits: {
+            fileSize: configService.get('file.maxFileSize'),
+          },
+        };
+      },
+    }),
+  ],
 })
 export class RouteHistoricalEventsModule {}

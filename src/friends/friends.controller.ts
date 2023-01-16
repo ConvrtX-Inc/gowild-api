@@ -1,11 +1,21 @@
-import { Controller, Get, Param, UseGuards, Post, HttpCode, Request, Body, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  UseGuards,
+  Post,
+  HttpCode,
+  Request,
+  Body,
+  HttpStatus,
+} from '@nestjs/common';
 import { FriendsService } from './friends.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController, Override } from '@nestjsx/crud';
 import { Friends } from './entities/friend.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { SendFriendRequestDto } from './dto/create-friend.dto'
-import { ConfirmDto } from './dto/confirm-request.dto'
+import { SendFriendRequestDto } from './dto/create-friend.dto';
+import { ConfirmDto } from './dto/confirm-request.dto';
 import { UserEntity } from 'src/users/user.entity';
 
 @ApiBearerAuth()
@@ -61,26 +71,23 @@ export class FriendsController implements CrudController<Friends> {
 
   @Post('confirm')
   @HttpCode(HttpStatus.OK)
-  async confirm(
-    @Request() request,
-    @Body() confirmDto: ConfirmDto,
-  ) {
-    return this.service.confirm( request.user,confirmDto);
+  async confirm(@Request() request, @Body() confirmDto: ConfirmDto) {
+    return this.service.confirm(request.user, confirmDto);
   }
 
   // To get All Friends of logged in User
-  @ApiOperation({ summary : "Get All Of My Friends"})
+  @ApiOperation({ summary: 'Get All Of My Friends' })
   @Get('my')
-  async getFriends(@Param('id') id: string,@Request() request) {
-    const returnResponse = [];   
-    const users = await this.service.getFriends(request.user);   
+  async getFriends(@Param('id') id: string, @Request() request) {
+    const returnResponse = [];
+    const users = await this.service.getFriends(request.user);
     const tempToUser = [];
     const tempFromUser = [];
     let to_user = {};
     let from_user = {};
     if (users instanceof Array) {
-      for (const i in users) {       
-       let data = users[i];
+      for (const i in users) {
+        const data = users[i];
 
         if (!tempToUser.includes(users[i].to_user_id)) {
           tempToUser.push(users[i].to_user_id);
@@ -98,10 +105,10 @@ export class FriendsController implements CrudController<Friends> {
         data['from_user'] = from_user;
         returnResponse.push(data);
       }
-      return {       
-        data: returnResponse
+      return {
+        data: returnResponse,
       };
-    }    
+    }
   }
 
   @Get('/received')
@@ -110,14 +117,13 @@ export class FriendsController implements CrudController<Friends> {
   }
 
   @Override('deleteOneBase')
-  async deleteOne(@Param('id') id:string){   
+  async deleteOne(@Param('id') id: string) {
     return this.service.delete(id);
   }
 
   @Get('suggested/remove/:id')
   @HttpCode(HttpStatus.OK)
-  async removeSuggested(@Param('id') id:string, @Request() req){
-    return await this.service.removeSuggested(id,req.user);
+  async removeSuggested(@Param('id') id: string, @Request() req) {
+    return await this.service.removeSuggested(id, req.user);
   }
-  
 }

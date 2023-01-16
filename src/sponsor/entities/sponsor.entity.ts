@@ -1,9 +1,16 @@
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
-import { AfterLoad, AfterUpdate, BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
+import {
+  AfterLoad,
+  AfterUpdate,
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsOptional, Validate } from 'class-validator';
 import { IsExist } from 'src/common/validators/is-exists.validator';
-import appConfig from "../../config/app.config";
+import appConfig from '../../config/app.config';
 import { Transform } from 'class-transformer';
 import * as base64_arraybuffer from 'base64-arraybuffer-converter';
 
@@ -42,7 +49,6 @@ export class Sponsor extends AbstractBaseEntity {
     default: 'link',
   })
   link: string | null;
-
 
   // @AfterLoad()
   // @AfterUpdate()

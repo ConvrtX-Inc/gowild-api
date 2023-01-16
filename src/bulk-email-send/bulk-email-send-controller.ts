@@ -1,11 +1,18 @@
-import {Body, Controller, Get, Param, Post, Request, UseGuards} from '@nestjs/common';
-import { bulkEmailSendService } from './bulk-email-send-service'; 
-import {ApiBearerAuth, ApiOperation, ApiTags} from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { bulkEmailSendService } from './bulk-email-send-service';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController } from '@nestjsx/crud';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import {Query} from "@nestjs/common/decorators";
+import { Query } from '@nestjs/common/decorators';
 import { bulkEmailSend } from './entities/bulk-email-send-entity';
-
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -19,8 +26,10 @@ export class bulkEmailSendController implements CrudController<bulkEmailSend> {
 
   @ApiOperation({ summary: 'Get Ticket Messages' })
   @Get('/:ticket_id')
-  public async getTicketMessages(@Param('ticket_id') ticketId: string, @Query() query) {
-    return 1
+  public async getTicketMessages(
+    @Param('ticket_id') ticketId: string,
+    @Query() query,
+  ) {
+    return 1;
   }
-
 }

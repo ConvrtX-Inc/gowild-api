@@ -4,8 +4,8 @@ import { UserEntity } from '../../users/user.entity';
 import { Status } from '../../statuses/status.entity';
 import { StatusEnum } from '../../auth/status.enum';
 import { Password } from '../../users/password.entity';
-import {Role} from "../../roles/role.entity";
-import {RoleEnum} from "../../roles/roles.enum";
+import { Role } from '../../roles/role.entity';
+import { RoleEnum } from '../../roles/roles.enum';
 
 export default class FakeSeed implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<void> {
@@ -22,14 +22,14 @@ export default class FakeSeed implements Seeder {
       })
       .getOne();
 
-      const role = await connection
-          .createQueryBuilder()
-          .select('r')
-          .from(Role, 'r')
-          .where('r.name = :name', {
-              name: RoleEnum.USER,
-          })
-          .getOne();
+    const role = await connection
+      .createQueryBuilder()
+      .select('r')
+      .from(Role, 'r')
+      .where('r.name = :name', {
+        name: RoleEnum.USER,
+      })
+      .getOne();
 
     const users = await factory(UserEntity)()
       .map(async (u) => {

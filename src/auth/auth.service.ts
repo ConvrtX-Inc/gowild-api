@@ -1,4 +1,8 @@
-import { Injectable, UnprocessableEntityException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  UnprocessableEntityException,
+  HttpStatus,
+} from '@nestjs/common';
 import { UserEntity } from '../users/user.entity';
 import { AuthEmailLoginDto } from './dtos/auth-email-login.dto';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
@@ -20,10 +24,10 @@ import { TokenResponse } from './dtos/token';
 import { SmsService } from '../sms/sms.service';
 import { StatusEnum } from './status.enum';
 import { StatusService } from '../statuses/status.service';
-import { randomInt } from "crypto";
-import { RoleService } from "../roles/role.service";
-import { RoleEnum } from "../roles/roles.enum";
-import { AuthVerifyUserDto } from "./dtos/auth-verify-user.dto";
+import { randomInt } from 'crypto';
+import { RoleService } from '../roles/role.service';
+import { RoleEnum } from '../roles/roles.enum';
+import { AuthVerifyUserDto } from './dtos/auth-verify-user.dto';
 import appConfig from 'src/config/app.config';
 
 @Injectable()
@@ -38,7 +42,7 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly statusService: StatusService,
     private readonly roleService: RoleService,
-  ) { }
+  ) {}
 
   public async validateLogin(
     loginDto: AuthEmailLoginDto,
@@ -149,17 +153,16 @@ export class AuthService {
   }
 
   public async register(dto: AuthRegisterLoginDto) {
-
-    var isExist = await this.usersService.findOne({
+    let isExist = await this.usersService.findOne({
       where: {
         phoneNo: dto.phoneNo,
-        phoneVerified: false
-      }
+        phoneVerified: false,
+      },
     });
     console.log(isExist);
     if (!isExist) {
       isExist = await this.usersService.findOne({
-        where: { email: dto.email }
+        where: { email: dto.email },
       });
     }
 
@@ -185,12 +188,12 @@ export class AuthService {
         return isExist;
       } else if (isExist.email == dto.email && isExist.phoneVerified == true) {
         return {
-          "errors": [
+          errors: [
             {
-              message: "Email Already Exist",
-            }
-          ]
-        }
+              message: 'Email Already Exist',
+            },
+          ],
+        };
       } else {
         let entity = new UserEntity();
         entity.firstName = dto.firstName;
@@ -271,9 +274,10 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new NotFoundException({ message: "Please Enter correct email address!" })
+        throw new NotFoundException({
+          message: 'Please Enter correct email address!',
+        });
       }
-
     } else {
       emailPhone = dto.email;
       user = await this.usersService.findOneEntity({
@@ -314,16 +318,19 @@ export class AuthService {
     }
     return {
       status: HttpStatus.OK,
-      message: "Success"
-    }
+      message: 'Success',
+    };
   }
 
-  public async verifyMobile(emailPhone: string, hash: string): Promise<SuccessResponse> {
-    let user = null;
+  public async verifyMobile(
+    emailPhone: string,
+    hash: string,
+  ): Promise<SuccessResponse> {
+    const user = null;
     const forgot = await this.forgotService.findOneEntity({
       where: {
         emailPhone,
-        hash
+        hash,
       },
     });
     if (!forgot) {
@@ -332,11 +339,15 @@ export class AuthService {
       });
     }
     return {
-      message: "OTP Verified Successfully"
-    }
+      message: 'OTP Verified Successfully',
+    };
   }
 
-  public async resetPassword(hash: string, emailPhone: string, password: string): Promise<SuccessResponse> {
+  public async resetPassword(
+    hash: string,
+    emailPhone: string,
+    password: string,
+  ): Promise<SuccessResponse> {
     /*let user = null;
     const forgot = await this.forgotService.findOneEntity({
       where: {
@@ -351,8 +362,8 @@ export class AuthService {
     }*/
     const user = await this.usersService.findOneEntity({
       where: {
-        phoneNo: emailPhone
-      }
+        phoneNo: emailPhone,
+      },
     });
     /*if(!user){
       throw new NotFoundException({
@@ -360,7 +371,10 @@ export class AuthService {
       });
     }*/
 
-    const passwordCheck = await this.passwordService.verifyPassword(user, password)
+    const passwordCheck = await this.passwordService.verifyPassword(
+      user,
+      password,
+    );
 
     if (passwordCheck) {
       throw new NotFoundException({
@@ -372,8 +386,8 @@ export class AuthService {
     await this.passwordService.createPassword(user, password);
     // await data.save();
     return {
-      message: "Password Reset Successfully"
-    }
+      message: 'Password Reset Successfully',
+    };
   }
 
   public async verifyOTP(dto: AuthVerifyUserDto): Promise<TokenResponse> {
@@ -384,7 +398,7 @@ export class AuthService {
       where: {
         email,
         phoneNo,
-        otp
+        otp,
       },
     });
     if (!user) {
@@ -404,7 +418,7 @@ export class AuthService {
       },
     });
     user['base_url'] = appConfig().backendDomain;
-    return user
+    return user;
   }
 
   public async generateAdmin() {

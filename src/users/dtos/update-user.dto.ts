@@ -1,11 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {Allow, IsEmail, IsOptional, Validate} from 'class-validator';
-import {Transform} from "class-transformer";
-import {IsNotExist} from "../../common/validators/is-not-exists.validator";
+import { Allow, IsEmail, IsOptional, Validate } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsNotExist } from '../../common/validators/is-not-exists.validator';
 import { GenderEnum } from '../gender.enum';
 
 export class UpdateUserDto {
-
   @ApiProperty({ example: 'test1@example.com', nullable: true })
   @Transform((value: string) => value.toLowerCase().trim())
   @Validate(IsNotExist, ['UserEntity'], {
@@ -17,29 +16,28 @@ export class UpdateUserDto {
 
   @ApiProperty({ example: 'username', nullable: true })
   @Transform((value: string) => value.toLowerCase().trim())
-  @IsOptional() 
+  @IsOptional()
   username: string;
 
   @IsOptional()
   @ApiProperty({
-    nullable: true
+    nullable: true,
   })
   @Allow()
   addressOne: string;
 
   @IsOptional()
   @ApiProperty({
-    nullable: true
+    nullable: true,
   })
   @Allow()
   addressTwo: string;
 
   @ApiProperty({
-    nullable: true
+    nullable: true,
   })
   @Allow()
-  about_me: string
-
+  about_me: string;
 
   @IsOptional()
   @ApiProperty({ example: 'John', nullable: true })

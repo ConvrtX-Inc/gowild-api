@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
 import { SocialInterface } from '../social/interfaces/social.interface';
-import { AuthGoogleLoginDto, deviceTypeEnum } from './dtos/auth-google-login.dto';
+import {
+  AuthGoogleLoginDto,
+  deviceTypeEnum,
+} from './dtos/auth-google-login.dto';
 
 @Injectable()
 export class AuthGoogleService {
@@ -19,8 +22,8 @@ export class AuthGoogleService {
   async getProfileByToken(
     loginDto: AuthGoogleLoginDto,
   ): Promise<SocialInterface> {
-    var ticket = undefined;
-    if (loginDto.device_type == deviceTypeEnum.IOS) {    
+    let ticket = undefined;
+    if (loginDto.device_type == deviceTypeEnum.IOS) {
       ticket = await this.google.verifyIdToken({
         idToken: loginDto.id_token,
         audience: [this.configService.get('google.clientIdIos')],

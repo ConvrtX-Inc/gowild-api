@@ -1,10 +1,10 @@
-import { Controller, UseGuards,Body,Request } from '@nestjs/common';
+import { Controller, UseGuards, Body, Request } from '@nestjs/common';
 import { LikeService } from './like.service';
 import { Crud, CrudController, Override } from '@nestjsx/crud';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Like } from './entities/like.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreateLikeDto } from './dto/create-like.dto'
+import { CreateLikeDto } from './dto/create-like.dto';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -40,8 +40,7 @@ export class LikeController implements CrudController<Like> {
   }
 
   @Override('createOneBase')
-  async createOne(@Request() req,@Body() dto:CreateLikeDto){  
-    return await this.service.createOnelike(dto,req.user.sub);
+  async createOne(@Request() req, @Body() dto: CreateLikeDto) {
+    return await this.service.createOnelike(dto, req.user.sub);
   }
-
 }

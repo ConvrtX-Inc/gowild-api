@@ -2,11 +2,16 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Validate } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { IsExist } from 'src/common/validators/is-exists.validator';
-import { Column, Entity,CreateDateColumn,UpdateDateColumn,PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  CreateDateColumn,
+  UpdateDateColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('gw_likes')
 export class Like extends AbstractBaseEntity {
-
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

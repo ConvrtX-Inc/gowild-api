@@ -1,9 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, IsEmail, IsEnum, IsOptional, MinLength, Validate } from 'class-validator';
+import {
+  Allow,
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  MinLength,
+  Validate,
+} from 'class-validator';
 import { IsNotExist } from 'src/common/validators/is-not-exists.validator';
-import {Exclude, Transform} from 'class-transformer';
+import { Exclude, Transform } from 'class-transformer';
 import { GenderEnum } from 'src/users/gender.enum';
-import {Column} from "typeorm";
+import { Column } from 'typeorm';
 
 export class CreateSubAdminDto {
   @ApiProperty({ example: 'test1@example.com' })
@@ -13,8 +20,6 @@ export class CreateSubAdminDto {
   })
   @IsEmail()
   email: string;
-
-
 
   @ApiProperty({ example: 'John' })
   @Allow()
@@ -48,21 +53,19 @@ export class CreateSubAdminDto {
   phoneNo: string | null;
 
   @ApiProperty({
-    nullable: true
+    nullable: true,
   })
   @Allow()
   addressOne: string;
 
   @ApiProperty({
-    nullable: true
+    nullable: true,
   })
- /* @Allow()
+  /* @Allow()
   @Exclude()
   addressTwo: string;*/
-
   @IsOptional()
   @ApiProperty({ example: '1999-12-12 11:11:11', nullable: true })
   @Column({ type: 'timestamp', nullable: true })
   birthDate?: Date;
 }
-

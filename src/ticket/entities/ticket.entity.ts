@@ -36,9 +36,12 @@ export class Ticket extends AbstractBaseEntity {
     nullable: true,
     enum: TicketStatusEnum,
     enumName: 'TicketStatusEnum',
-})
-  @Column({ nullable: true, enum: TicketStatusEnum, enumName: 'TicketStatusEnum', default: TicketStatusEnum.Pending })
-  status: TicketStatusEnum
-
-
+  })
+  @Column({
+    nullable: true,
+    enum: TicketStatusEnum,
+    enumName: 'TicketStatusEnum',
+    default: TicketStatusEnum.Pending,
+  })
+  status: TicketStatusEnum;
 }

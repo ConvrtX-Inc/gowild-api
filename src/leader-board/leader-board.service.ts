@@ -21,37 +21,37 @@ export class LeaderBoardService extends TypeOrmCrudService<LeaderBoard> {
   }
 
   async create(userId: string, dto: CreateLeaderBoardDto) {
-    const completionTime = moment.utc(moment(dto.endDate).diff(moment(dto.startDate))).format("HH:mm:ss");
+    const completionTime = moment
+      .utc(moment(dto.endDate).diff(moment(dto.startDate)))
+      .format('HH:mm:ss');
     const record = new LeaderBoard();
-    record.user_id = userId,
-    record.route_id = dto.route_id,
-    record.completionTime = completionTime
-    record.startDate = dto.startDate
-    record.endDate = dto.endDate
-
+    (record.user_id = userId),
+      (record.route_id = dto.route_id),
+      (record.completionTime = completionTime);
+    record.startDate = dto.startDate;
+    record.endDate = dto.endDate;
 
     const result = await this.Repository.findOne({
-      where:{
+      where: {
         user_id: userId,
-        route_id: dto.route_id
-      }
+        route_id: dto.route_id,
+      },
     });
 
-  if(!result){
-    const data = await this.Repository.create(record);
-    await this.Repository.save(data);
-    return { message: "Created successfully!", data: data };
-  }
-
-  await this.Repository.update(result.id, record)
-  const updatedResult = await this.Repository.findOne({
-    where:{
-      id: result.id
+    if (!result) {
+      const data = await this.Repository.create(record);
+      await this.Repository.save(data);
+      return { message: 'Created successfully!', data: data };
     }
-  });
-  return { message: "Updated successfully!", data: updatedResult };
-    
-}
+
+    await this.Repository.update(result.id, record);
+    const updatedResult = await this.Repository.findOne({
+      where: {
+        id: result.id,
+      },
+    });
+    return { message: 'Updated successfully!', data: updatedResult };
+  }
 
   // async updateLeaderBoard(userId:string, dto: CreateLeaderBoardDto){
   //   console.log(dto);
@@ -69,44 +69,47 @@ export class LeaderBoardService extends TypeOrmCrudService<LeaderBoard> {
   //   return{
   //     message: "Updated Successfully...",
   //     data: data
-      
+
   //   }
 
   // }
 
-  async getRankings(pageNo: number){
-    const take = 10
+  async getRankings(pageNo: number) {
+    const take = 10;
     const page = pageNo || 1;
     const skip = (page - 1) * take;
 
     const data = await this.Repository.createQueryBuilder('leaderBoard')
-    .leftJoinAndMapOne('leaderBoard.user', UserEntity, 'user', 'user.id = user_id')
-    .orderBy('leaderBoard.completionTime', 'ASC')
-    .skip(skip).take(take)
-    .getManyAndCount();
-
-
-
+      .leftJoinAndMapOne(
+        'leaderBoard.user',
+        UserEntity,
+        'user',
+        'user.id = user_id',
+      )
+      .orderBy('leaderBoard.completionTime', 'ASC')
+      .skip(skip)
+      .take(take)
+      .getManyAndCount();
 
     return paginateResponse(data, page, take);
   }
 
   // Get by Route Id
-  async rankByRoute(routeId: string, pageNo: number){
-    const take = 10
+  async rankByRoute(routeId: string, pageNo: number) {
+    const take = 10;
     const page = pageNo || 1;
     const skip = (page - 1) * take;
-    
+
     const data = await this.Repository.createQueryBuilder('leaderBoard')
-    .leftJoinAndMapOne('leaderBoard.user', UserEntity, 'user')
-    .where('user.id = user_id')
-    .andWhere('leaderBoard.route_id = :routeId', {routeId: routeId})
-    .orderBy('leaderBoard.completionTime', 'ASC')
-    .skip(skip).take(take)
-    .getManyAndCount();
+      .leftJoinAndMapOne('leaderBoard.user', UserEntity, 'user')
+      .where('user.id = user_id')
+      .andWhere('leaderBoard.route_id = :routeId', { routeId: routeId })
+      .orderBy('leaderBoard.completionTime', 'ASC')
+      .skip(skip)
+      .take(take)
+      .getManyAndCount();
 
     return paginateResponse(data, page, take);
-
   }
 
   // async getPosition(userId: string) {
@@ -131,20 +134,10 @@ export class LeaderBoardService extends TypeOrmCrudService<LeaderBoard> {
   //   // return data;
   // }
 
-
-
   async getPosition(userId: string) {
     const data = await this.Repository.createQueryBuilder('leaderBoard')
       .where('leaderBoard.user_id = :userId', { userId })
       .orderBy('leaderBoard.completionTime', 'ASC')
       .getRawMany();
-  
-  
   }
-
-  
-  
-  
-  
-
 }

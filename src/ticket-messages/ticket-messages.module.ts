@@ -11,5 +11,3 @@ import { TicketMessage } from './entities/ticket-message.entity';
   imports: [TypeOrmModule.forFeature([TicketMessage])],
 })
 export class TicketMessagesModule {}
-
-

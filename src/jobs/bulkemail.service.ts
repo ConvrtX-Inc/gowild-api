@@ -6,17 +6,15 @@ import { ConfigService } from '@nestjs/config';
 import { I18nService } from 'nestjs-i18n';
 import { PostFeedAttachmentService } from 'src/post-feed-attchment/post-feed-attachment.service';
 
-
 @Injectable()
 export class bulkMailService {
   constructor(
-    private readonly PostFeedAttachmentService:PostFeedAttachmentService,
+    private readonly PostFeedAttachmentService: PostFeedAttachmentService,
     private i18n: I18nService,
     private mailerService: MailerService,
     private configService: ConfigService,
-  ) { }
-  private readonly logger = new Logger(bulkMailService.name)
-
+  ) {}
+  private readonly logger = new Logger(bulkMailService.name);
 
   @Cron('5 * * * * *')
   async handleCron() {

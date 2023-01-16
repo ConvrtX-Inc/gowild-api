@@ -7,28 +7,36 @@ import {
   Param,
   Patch,
   Post,
-  Request, UploadedFile,
+  Request,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
-  UploadedFiles
+  UploadedFiles,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Crud, CrudController, Override } from '@nestjsx/crud';
 import { PostFeed } from './entities/post-feed.entity';
 import { PostFeedService } from './post-feed.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreatePostFeedDto } from "./dto/create-post-feed.dto";
-import { UpdatePostFeedDto } from "./dto/update-post-feed.dto";
-import { Route } from "../route/entities/route.entity";
-import { Roles } from "../roles/roles.decorator";
-import { RoleEnum } from "../roles/roles.enum";
-import { FileInterceptor } from "@nestjs/platform-express";
-import { ConfigService } from "@nestjs/config";
-import { FilesService } from "../files/files.service";
-import { RolesGuard } from "../roles/roles.guard";
+import { CreatePostFeedDto } from './dto/create-post-feed.dto';
+import { UpdatePostFeedDto } from './dto/update-post-feed.dto';
+import { Route } from '../route/entities/route.entity';
+import { Roles } from '../roles/roles.decorator';
+import { RoleEnum } from '../roles/roles.enum';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ConfigService } from '@nestjs/config';
+import { FilesService } from '../files/files.service';
+import { RolesGuard } from '../roles/roles.guard';
 import { PostFeedAttachmentService } from 'src/post-feed-attchment/post-feed-attachment.service';
 import { PostFeedAttachment } from 'src/post-feed-attchment/post-feed-attachment.entity';
-import { FileFieldsInterceptor } from "@nestjs/platform-express";
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -46,7 +54,7 @@ import { FileFieldsInterceptor } from "@nestjs/platform-express";
   },
   dto: {
     create: CreatePostFeedDto,
-    update: UpdatePostFeedDto
+    update: UpdatePostFeedDto,
   },
   params: {
     id: {
@@ -61,11 +69,12 @@ import { FileFieldsInterceptor } from "@nestjs/platform-express";
   version: '1',
 })
 export class PostFeedController implements CrudController<PostFeed> {
-  constructor(readonly service: PostFeedService,
+  constructor(
+    readonly service: PostFeedService,
     private readonly filesService: FilesService,
     private readonly configService: ConfigService,
     private readonly attachmentService: PostFeedAttachmentService,
-  ) { }
+  ) {}
 
   get base(): CrudController<PostFeed> {
     return this;
@@ -87,7 +96,6 @@ export class PostFeedController implements CrudController<PostFeed> {
   @Get('share/:id')
   async share(@Param('id') id) {
     return await this.service.sharePost(id);
-
   }
 
   @ApiOperation({ summary: 'Get friends post' })
@@ -97,7 +105,10 @@ export class PostFeedController implements CrudController<PostFeed> {
   }
   @ApiOperation({ summary: 'Create Post Feed' })
   @Post()
-  public async create(@Request() request: Express.Request, @Body() createPostFeedDto: CreatePostFeedDto,) {
+  public async create(
+    @Request() request: Express.Request,
+    @Body() createPostFeedDto: CreatePostFeedDto,
+  ) {
     return this.service.create(request.user?.sub, createPostFeedDto);
   }
 
@@ -117,37 +128,46 @@ export class PostFeedController implements CrudController<PostFeed> {
   @Post(':id/update-picture')
   @HttpCode(HttpStatus.OK)
   @Roles(RoleEnum.USER)
-  @UseInterceptors(FileFieldsInterceptor([
-    { name: 'file', maxCount: 1 },
-    { name: 'attachment', maxCount: 1 },
-  ]))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'file', maxCount: 1 },
+      { name: 'attachment', maxCount: 1 },
+    ]),
+  )
   public async updatePicture(
     @Param('id') id: string,
-    @UploadedFiles() files: { file?: Express.Multer.File, attachment?: Express.Multer.File },
+    @UploadedFiles()
+    files: { file?: Express.Multer.File; attachment?: Express.Multer.File },
   ) {
     const driver = this.configService.get('file.driver');
     if (files['file']) {
       var picture = {
-        local: `/${this.configService.get('app.apiPrefix')}/v1/${files['file'][0].path}`,
+        local: `/${this.configService.get('app.apiPrefix')}/v1/${
+          files['file'][0].path
+        }`,
         s3: files['file'].location,
         firebase: files['file'][0].publicUrl,
       };
     }
     if (files['attachment']) {
       var attachments = {
-        local: `/${this.configService.get('app.apiPrefix')}/v1/${files['attachment'][0].path}`,
+        local: `/${this.configService.get('app.apiPrefix')}/v1/${
+          files['attachment'][0].path
+        }`,
         s3: files['attachment'].location,
         firebase: files['attachment'][0].publicUrl,
-      }    
+      };
     }
-    return this.service.updatePicture(id, picture?picture[driver]:null, attachments?attachments[driver]:null);
+    return this.service.updatePicture(
+      id,
+      picture ? picture[driver] : null,
+      attachments ? attachments[driver] : null,
+    );
   }
-
 
   @ApiOperation({ summary: 'Get posts from other users' })
   @Get('other-users-posts/:user_id')
   public async getPostsFromOtherUsers(@Param('user_id') user_id: string) {
     return this.service.otherUsersPost(user_id);
   }
-   
 }
