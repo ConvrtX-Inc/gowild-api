@@ -49,11 +49,10 @@ export class ParticipantService extends TypeOrmCrudService<Participant> {
         .select('participant.room_id as room_id')
         .where("participant.user_id = :userId",{userId})
         .getRawMany();
-    if(!roomIds.length){
-      throw new NotFoundException({
-        message: "User's Inbox not Found!"
-      })
+    if(!roomIds.length) {
+      return { message: "User's Inbox not Found!", data:[]}
     }
+
     const roomArray = roomIds.map(function (obj) {
       return obj.room_id;
     });

@@ -1,15 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { RouteHistoricalEvent } from './entities/route-historical-event.entity';
-import { FilesService } from '../files/files.service';
-import { RouteHistoricalEventMedias } from './entities/route-historical-event-medias.entity';
-import { RouteHistoricalEventMediasService } from './route-historical-events-medias.service';
+import {Injectable} from '@nestjs/common';
+import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
+import {Not, Repository} from 'typeorm';
+import {InjectRepository} from '@nestjs/typeorm';
+import {RouteHistoricalEvent} from './entities/route-historical-event.entity';
+import {RouteHistoricalEventMediasService} from './route-historical-events-medias.service';
 import {CreateRouteHistoricalEventDto} from "./dto/create-route-historical-event.dto";
-import {UpdateRouteDto} from "../route/dto/update-route.dto";
 import {UpdateRouteHistoricalEventDto} from "./dto/update-route-historical-event.dto";
-import { NotFoundException } from 'src/exceptions/not-found.exception';
+import {NotFoundException} from 'src/exceptions/not-found.exception';
+import {RouteService} from "../route/route.service";
+import {RoleEnum} from "../roles/roles.enum";
 
 @Injectable()
 export class RouteHistoricalEventsService extends TypeOrmCrudService<RouteHistoricalEvent> {
@@ -17,12 +16,18 @@ export class RouteHistoricalEventsService extends TypeOrmCrudService<RouteHistor
     @InjectRepository(RouteHistoricalEvent)
     private readonly routeHistoricalEventRepository: Repository<RouteHistoricalEvent>,
     private readonly mediaService: RouteHistoricalEventMediasService,
+    private routeService: RouteService
   ) {
     super(routeHistoricalEventRepository);
   }
 
   public async createHistoricalEvent(routeId: any, dto: CreateRouteHistoricalEventDto){
-    const route = await this.routeHistoricalEventRepository.findOne(routeId);
+    const route = await this.routeService.findOne({
+      where: {
+        id: routeId,
+        role: Not(RoleEnum.USER)
+      }
+    })
     if (!route) {
       throw new NotFoundException({ message: `Route with ID ${routeId} not found!` });
     }
