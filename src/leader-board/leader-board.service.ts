@@ -20,38 +20,38 @@ export class LeaderBoardService extends TypeOrmCrudService<LeaderBoard> {
     super(Repository);
   }
 
-  async create(userId: string, dto: CreateLeaderBoardDto) {
-    const completionTime = moment.utc(moment(dto.endDate).diff(moment(dto.startDate))).format("HH:mm:ss");
-    const record = new LeaderBoard();
-    record.user_id = userId,
-    record.route_id = dto.route_id,
-    record.completionTime = completionTime
-    record.startDate = dto.startDate
-    record.endDate = dto.endDate
+//   async create(userId: string, dto: CreateLeaderBoardDto) {
+//     const completionTime = moment.utc(moment(dto.endDate).diff(moment(dto.startDate))).format("HH:mm:ss");
+//     const record = new LeaderBoard();
+//     record.user_id = userId,
+//     record.route_id = dto.route_id,
+//     record.completionTime = completionTime
+//     record.startDate = dto.startDate
+//     record.endDate = dto.endDate
 
 
-    const result = await this.Repository.findOne({
-      where:{
-        user_id: userId,
-        route_id: dto.route_id
-      }
-    });
+//     const result = await this.Repository.findOne({
+//       where:{
+//         user_id: userId,
+//         route_id: dto.route_id
+//       }
+//     });
 
-  if(!result){
-    const data = await this.Repository.create(record);
-    await this.Repository.save(data);
-    return { message: "Created successfully!", data: data };
-  }
+//   if(!result){
+//     const data = await this.Repository.create(record);
+//     await this.Repository.save(data);
+//     return { message: "Created successfully!", data: data };
+//   }
 
-  await this.Repository.update(result.id, record)
-  const updatedResult = await this.Repository.findOne({
-    where:{
-      id: result.id
-    }
-  });
-  return { message: "Updated successfully!", data: updatedResult };
+//   await this.Repository.update(result.id, record)
+//   const updatedResult = await this.Repository.findOne({
+//     where:{
+//       id: result.id
+//     }
+//   });
+//   return { message: "Updated successfully!", data: updatedResult };
     
-}
+// }
 
   // async updateLeaderBoard(userId:string, dto: CreateLeaderBoardDto){
   //   console.log(dto);
@@ -73,6 +73,33 @@ export class LeaderBoardService extends TypeOrmCrudService<LeaderBoard> {
   //   }
 
   // }
+
+  async create(userId: string, dto: CreateLeaderBoardDto) {
+    const completionTime = moment.utc(moment(dto.endDate).diff(moment(dto.startDate))).format("HH:mm:ss");
+    const record = new LeaderBoard();
+    record.user_id = userId,
+    record.route_id = dto.route_id,
+    record.completionTime = completionTime
+    record.startDate = dto.startDate
+    record.endDate = dto.endDate
+  
+    const result = await this.Repository.findOne({ user_id: userId, route_id: dto.route_id });
+
+    if(result && completionTime >= result.completionTime){
+      return { message: "Try again!", completionTime: completionTime};
+    }
+  
+    if(!result){
+      const data = await this.Repository.save(record);
+      return { message: "Created successfully!", data };
+    }
+  
+    await this.Repository.update({ id: result.id }, record);
+    const updatedResult = await this.Repository.findOne({ id: result.id });
+    return { message: "Updated successfully!", data: updatedResult };
+  }
+  
+  
 
   async getRankings(pageNo: number){
     const take = 10
