@@ -24,4 +24,12 @@ export class CreateSupportMessageDto {
     @ApiProperty({ example: 'admin / user' })
     @Column({ nullable: true })
     role?: string;
+
+    @IsOptional()
+    @ApiProperty({ example: 'Attachment' })
+    @Column({ nullable: true })
+    attachment?: {
+        extension: string,
+        base64: string
+    };
 }

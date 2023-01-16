@@ -15,7 +15,7 @@ import { RoomInfo } from './roomInfo';
 import { MessageDetail, MessageStatus } from '../message/messageDetail';
 import {convertToImage} from "../../common/constants/base64.image";
 
-@WebSocketGateway(5000,{ namespace:'/chat',  cors: true})
+@WebSocketGateway({ namespace:'/chat',  cors: true})
 export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -44,31 +44,26 @@ export class ChatGateway
   }
 
   @SubscribeMessage('connect_users')
-  public  conect(client: Socket, payload: any): void {
-    this._roomService.insertRoom(payload.sender_id, payload.receiver_id);
-    this.logger.log(`Connect Conversation ` + this._roomService.newRoomID);
-    this.addClient(client, payload.sender_id, this._roomService.newRoomID);
-    this.joinRoom(client, this._roomService.newRoomID);
+  public  connect(client: Socket, payload: any): void {
+    const roomId = this._roomService.ConnectConversation(payload.sender_id, payload.receiver_id);
+    this.logger.log(`Connect Conversation ` + roomId);
+    this.addClient(client, payload.sender_id, roomId);
+    this.joinRoom(client, roomId);
   }
 
   @SubscribeMessage('msgToServer')
-  public handleMessage(client: Socket, payload: any): void {
-    var curDate = new Date();
-    let attachment = null;
-    if (payload.attachment){
-      attachment = convertToImage(payload.attachment.base64, payload.attachment.extension);
-    }
-    let _message = new MessageDetail(
-      payload.user_id,
-      payload.message,
-      MessageStatus.msSent,
-      curDate,
-      attachment
-    );
-    payload.attachment = attachment;
+  async handleMessage(client: Socket, payload: any) {
+    const curDate = new Date();
+    const _message = {
+      user_id: payload.user_id,
+      message: payload.message,
+      msSent: 1,
+      date: curDate,
+      attachment: payload.attachment
+    };
     let room = this.getRoomOfClient(client);
-    this.addMessage(_message, room);
-    this.wss.to(room).emit('msgToClient', payload);
+    const message = await this.addMessage(_message, room);
+    this.wss.to(room).emit('msgToClient', message);
   }
 
   @SubscribeMessage('joinRoom')
@@ -123,25 +118,27 @@ export class ChatGateway
     let objRoom = this.lstRooms.find((o) => o.RoomID === roomID);
     if (objRoom != undefined) {
       if (objRoom.UserMessages.length> 0) {
-        await this._roomService.saveMessagesofRoom(
-          roomID,
-          objRoom.UserMessages,
-        );
+        let message = objRoom.UserMessages[0];
         objRoom.UserMessages = [];
+        return await this._roomService.saveMessagesofRoom(
+          roomID,
+          message,
+        );
+
       }
     }
   }
 
-  addMessage(UserMessage: MessageDetail, clientRoom: string) {
+  async addMessage(UserMessage: any, clientRoom: string) {
     let objRoom = this.lstRooms.find((o) => o.RoomID === clientRoom);
     if (objRoom === undefined) {
       var rm = new RoomInfo(clientRoom);
       rm.UserMessages.push(UserMessage);
       this.lstRooms.push(rm);
-      this.saveMessage(clientRoom);
+      return await this.saveMessage(clientRoom);
     } else {
       objRoom.UserMessages.push(UserMessage);
-      this.saveMessage(clientRoom);
+      return await this.saveMessage(clientRoom);
     }
   }
 }

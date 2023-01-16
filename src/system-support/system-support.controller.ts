@@ -16,7 +16,7 @@ import {CreateSupportMessageDto} from "./dto/create-supportmessage.dto";
     type: SystemSupport,
   },
   routes: {
-    exclude: ['replaceOneBase', 'createManyBase'],
+    exclude: ['replaceOneBase', 'createManyBase', 'getOneBase','getManyBase', 'createOneBase', 'updateOneBase'],
   },
   query: {
     maxLimit: 50,

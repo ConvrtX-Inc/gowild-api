@@ -96,14 +96,16 @@ export class RoomService extends TypeOrmCrudService<Room> {
     }
   }
 
-  public async saveMessagesofRoom(room_id: string, messages: MessageInterface[]) {
-    for (const msg of messages) {
-      await this.messageService.saveOne({
-        room_id: room_id,
-        user_id: msg.userid,
-        message: msg.message,
-        attachment: msg.attachment
-      })
+  public async saveMessagesofRoom(room_id: string, msg: any) {
+    let attachment = null;
+    if (msg.attachment){
+      attachment = convertToImage(msg.attachment.base64, msg.attachment.extension);
     }
+    return await this.messageService.saveOne({
+      room_id: room_id,
+      user_id: msg.user_id,
+      message: msg.message,
+      attachment: attachment
+    })
   }
 }

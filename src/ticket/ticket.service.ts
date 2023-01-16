@@ -1,4 +1,4 @@
-import {HttpStatus, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
 import {Repository} from 'typeorm';
@@ -45,7 +45,7 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
    ticket['message_id'] = findMessage.id
 
    await this.notificationService.createNotificationAdmin(
-       `${user.firstName} ${user.lastName} created a notification!`,
+       `${user.firstName} ${user.lastName} created a new ticket!`,
        'support');
 
    return {
@@ -58,14 +58,13 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
   async getTicket(id: string){
     const ticket = await this.ticketRepository.findOne({ where:{ id: id } })
 
-    const image = await this.systemSupportAttachmentService.findManyEntities({ where:{ ticket_id: id } });
-    ticket['attachment'] = image;
+    ticket['attachment'] = await this.systemSupportAttachmentService.findManyEntities({where: {ticket_id: id}});
     return{
       message: 'Ticket Fetched Successfully!',
       data: ticket
     }
   }
-
+m
   // get ticket by user_id
   async getTicketsByUserId(id: string){
 

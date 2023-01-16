@@ -9,6 +9,7 @@ import {Message} from "./message.entity";
 import {MessageService} from "./message.service";
 import {CreateRoomDto} from "./dto/create-room.dto";
 import {RoomService} from "../room/room.service";
+import {CreateMessageDto} from "./dto/create-message.dto";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -51,14 +52,22 @@ export class MessageController implements CrudController<Message> {
     return await this.service.inbox(request.user.sub);
   }
   @ApiOperation({summary: 'Create Room Sender & Receiver'})
-  @Post('rooms')
-  public async createRoom(@Request() req,@Body() dto: CreateRoomDto){
+  @Post('create-room')
+  public async createRoom(@Body() dto: CreateRoomDto){
     return{
       message: "Room Created Successfully!",
-      data: await this.roomService.ConnectConversation(req.user.sub, dto.recipient_id)
+      data: await this.roomService.ConnectConversation(dto.sender_id, dto.recipient_id)
     }
   }
 
+  @ApiOperation({summary: 'Create Message'})
+  @Post('/create:room_id')
+  public async addMessage(@Param('roomId') roomId, @Body() dto: CreateMessageDto){
+    return{
+      message: "Message Created Successfully!",
+      data: await this.roomService.saveMessagesofRoom(roomId, dto)
+    }
+  }
 
   @ApiResponse({ type: Message })
   @ApiOperation({ summary: 'Get User Messages' })
@@ -67,7 +76,7 @@ export class MessageController implements CrudController<Message> {
     return await this.service.userMessages(req.user.sub, roomId, query.page)
   }
 
- 
+
   @ApiOperation({ summary: 'Clean Conversation' })
   @Post('/:roomId')
   public async cleanConversation(@Request() request: Express.Request, @Param('roomId') roomId) {

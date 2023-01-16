@@ -6,6 +6,7 @@ import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import {TicketMessagesService} from "../ticket-messages/ticket-messages.service";
 import {FindOptions} from "../common/types/find-options.type";
 import {Route} from "../route/entities/route.entity";
+import {convertToImage} from "../common/constants/base64.image";
 
 @Injectable()
 export class SystemSupportService extends TypeOrmCrudService<SystemSupport> {
@@ -18,6 +19,10 @@ export class SystemSupportService extends TypeOrmCrudService<SystemSupport> {
   }
 
   async addMessage(payload: any) {
+    let attachment = null;
+    if (payload.attachment){
+      payload.attachment = convertToImage(payload.attachment.base64, payload.attachment.extension);
+    }
     return this.ticketMessage.saveOne(payload);
   }
 }

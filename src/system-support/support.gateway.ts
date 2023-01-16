@@ -12,7 +12,7 @@ import {SystemSupportService} from "./system-support.service";
 import {RoleEnum} from "../roles/roles.enum";
 
 
-@WebSocketGateway(5000,{ namespace:'/support',  cors: true})
+@WebSocketGateway({ namespace:'/support',  cors: true})
 export class SupportGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -39,7 +39,8 @@ export class SupportGateway
       user_id: payload.user_id,
       ticket_id: payload.ticket_id,
       message: payload.message,
-      role: RoleEnum.USER
+      role: RoleEnum.USER,
+      attachment: payload.attachment
     };
     const message = await this.supportService.addMessage(ticketMessage);
     this.wss.emit('msgSupport', message);
@@ -52,7 +53,8 @@ export class SupportGateway
       user_id: payload.user_id,
       ticket_id: payload.ticket_id,
       message: payload.message,
-      role: RoleEnum.ADMIN
+      role: RoleEnum.ADMIN,
+      attachment: payload.attachment
     };
     const message = await this.supportService.addMessage(ticketMessage);
     this.wss.emit('msgSupport', message);
