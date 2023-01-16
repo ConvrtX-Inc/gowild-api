@@ -15,5 +15,6 @@ define(UserEntity, () => {
   user.username = `${firstName}${lastName}${faker.random.alphaNumeric()}`;
   user.email = faker.internet.email().toLowerCase();
   user.phoneNo = faker.phone.number();
+  user.phoneVerified = true;
   return user;
 });

@@ -61,7 +61,7 @@ export class MessageController implements CrudController<Message> {
   }
 
   @ApiOperation({summary: 'Create Message'})
-  @Post('/create:room_id')
+  @Post('/create/:roomId')
   public async addMessage(@Param('roomId') roomId, @Body() dto: CreateMessageDto){
     return{
       message: "Message Created Successfully!",

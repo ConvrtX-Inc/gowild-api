@@ -44,8 +44,8 @@ export class ChatGateway
   }
 
   @SubscribeMessage('connect_users')
-  public  connect(client: Socket, payload: any): void {
-    const roomId = this._roomService.ConnectConversation(payload.sender_id, payload.receiver_id);
+  async  connect(client: Socket, payload: any): Promise<void> {
+    const roomId = await this._roomService.ConnectConversation(payload.sender_id, payload.receiver_id);
     this.logger.log(`Connect Conversation ` + roomId);
     this.addClient(client, payload.sender_id, roomId);
     this.joinRoom(client, roomId);

@@ -52,8 +52,8 @@ export class RoomService extends TypeOrmCrudService<Room> {
     await this.roomRepository.delete(id);
   }
 
-  public ConnectConversation(user_id: string, recipient_id: string): any {
-    this.insertRoom(user_id, recipient_id);
+  async ConnectConversation(user_id: string, recipient_id: string): Promise<string> {
+    await this.insertRoom(user_id, recipient_id);
     return this.newRoomID;
   }
 
