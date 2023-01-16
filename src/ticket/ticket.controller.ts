@@ -112,14 +112,8 @@ export class TicketController implements CrudController<Ticket> {
     @Body() dto: AddMessageidTicketDto,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
-
-
     let attachments = []
     attachments = [...await files['attachment']]
-
-
-    
-   
     for (let i = 0; i < attachments.length; i++) {
       const driver = this.configService.get('file.driver');
       const picture = {
