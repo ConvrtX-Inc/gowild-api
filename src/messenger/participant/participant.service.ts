@@ -7,6 +7,7 @@ import { FindOptions } from '../../common/types/find-options.type';
 
 import { Participant } from './participant.entity';
 import {UserEntity} from "../../users/user.entity";
+import {NotFoundException} from "../../exceptions/not-found.exception";
 
 @Injectable()
 export class ParticipantService extends TypeOrmCrudService<Participant> {
@@ -48,6 +49,11 @@ export class ParticipantService extends TypeOrmCrudService<Participant> {
         .select('participant.room_id as room_id')
         .where("participant.user_id = :userId",{userId})
         .getRawMany();
+    if(!roomIds.length){
+      throw new NotFoundException({
+        message: "User's Inbox not Found!"
+      })
+    }
     const roomArray = roomIds.map(function (obj) {
       return obj.room_id;
     });
