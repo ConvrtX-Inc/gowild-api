@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, Validate } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';

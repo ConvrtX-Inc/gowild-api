@@ -1,7 +1,7 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { AbstractBaseEntity } from '../../common/abstract-base-entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, IsOptional } from 'class-validator';
+import { IsOptional } from 'class-validator';
 
 export enum bulkEmailSendEnum {
   PENDING = 'pending',

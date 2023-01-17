@@ -1,7 +1,4 @@
 import {
-  AfterInsert,
-  AfterLoad,
-  AfterUpdate,
   Column,
   Entity,
   JoinColumn,
@@ -22,11 +19,8 @@ import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { CrudValidationGroups } from '@nestjsx/crud';
 import { Status } from 'src/statuses/status.entity';
 import { Password } from './password.entity';
-import { FileEntity } from '../files/file.entity';
 import { GenderEnum } from './gender.enum';
 import { Role } from '../roles/role.entity';
-import appConfig from '../config/app.config';
-import { time } from 'console';
 
 @Entity('gw_users')
 export class UserEntity extends AbstractBaseEntity {

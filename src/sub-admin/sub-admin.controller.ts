@@ -4,16 +4,13 @@ import {
   Post,
   Body,
   Request,
-  Patch,
   Param,
-  Delete,
   HttpStatus,
   HttpCode,
   UseGuards,
 } from '@nestjs/common';
 import { SubAdminService } from './sub-admin.service';
 import { CreateSubAdminDto } from './dto/create-sub-admin.dto';
-import { UpdateSubAdminDto } from './dto/update-sub-admin.dto';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -26,9 +23,6 @@ import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
 import { Roles } from 'src/roles/roles.decorator';
 import { RoleEnum } from 'src/roles/roles.enum';
 import { Crud, CrudController, CrudService, Override } from '@nestjsx/crud';
-import { request } from 'http';
-import { bool } from 'aws-sdk/clients/signer';
-import { Role } from 'src/roles/role.entity';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { Password } from 'src/users/password.entity';
 

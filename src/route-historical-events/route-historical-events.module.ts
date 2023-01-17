@@ -14,17 +14,23 @@ import path from 'path';
 import { UnprocessableEntityException } from '@nestjs/common/exceptions';
 import { RouteHistoricalEventMediasService } from './route-historical-events-medias.service';
 import { RouteHistoricalEventMedias } from './entities/route-historical-event-medias.entity';
-import {RouteModule} from "../route/route.module";
+import { RouteModule } from '../route/route.module';
 
 @Module({
   controllers: [RouteHistoricalEventsController],
   providers: [RouteHistoricalEventsService, RouteHistoricalEventMediasService],
-  imports: [RouteModule, TypeOrmModule.forFeature([RouteHistoricalEvent, RouteHistoricalEventMedias]), FilesModule
-  ,MulterModule.registerAsync({
-    imports: [ConfigModule],
-    inject: [ConfigService],
-    useFactory: (configService: ConfigService) => {
-      const storages: Record<files.FileType, files.VoidStorageEngineConfig> =
+  imports: [
+    RouteModule,
+    TypeOrmModule.forFeature([
+      RouteHistoricalEvent,
+      RouteHistoricalEventMedias,
+    ]),
+    FilesModule,
+    MulterModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const storages: Record<files.FileType, files.VoidStorageEngineConfig> =
           {
             local: () =>
               diskStorage({

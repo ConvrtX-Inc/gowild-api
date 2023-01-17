@@ -6,8 +6,8 @@ import { DeepPartial } from '../../common/types/deep-partial.type';
 import { FindOptions } from '../../common/types/find-options.type';
 
 import { Participant } from './participant.entity';
-import {UserEntity} from "../../users/user.entity";
-import {NotFoundException} from "../../exceptions/not-found.exception";
+import { UserEntity } from '../../users/user.entity';
+import { NotFoundException } from '../../exceptions/not-found.exception';
 
 @Injectable()
 export class ParticipantService extends TypeOrmCrudService<Participant> {
@@ -45,12 +45,13 @@ export class ParticipantService extends TypeOrmCrudService<Participant> {
   }
 
   async userParticipants(userId: string) {
-    const roomIds = await this.participantRepository.createQueryBuilder('participant')
-        .select('participant.room_id as room_id')
-        .where("participant.user_id = :userId",{userId})
-        .getRawMany();
-    if(!roomIds.length) {
-      return { message: "User's Inbox not Found!", data:[]}
+    const roomIds = await this.participantRepository
+      .createQueryBuilder('participant')
+      .select('participant.room_id as room_id')
+      .where('participant.user_id = :userId', { userId })
+      .getRawMany();
+    if (!roomIds.length) {
+      return { message: "User's Inbox not Found!", data: [] };
     }
 
     const roomArray = roomIds.map(function (obj) {

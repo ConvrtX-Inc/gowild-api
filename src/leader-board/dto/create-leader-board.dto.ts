@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { time } from 'aws-sdk/clients/frauddetector';
 import { IsNotEmpty, IsUUID } from 'class-validator';
-import { IsValidTime } from 'src/common/is_valid_time';
 
 export class CreateLeaderBoardDto {
   @ApiProperty({

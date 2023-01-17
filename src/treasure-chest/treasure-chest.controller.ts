@@ -29,7 +29,7 @@ import { CreateTreasureChestDto } from './dto/create-treasure-chest.dto';
 import { ChangeHuntStatusDto } from './dto/change-hunt-status';
 import { ConfigService } from '@nestjs/config';
 import { UserTreasureHuntService } from '../user-treasure-hunt/user-treasure-hunt.service';
-import {UpdateTreasureChestDto} from "./dto/update-treasure-chest.dto";
+import { UpdateTreasureChestDto } from './dto/update-treasure-chest.dto';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, AdminRolesGuard)
@@ -43,7 +43,7 @@ import {UpdateTreasureChestDto} from "./dto/update-treasure-chest.dto";
   },
   dto: {
     create: CreateTreasureChestDto,
-    update: UpdateTreasureChestDto
+    update: UpdateTreasureChestDto,
   },
   query: {
     maxLimit: 50,

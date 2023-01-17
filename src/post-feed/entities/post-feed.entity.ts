@@ -1,18 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import { Allow, IsOptional, Validate } from 'class-validator';
+import { Allow, IsOptional } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
-import { IsExist } from 'src/common/validators/is-exists.validator';
-import appConfig from 'src/config/app.config';
 import {
-  AfterLoad,
-  AfterUpdate,
   Column,
   Entity,
-  JoinColumn,
-  ManyToOne,
 } from 'typeorm';
-import { FileEntity } from '../../files/file.entity';
 
 @Entity('gw_post_feeds')
 export class PostFeed extends AbstractBaseEntity {
