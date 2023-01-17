@@ -51,7 +51,7 @@ export class LeaderBoardController implements CrudController<LeaderBoard> {
   @ApiOperation({ summary: 'Create Record' })
   @Post()
   public async create(@Request() req: Express.Request, @Body() dto:CreateLeaderBoardDto){
-    return this.service.create(req.user.sub, dto)
+    return this.service.createLeaderBoard(req.user.sub, dto)
 
   }
 @Override('getManyBase')
@@ -60,7 +60,7 @@ export class LeaderBoardController implements CrudController<LeaderBoard> {
     return this.service.getPosition(req.user.sub)
   }
 
-  @ApiOperation({ summary: 'Get Rankings By route id' })
+  @ApiOperation({ summary: 'Get Rankings By route id main listings'})
   @Get('/:route_id')
   public async getByRoute(@Param('route_id') routeId,@Query() query){
     return this.service.rankByRoute(routeId,query.page)
