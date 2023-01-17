@@ -5,6 +5,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { DeepPartial } from '../common/types/deep-partial.type';
 import { RoleEnum } from '../roles/roles.enum';
+import * as admin from 'firebase-admin';
+import { UserEntity } from 'src/users/user.entity';
+import { pushNotificationDto } from './dtos/push-notification.dto';
+import { ConsoleLogger } from '@nestjs/common/services';
+import { BadGatewayException } from '@nestjs/common/exceptions';
 
 @Injectable()
 export class NotificationService extends TypeOrmCrudService<Notification> {
@@ -96,5 +101,32 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
     return this.destinationsRepository.save(
       this.destinationsRepository.create(data),
     );
+  }
+
+  async pushNotification(id:string , dto: pushNotificationDto) {
+    const user = await UserEntity.findOne({
+      where: {
+        email: dto.email
+      }
+    })
+    if (user.fcm_token) {
+      var message = {
+        notification: {
+          title: dto.title,
+          body: dto.message
+        },
+        token: user.fcm_token,
+      };
+      const sent = await admin.messaging().send(message);
+      if(sent){
+
+        return { message : "Notication Pushed Successfully" , message_code : sent }
+      }else{
+        new BadGatewayException( {
+          message : "Something Went Wrong"
+        })
+      }
+    }
+    return {message : "Token Not Found"};
   }
 }

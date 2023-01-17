@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, Validate } from 'class-validator';
+import { IsNotEmpty, IsOptional, Validate } from 'class-validator';
 import { IsExist } from 'src/common/validators/is-exists.validator';
 import { Transform } from 'class-transformer';
 
@@ -14,4 +14,8 @@ export class AuthEmailLoginDto {
   @ApiProperty({ example: 'string' })
   @IsNotEmpty()
   password: string;
+
+  @ApiProperty({ example: 'fcm_token' })
+  @IsOptional()
+  fcm_token: string;
 }
