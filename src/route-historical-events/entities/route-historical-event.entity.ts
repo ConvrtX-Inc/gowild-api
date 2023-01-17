@@ -19,7 +19,7 @@ export class RouteHistoricalEvent extends AbstractBaseEntity {
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'route_id' })
-  route: Route;
+  route_id: Route;
 
   @Allow()
   @ApiProperty({ type: () => Coordinates, nullable: false })

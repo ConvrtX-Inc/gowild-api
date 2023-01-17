@@ -17,10 +17,9 @@ import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
 
 @Module({
   controllers: [RouteController, AdminRouteController],
-  providers: [RouteService, ConfigModule, ConfigService],
-  imports: [
-    TypeOrmModule.forFeature([Route, SavedRoute, LeaderBoard]),
-    FilesModule,
+  providers: [RouteService, ConfigModule, ConfigService,],
+  exports: [RouteService],
+  imports: [TypeOrmModule.forFeature([Route,SavedRoute, LeaderBoard]), FilesModule,
     MulterModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

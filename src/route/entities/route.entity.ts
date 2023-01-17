@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsOptional } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { RouteHistoricalEvent } from '../../route-historical-events/entities/route-historical-event.entity';
 import { RoleEnum } from '../../roles/roles.enum';
 import { Coordinates } from '../../common/coordinates';
@@ -52,7 +52,7 @@ export class Route extends AbstractBaseEntity {
 
   @Allow()
   @ApiProperty({ type: () => [RouteHistoricalEvent], nullable: true })
-  @OneToMany(() => RouteHistoricalEvent, (obj) => obj.route, {
+  @OneToMany(() => RouteHistoricalEvent, (obj) => obj.route_id, {
     cascade: true,
     orphanedRowAction: 'delete',
   })

@@ -71,7 +71,10 @@ export class MessageController implements CrudController<Message> {
   @ApiOperation({ summary: 'Get Inbox' })
   @Get('/inbox')
   public async inbox(@Request() request: Express.Request) {
-    return await this.service.inbox(request.user.sub);
+    return{
+      message: "User Inbox Fetched Successfully!",
+      data: await this.service.inbox(request.user.sub)
+    }
   }
   @ApiOperation({ summary: 'Create Room Sender & Receiver' })
   @Post('create-room')

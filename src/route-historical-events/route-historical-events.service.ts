@@ -1,15 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { RouteHistoricalEvent } from './entities/route-historical-event.entity';
-import { FilesService } from '../files/files.service';
-import { RouteHistoricalEventMedias } from './entities/route-historical-event-medias.entity';
-import { RouteHistoricalEventMediasService } from './route-historical-events-medias.service';
-import { CreateRouteHistoricalEventDto } from './dto/create-route-historical-event.dto';
-import { UpdateRouteDto } from '../route/dto/update-route.dto';
-import { UpdateRouteHistoricalEventDto } from './dto/update-route-historical-event.dto';
-import { NotFoundException } from 'src/exceptions/not-found.exception';
+import {Injectable} from '@nestjs/common';
+import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
+import {Not, Repository} from 'typeorm';
+import {InjectRepository} from '@nestjs/typeorm';
+import {RouteHistoricalEvent} from './entities/route-historical-event.entity';
+import {RouteHistoricalEventMediasService} from './route-historical-events-medias.service';
+import {CreateRouteHistoricalEventDto} from "./dto/create-route-historical-event.dto";
+import {UpdateRouteHistoricalEventDto} from "./dto/update-route-historical-event.dto";
+import {NotFoundException} from 'src/exceptions/not-found.exception';
+import {RouteService} from "../route/route.service";
+import {RoleEnum} from "../roles/roles.enum";
 
 @Injectable()
 export class RouteHistoricalEventsService extends TypeOrmCrudService<RouteHistoricalEvent> {
@@ -17,29 +16,43 @@ export class RouteHistoricalEventsService extends TypeOrmCrudService<RouteHistor
     @InjectRepository(RouteHistoricalEvent)
     private readonly routeHistoricalEventRepository: Repository<RouteHistoricalEvent>,
     private readonly mediaService: RouteHistoricalEventMediasService,
+    private routeService: RouteService
   ) {
     super(routeHistoricalEventRepository);
   }
 
-  public async createHistoricalEvent(
-    routeId: any,
-    dto: CreateRouteHistoricalEventDto,
-  ) {
-    const route = await this.routeHistoricalEventRepository.findOne(routeId);
+  public async createHistoricalEvent(routeId: any, dto: CreateRouteHistoricalEventDto){
+    const route = await this.routeService.findOne({
+      where: {
+        id: routeId,
+        role: Not(RoleEnum.USER)
+      }
+    })
     if (!route) {
       throw new NotFoundException({
         message: `Route with ID ${routeId} not found!`,
       });
     }
-    return await this.routeHistoricalEventRepository.save(
-      this.routeHistoricalEventRepository.create({ route: routeId, ...dto }),
-    );
+    return await this.routeHistoricalEventRepository.save(this.routeHistoricalEventRepository.create({route_id: routeId,...dto }));
   }
 
   public async getAllHistoricalEvents() {
     const hEvents = await this.routeHistoricalEventRepository.find({});
 
-    if (!hEvents) {
+    if(!hEvents){
+      throw new NotFoundException({
+        errors:[{
+          message: 'Historical Event Routes not found!'
+        }]
+      })
+    }
+    return hEvents
+  }
+
+  public async getAllHistoricalEventsByRouteId(route_id: string){
+    const hEvents = await this.routeHistoricalEventRepository.find({where:{route_id: route_id}})
+
+    if(!hEvents){
       throw new NotFoundException({
         errors: [
           {
