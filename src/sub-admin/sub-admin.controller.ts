@@ -102,10 +102,15 @@ export class SubAdminController implements CrudController<UserEntity> {
 
   @ApiResponse({ type: UserEntity })
   @Get('active-inActive/:keyword')
-  @ApiOperation({ summary: 'Active or inActive Sub admin' })
+  @ApiOperation({ summary: 'Filter Active or inActive Sub admin' })
   @HttpCode(HttpStatus.OK)
   @Roles(RoleEnum.ADMIN)
   async activeInactive(@Param('keyword') keyword: boolean) {
     return this.subAdminService.activeInactive(keyword);
+  }
+  @Post(':id/status')
+  @ApiOperation({ summary: 'Change Status to Active or inActive Sub admin' })
+  async updateStatus(@Param('id') id: string) {
+    return await this.subAdminService.changeStatus(id);
   }
 }

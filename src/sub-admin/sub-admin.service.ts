@@ -9,9 +9,8 @@ import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
 import { PasswordService } from 'src/users/password.service';
 import { UserEntity } from 'src/users/user.entity';
 import { UsersService } from 'src/users/users.service';
-import { FindConditions, getConnection, ObjectID, Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import { CreateSubAdminDto } from './dto/create-sub-admin.dto';
-import { UpdateSubAdminDto } from './dto/update-sub-admin.dto';
 import { Password } from '../users/password.entity';
 
 @Injectable()
@@ -60,9 +59,9 @@ export class SubAdminService {
 
   public async registerSubAdmin(dto: CreateSubAdminDto) {
     let entity = new UserEntity();
-    (entity.firstName = dto.firstName),
-      (entity.lastName = dto.lastName),
-      (entity.gender = dto.gender);
+    entity.firstName = dto.firstName;
+    entity.lastName = dto.lastName;
+    entity.gender = dto.gender;
     entity.email = dto.email;
     entity.username = dto.username;
     entity.phoneNo = dto.phoneNo;
@@ -126,10 +125,10 @@ export class SubAdminService {
       });
     }
 
-    (admin.firstName = dto.firstName),
-      (admin.lastName = dto.lastName),
-      (admin.birthDate = dto.birthDate),
-      (admin.addressOne = dto.addressOne);
+    admin.firstName = dto.firstName;
+    admin.lastName = dto.lastName;
+    admin.birthDate = dto.birthDate;
+    admin.addressOne = dto.addressOne;
     admin.username = dto.username;
 
     await admin.save();
@@ -245,5 +244,22 @@ export class SubAdminService {
     });
 
     return await this.mapListingsData(admins);
+  }
+
+  async changeStatus(id: string) {
+    const user = await this.usersRepository.findOne({ id: id });
+    if (!user) {
+      throw new NotFoundException({ message: 'User Not Found!' });
+    }
+    const userStatus = user.status.statusName;
+    if (userStatus === StatusEnum.Active) {
+      user.status = await this.statusService.findByEnum(StatusEnum.Inactive);
+      await user.save();
+      return { message: 'User status Changed Successfully! (Disabled)' };
+    } else {
+      user.status = await this.statusService.findByEnum(StatusEnum.Active);
+      await user.save();
+      return { message: 'User status Changed Successfully! (Active)' };
+    }
   }
 }
