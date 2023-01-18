@@ -142,7 +142,7 @@ export class RouteController implements CrudController<Route> {
   }
 
   @Roles(RoleEnum.USER)
-  @Get('saved')
+  @Get('approved')
   @ApiOperation({ summary: 'Get All Approved Routes' })
   async getApprovedRoutes(@Request() req, @Query() query) {
     return await this.service.getApprovedRoutes(

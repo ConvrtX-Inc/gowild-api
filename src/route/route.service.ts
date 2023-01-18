@@ -128,19 +128,9 @@ export class RouteService extends TypeOrmCrudService<Route> {
       }
       routes[i]['leaderboard'] = user;
 
-      const current_user_leaderboard = await LeaderBoard.createQueryBuilder(
-        'leader',
-      )
-        .where('leader.route_id = :id AND leader.user_id = :user ', {
-          id: routes[i].id,
-          user: id,
-        })
-        .leftJoinAndMapOne(
-          'leader.user',
-          UserEntity,
-          'user',
-          'leader.user_id = user.id',
-        )
+      const current_user_leaderboard = await LeaderBoard.createQueryBuilder('leader')
+        .where('leader.route_id = :id AND leader.user_id = :user ', {id: routes[i].id,user: id,})
+        .leftJoinAndMapOne('leader.user',UserEntity,'user','leader.user_id = user.id',)
         .orderBy('leader.completionTime', 'ASC')
         .getMany();
       if (
