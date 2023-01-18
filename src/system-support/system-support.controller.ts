@@ -50,7 +50,7 @@ export class SystemSupportController implements CrudController<SystemSupport> {
 
   @ApiOperation({ summary: 'Create System Support Message' })
   @Post('message')
-  public async addOneMessage(@Body() payload: CreateSupportMessageDto) {
-    return await this.service.addMessage(payload);
+  public async addOneMessage(@Request() request: Express.Request, @Body() payload: CreateSupportMessageDto) {
+    return await this.service.addMessage(request.user.sub, payload);
   }
 }
