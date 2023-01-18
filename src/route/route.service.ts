@@ -13,9 +13,6 @@ import { SaveRouteDto } from './dto/save-route-dto';
 import { SavedRoute } from './entities/saved-routs.entity';
 import { UpdateRouteDto } from './dto/update-route.dto';
 import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
-import { skip } from 'rxjs';
-import { paginateResponse } from 'src/common/paginate.response';
-import { Role } from 'src/roles/role.entity';
 import { StatusEnum } from 'src/auth/status.enum';
 
 @Injectable()
@@ -168,13 +165,14 @@ export class RouteService extends TypeOrmCrudService<Route> {
         results.push(routes[i]);
       }
     }
+
     const totalPage = Math.ceil(total / limit);
     const currentPage = parseInt(String(page));
     const prevPage = page > 1 ? page - 1 : null;
     return {
       message: 'Approved routes successfully fetched!',
       data: results,
-      count: total,
+      count: results.length,
       currentPage,
       prevPage,
       totalPage,
