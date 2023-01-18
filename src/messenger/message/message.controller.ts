@@ -21,7 +21,7 @@ import { Message } from './message.entity';
 import { MessageService } from './message.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { RoomService } from '../room/room.service';
-import { CreateMessageDto } from './dto/create-message.dto';
+import {CreateMessageDto} from "./dto/create-message.dto";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -78,25 +78,30 @@ export class MessageController implements CrudController<Message> {
   }
   @ApiOperation({ summary: 'Create Room Sender & Receiver' })
   @Post('create-room')
-  public async createRoom(@Body() dto: CreateRoomDto) {
+  public async createRoom(@Request() request: Express.Request, @Body() dto: CreateRoomDto) {
     return {
       message: 'Room Created Successfully!',
       data: await this.roomService.ConnectConversation(
-        dto.sender_id,
+        request.user.sub,
         dto.recipient_id,
       ),
     };
   }
 
   @ApiOperation({ summary: 'Create Message' })
-  @Post('/create/:roomId')
-  public async addMessage(
-    @Param('roomId') roomId,
+  @Post('/create')
+  public async addMessage(@Request() request: Express.Request,
     @Body() dto: CreateMessageDto,
   ) {
+    const payload = {
+      message: dto.message,
+      attachment: dto.attachment,
+      user_id: request.user.sub,
+      room_id: dto.room_id,
+    }
     return {
       message: 'Message Created Successfully!',
-      data: await this.roomService.saveMessagesofRoom(roomId, dto),
+      data: await this.roomService.saveMessagesofRoom(dto.room_id, payload),
     };
   }
 

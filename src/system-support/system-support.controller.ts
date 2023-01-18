@@ -1,4 +1,4 @@
-import { Body, Controller, UseGuards } from '@nestjs/common';
+import { Body, Controller, UseGuards, Request } from '@nestjs/common';
 import { SystemSupportService } from './system-support.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController } from '@nestjsx/crud';
@@ -49,7 +49,7 @@ export class SystemSupportController implements CrudController<SystemSupport> {
 
   @ApiOperation({ summary: 'Create System Support Message' })
   @Post('message')
-  public async addOneMessage(@Body() payload: CreateSupportMessageDto) {
-    return await this.service.addMessage(payload);
+  public async addOneMessage(@Request() request: Express.Request, @Body() payload: CreateSupportMessageDto) {
+    return await this.service.addMessage(request.user.sub, payload);
   }
 }
