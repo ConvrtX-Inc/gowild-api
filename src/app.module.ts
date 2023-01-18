@@ -9,6 +9,7 @@ import mailConfig from './config/mail.config';
 import fileConfig from './config/file.config';
 import facebookConfig from './config/facebook.config';
 import googleConfig from './config/google.config';
+import firebaseConfig from './config/firebase.config';
 import twitterConfig from './config/twitter.config';
 import appleConfig from './config/apple.config';
 import * as path from 'path';
@@ -80,6 +81,7 @@ import { LeaderBoardModule } from './leader-board/leader-board.module';
         googleConfig,
         twitterConfig,
         appleConfig,
+        firebaseConfig
       ],
       envFilePath: ['.env'],
       expandVariables: true,

@@ -30,4 +30,7 @@ export class LeaderBoard extends AbstractBaseEntity {
   @ApiProperty({ example: '01:04:55' })
   @Column({ nullable: false, name: 'completion_time' })
   completionTime: time;
+
+    @Column({nullable: true, name: 'rank'})
+    rank: number;
 }

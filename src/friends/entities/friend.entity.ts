@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, Validate, IsOptional } from 'class-validator';
+import { Validate, IsOptional } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { IsExist } from 'src/common/validators/is-exists.validator';
 import {
@@ -7,7 +7,6 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
-  UpdateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
 

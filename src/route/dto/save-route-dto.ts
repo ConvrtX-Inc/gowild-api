@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, Validate } from 'class-validator';
+import { Validate } from 'class-validator';
 import { IsExist } from 'src/common/validators/is-exists.validator';
 
 export class SaveRouteDto {

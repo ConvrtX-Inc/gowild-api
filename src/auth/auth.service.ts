@@ -42,7 +42,7 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly statusService: StatusService,
     private readonly roleService: RoleService,
-  ) {}
+  ) { }
 
   public async validateLogin(
     loginDto: AuthEmailLoginDto,
@@ -59,7 +59,11 @@ export class AuthService {
         user,
         loginDto.password,
       );
-
+      if (loginDto.fcm_token) {
+        user.fcm_token = loginDto.fcm_token;
+        user.last_seen = new Date();
+        await user.save();
+      }
       if (isValidPassword) {
         return await this.tokenService.generateToken(user);
       } else {

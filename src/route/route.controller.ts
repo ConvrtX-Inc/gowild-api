@@ -21,15 +21,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  Crud,
-  CrudController,
-  CrudRequestInterceptor,
-  Override,
-} from '@nestjsx/crud';
+import { Crud, CrudController, Override } from '@nestjsx/crud';
 import { Route } from './entities/route.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { ImageUpdateDto } from '../users/dtos/image-update.dto';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { Roles } from '../roles/roles.decorator';
 import { RoleEnum } from '../roles/roles.enum';
@@ -148,7 +142,7 @@ export class RouteController implements CrudController<Route> {
   }
 
   @Roles(RoleEnum.USER)
-  @Get('saved')
+  @Get('approved')
   @ApiOperation({ summary: 'Get All Approved Routes' })
   async getApprovedRoutes(@Request() req, @Query() query) {
     return await this.service.getApprovedRoutes(
@@ -159,6 +153,17 @@ export class RouteController implements CrudController<Route> {
     );
   }
 
+  @Roles(RoleEnum.USER)
+  @Get('created-routes')
+  @ApiOperation({ summary: 'Get All User Created Routes' })
+  async getUserCreatedRoutes(@Request() req) {
+    return {
+      message: 'User Created routes Fetched Successfully!',
+      data: await this.service.findManyEntities({
+        where: { user_id: req.user.sub },
+      }),
+    };
+  }
   @Roles(RoleEnum.USER)
   @Post('save')
   async saveRoute(@Request() req, @Body() dto: SaveRouteDto) {

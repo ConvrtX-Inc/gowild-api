@@ -31,4 +31,9 @@ export class CreateRouteDto {
   @ApiProperty({ example: '2h 14m' })
   @IsNotEmpty()
   estimate_time: string;
+
+  @ApiProperty({ example: '' })
+  @IsOptional()
+  @IsNotEmpty()
+  route_path: string;
 }

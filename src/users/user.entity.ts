@@ -1,13 +1,4 @@
-import {
-  AfterInsert,
-  AfterLoad,
-  AfterUpdate,
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Exclude, Transform } from 'class-transformer';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import {
@@ -22,11 +13,8 @@ import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { CrudValidationGroups } from '@nestjsx/crud';
 import { Status } from 'src/statuses/status.entity';
 import { Password } from './password.entity';
-import { FileEntity } from '../files/file.entity';
 import { GenderEnum } from './gender.enum';
 import { Role } from '../roles/role.entity';
-import appConfig from '../config/app.config';
-import { time } from 'console';
 
 @Entity('gw_users')
 export class UserEntity extends AbstractBaseEntity {
@@ -146,6 +134,21 @@ export class UserEntity extends AbstractBaseEntity {
   })
   otp: string;
 
+  @ApiHideProperty()
+  @Exclude()
+  @Column({
+    nullable: true,
+  })
+  fcm_token: string;
+
+  @ApiHideProperty()
+  @Exclude()
+  @Column({
+    nullable: true,
+  })
+  last_seen: Date;
+
+
   @ApiProperty()
   @Column({
     nullable: true,
@@ -170,26 +173,4 @@ export class UserEntity extends AbstractBaseEntity {
   get getTemporaryPassword(): string {
     return `gowild@${Math.floor(1000 + Math.random() * 9000)}`;
   }
-
-  // @AfterLoad()
-  // @AfterUpdate()
-  // updatePicture() {
-  //   if (this.picture && this.picture.indexOf('/') === 0) {
-  //     this.picture = appConfig().backendDomain + this.picture;
-  //   }
-  // }
-  // @AfterLoad()
-  // @AfterUpdate()
-  // updateFrontImage() {
-  //   if (this.frontImage && this.frontImage.indexOf('/') === 0) {
-  //     this.frontImage = appConfig().backendDomain + this.frontImage;
-  //   }
-  // }
-  // @AfterLoad()
-  // @AfterUpdate()
-  // updateBackImage() {
-  //   if (this.backImage && this.backImage.indexOf('/') === 0) {
-  //     this.backImage = appConfig().backendDomain + this.backImage;
-  //   }
-  // }
 }

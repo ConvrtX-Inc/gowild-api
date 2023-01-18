@@ -1,11 +1,4 @@
-import {
-  Body,
-  HttpCode,
-  Injectable,
-  NotFoundException,
-  Post,
-  Request,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
@@ -16,13 +9,8 @@ import {
   UserTreasureHuntStatusEnum,
 } from 'src/user-treasure-hunt/user-treasure-hunt.entity';
 import { UserTreasureHuntService } from 'src/user-treasure-hunt/user-treasure-hunt.service';
-import { isBigInt64Array } from 'util/types';
-import { HttpStatus } from '@nestjs/common/enums';
 import { Sponsor } from 'src/sponsor/entities/sponsor.entity';
 import { UserEntity } from 'src/users/user.entity';
-import { title } from 'process';
-import { stringify } from 'querystring';
-import { type } from 'os';
 import { NotificationService } from '../notification/notification.service';
 import { paginateResponse } from 'src/common/paginate.response';
 

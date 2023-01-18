@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Request,
   UploadedFile,
@@ -28,6 +29,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FilesService } from '../files/files.service';
 import { AdminRolesGuard } from '../roles/admin.roles.guard';
 import { ConfigService } from '@nestjs/config';
+import { UpdateRouteDto } from './dto/update-route.dto';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, AdminRolesGuard)
@@ -62,6 +64,12 @@ export class AdminRouteController {
       request.user.user.role as RoleEnum,
       dto,
     );
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update Admin Route' })
+  async updateOneRoute(@Param('id') id: string, @Body() dto: UpdateRouteDto) {
+    return await this.service.updateOneRoute(id, dto);
   }
 
   @ApiResponse({ type: Route })
