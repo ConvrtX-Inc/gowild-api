@@ -122,6 +122,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
             state.user_id,
             state['user'].firstName,
             state['user'].picture,
+            state.rank,
           );
           user.push(leaderboard);
         });
@@ -186,17 +187,20 @@ export class RouteService extends TypeOrmCrudService<Route> {
     user_id: string,
     firstName: string,
     picture: string,
+    rank : number
   ) {
     const leaderboard: {
       id: string;
       user_id: string;
       name: string;
       image: string;
+      rank : number
     } = {
       id: id,
       user_id: user_id,
       name: firstName,
       image: picture,
+      rank : rank
     };
     return leaderboard;
   }
@@ -368,27 +372,17 @@ export class RouteService extends TypeOrmCrudService<Route> {
             state.user_id,
             state['user'].firstName,
             state['user'].picture,
+            state.rank,
           );
           user.push(leaderboard);
         });
       }
-
       savedRoutes[i]['leaderboard'] = user;
       results.push(savedRoutes[i]);
-
-      // var responseArray = [];
-      // savedRoutes.forEach(routes => {
-      //   if (routes['route']) {
-      //     responseArray.push(routes['route']);
-      //   }
-      // })
-      // return { data: responseArray };
     }
-
     const totalPage = Math.ceil(total / limit);
     const currentPage = parseInt(String(page));
     const prevPage = page > 1 ? page - 1 : null;
-
     return {
       message: 'Saved routes successfully fetched!',
       data: results,
