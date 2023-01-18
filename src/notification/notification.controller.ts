@@ -1,6 +1,14 @@
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController, Override } from '@nestjsx/crud';
-import { Controller, Get, Post, Param, Request, UseGuards, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Request,
+  UseGuards,
+  Body,
+} from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { Notification } from './notification.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -36,7 +44,7 @@ import { pushNotificationDto } from './dtos/push-notification.dto';
   version: '1',
 })
 export class NotificationController implements CrudController<Notification> {
-  constructor(public service: NotificationService) { }
+  constructor(public service: NotificationService) {}
 
   get base(): CrudController<Notification> {
     return this;
@@ -60,10 +68,9 @@ export class NotificationController implements CrudController<Notification> {
     return this.service.getNotification(id);
   }
 
-
   @Post('push')
-  async pushNotification(@Body() dto:pushNotificationDto,@Request() req) {
-    return await this.service.pushNotification(req.user.sub,dto);
+  async pushNotification(@Body() dto: pushNotificationDto, @Request() req) {
+    return await this.service.pushNotification(req.user.sub, dto);
   }
 
   @Get('role/:role')
