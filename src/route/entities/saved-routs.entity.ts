@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, IsOptional } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { Column, Entity } from 'typeorm';
 

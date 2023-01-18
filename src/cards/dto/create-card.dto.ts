@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, IsNotEmpty, IsOptional } from 'class-validator';
+import { Allow, IsOptional } from 'class-validator';
 import { Column } from 'typeorm';
 
 export class CreateCardDto {

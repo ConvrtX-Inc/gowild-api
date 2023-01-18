@@ -4,7 +4,8 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Param, Patch,
+  Param,
+  Patch,
   Post,
   Request,
   UploadedFile,
@@ -28,7 +29,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FilesService } from '../files/files.service';
 import { AdminRolesGuard } from '../roles/admin.roles.guard';
 import { ConfigService } from '@nestjs/config';
-import {UpdateRouteDto} from "./dto/update-route.dto";
+import { UpdateRouteDto } from './dto/update-route.dto';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, AdminRolesGuard)

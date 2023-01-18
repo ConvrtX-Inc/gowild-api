@@ -2,7 +2,6 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
-  Param,
   Post,
   UseGuards,
   Body,
@@ -10,19 +9,15 @@ import {
   Get,
   Query,
 } from '@nestjs/common';
-import { TreasureChestService } from './treasure-chest.service';
 import { Crud, CrudController, Override } from '@nestjsx/crud';
 import { TreasureChest } from './entities/treasure-chest.entity';
 import {
   ApiBearerAuth,
-  ApiBody,
-  ApiConsumes,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { AdminRolesGuard } from '../roles/admin.roles.guard';
 import { CreateTreasureChestDto } from './dto/create-treasure-chest.dto';
 import { RegisterTreasureHuntDto } from './dto/register-treasure-hunt.dto';
 import { TreasureWildService } from './treasure-wild.service';

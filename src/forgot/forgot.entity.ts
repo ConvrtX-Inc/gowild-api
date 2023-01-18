@@ -1,4 +1,4 @@
-import { Column, Entity, Index, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { UserEntity } from '../users/user.entity';
 import { Allow } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';

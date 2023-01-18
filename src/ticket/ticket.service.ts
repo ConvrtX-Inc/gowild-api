@@ -113,9 +113,9 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
     const ticket = await this.ticketMessageService.findOneEntity({
       where: {
         ticket_id: id,
-        id: message_id
-      }
-    })
+        id: message_id,
+      },
+    });
     if (!ticket) {
       throw new NotFoundException({
         errors: [
@@ -125,7 +125,12 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
         ],
       });
     }
-    const saveAttachment = await this.systemSupportAttachmentService.createSupportAttachment(image, id, message_id);
+    const saveAttachment =
+      await this.systemSupportAttachmentService.createSupportAttachment(
+        image,
+        id,
+        message_id,
+      );
     return saveAttachment;
   }
 

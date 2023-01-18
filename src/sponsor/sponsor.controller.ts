@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Request,
-  UploadedFiles,
   HttpCode,
   HttpStatus,
   UseGuards,
@@ -25,13 +24,7 @@ import { Crud, CrudController, Override } from '@nestjsx/crud';
 import { Sponsor } from './entities/sponsor.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateSponsorDto } from './dto/create-sponsor.dto';
-import { RolesGuard } from 'src/roles/roles.guard';
-import { RoleEnum } from 'src/roles/roles.enum';
-import { Roles } from 'src/roles/roles.decorator';
-import { Update } from 'aws-sdk/clients/dynamodb';
-import { UpdateSponsorDto } from './dto/update-sponsor.dto';
 import { ConfigService } from '@nestjs/config';
-import { Route } from 'src/route/entities/route.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FilesService } from 'src/files/files.service';
 import { AdminRolesGuard } from 'src/roles/admin.roles.guard';

@@ -1,13 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { HttpStatus } from '@nestjs/common/enums';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { paginateResponse } from 'src/common/paginate.response';
-import databaseConfig from 'src/config/database.config';
 import { UserEntity } from 'src/users/user.entity';
 import { LessThan, LessThanOrEqual, MoreThan, Repository } from 'typeorm';
 import { CreateLeaderBoardDto } from './dto/create-leader-board.dto';
-import { UpdateLeaderBoardDto } from './dto/update-leader-board.dto';
 import { LeaderBoard } from './entities/leader-board.entity';
 import * as moment from 'moment';
 

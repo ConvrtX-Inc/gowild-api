@@ -82,6 +82,10 @@ export class Route extends AbstractBaseEntity {
   @Column({ nullable: true, name: 'distance_meters' })
   distance_meters: number;
 
+  @ApiProperty({ example: '' })
+  @Column({ nullable: true, name: 'route_path' })
+  route_path: string;
+
   @IsOptional()
   @ApiProperty({
     example: 'pending/completed',
