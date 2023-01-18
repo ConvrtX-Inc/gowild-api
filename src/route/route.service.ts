@@ -84,7 +84,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     pageNo?: number,
   ) {
     const page = pageNo || 1,
-      limit = 10;
+      limit = 5;
     const [routes, total] = await this.routeRepository.findAndCount({
       where: { status: StatusEnum.Approved },
       skip: (page - 1) * limit,
