@@ -119,8 +119,16 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
       };
       const sent = await admin.messaging().send(message);
       if (sent) {
+        let addAdminNotification = new Notification();
+        addAdminNotification.title = dto.title;
+        addAdminNotification.notification_msg = dto.message;
+        addAdminNotification.msg_code = sent;
+        addAdminNotification.user_id = user.id;
+        addAdminNotification.type = 'push'
+        addAdminNotification.role = RoleEnum.ADMIN;
+        await this.saveEntity(addAdminNotification);
         return {
-          message: 'Notication Pushed Successfully',
+          message: 'Notification Pushed Successfully',
           message_code: sent,
         };
       } else {

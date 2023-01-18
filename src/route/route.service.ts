@@ -84,7 +84,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     pageNo?: number,
   ) {
     const page = pageNo || 1,
-      limit = 5;
+      limit = 10;
     const [routes, total] = await this.routeRepository.findAndCount({
       where: { status: StatusEnum.Approved },
       skip: (page - 1) * limit,
@@ -165,6 +165,16 @@ export class RouteService extends TypeOrmCrudService<Route> {
         results.push(routes[i]);
       }
     }
+    if (results.length === 0) {
+      return {
+        message: 'No routes found within 5km of the given latitude and longitude',
+        data: [],
+        count: 0,
+        currentPage: 0,
+        prevPage: null,
+        totalPage: 0,
+      };
+    }
 
     const totalPage = Math.ceil(total / limit);
     const currentPage = parseInt(String(page));
@@ -172,7 +182,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     return {
       message: 'Approved routes successfully fetched!',
       data: results,
-      count: results.length,
+      count: total,
       currentPage,
       prevPage,
       totalPage,
