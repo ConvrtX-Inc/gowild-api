@@ -4,7 +4,6 @@ import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
 import { TicketMessage } from './entities/ticket-message.entity';
 import { DeepPartial } from '../common/types/deep-partial.type';
-import { paginateResponse } from '../common/paginate.response';
 import { UserEntity } from '../users/user.entity';
 import { SystemSupportAttachment } from '../system-support-attachment/system-support-attachment.entity';
 import { FindOptions } from '../common/types/find-options.type';
@@ -51,7 +50,6 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
     const page = pageNo || 1;
     const skip = (page - 1) * limit;
 
-    const final_data = []
     const [data,total] = await this.ticketMessageRepository
       .createQueryBuilder('ticketMessage')
       .where('ticketMessage.ticket_id = :ticketId', { ticketId })
