@@ -47,11 +47,12 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
     return { message: 'Message Created', data: messages };
   }
   async getTicketMessages(ticketId: string, pageNo: number) {
-    const take = 10;
+    const limit = 10;
     const page = pageNo || 1;
-    const skip = (page - 1) * take;
+    const skip = (page - 1) * limit;
 
-    const data = await this.ticketMessageRepository
+    const final_data = []
+    const [data,total] = await this.ticketMessageRepository
       .createQueryBuilder('ticketMessage')
       .where('ticketMessage.ticket_id = :ticketId', { ticketId })
       .leftJoinAndMapMany(
@@ -61,11 +62,35 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
         'ticketMessage.id = attachment.message_id',
       )
       .skip(skip)
-      .take(take)
+      .take(limit)
       .orderBy('ticketMessage.createdDate', 'ASC')
       .getManyAndCount();
 
-    return paginateResponse(data, page, take);
+
+    data.forEach((obj,index) =>{
+       var customArr = []
+
+      customArr = [...obj['attachment']]
+      var attachmentString = []
+      customArr.forEach(singleAttachment =>{
+        attachmentString.push(singleAttachment.attachment);
+      })
+      delete obj.attachment;
+      obj['attachments'] = attachmentString;
+    })
+
+
+    const totalPage = Math.ceil(total / limit);
+    const currentPage = parseInt(String(page));
+    const prevPage = page > 1 ? page - 1 : null;
+    return {
+      message: 'Ticket Messages successfully fetched!',
+      data: data,
+      count: total,
+      currentPage,
+      prevPage,
+      totalPage,
+    };
   }
   async findOneEntity(options: FindOptions<TicketMessage>) {
     return this.ticketMessageRepository.findOne({
