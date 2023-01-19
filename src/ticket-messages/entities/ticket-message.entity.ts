@@ -36,8 +36,8 @@ export class TicketMessage extends AbstractBaseEntity {
   @Column({ type: 'varchar', default: 'user' })
   role?: string;
 
-  @IsOptional()
+  /*@IsOptional()
   @ApiProperty({ example: 'Attachment' })
   @Column({ nullable: true })
-  attachment: string;
+  attachment: string;*/
 }

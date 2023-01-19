@@ -73,8 +73,8 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
       customArr.forEach(singleAttachment =>{
         attachmentString.push(singleAttachment.attachment);
       })
-      delete obj.attachment;
-      obj['attachments'] = attachmentString;
+      delete obj['attachment'];
+      obj['attachment'] =  attachmentString;
     })
 
 
