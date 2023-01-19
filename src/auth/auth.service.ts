@@ -29,6 +29,7 @@ import { RoleService } from '../roles/role.service';
 import { RoleEnum } from '../roles/roles.enum';
 import { AuthVerifyUserDto } from './dtos/auth-verify-user.dto';
 import appConfig from 'src/config/app.config';
+import { BadGatewayException, BadRequestException } from '@nestjs/common/exceptions';
 
 @Injectable()
 export class AuthService {
@@ -42,11 +43,11 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly statusService: StatusService,
     private readonly roleService: RoleService,
-  ) {}
+  ) { }
 
   public async validateLogin(
     loginDto: AuthEmailLoginDto,
-  ): Promise<TokenResponse> {
+  ) {
     const status = await this.statusService.findByEnum(StatusEnum.Active);
     const user = await this.usersService.findOneEntity({
       where: {
@@ -76,7 +77,7 @@ export class AuthService {
         });
       }
     } else {
-      throw new UnprocessableEntityException({
+      throw new BadRequestException ({
         errors: [
           {
             messsage: 'Verify your Account to Proceed',

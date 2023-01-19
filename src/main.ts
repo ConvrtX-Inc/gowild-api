@@ -5,6 +5,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express/interfaces/nest-express-application.interface';
 import { validationOptions } from './common/validation-options';
+import { json, urlencoded } from 'express';
 
 async function bootstrap() {
   const app: NestExpressApplication = await NestFactory.create(AppModule, {
@@ -12,6 +13,8 @@ async function bootstrap() {
   });
   const configService = app.get(ConfigService);
 
+  app.use(json({ limit: '100mb' }));
+  app.use(urlencoded({ limit: '100mb', extended: true }));
   app.set('trust proxy', 1); // trust first proxy
 
   app.enableShutdownHooks();

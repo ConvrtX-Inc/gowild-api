@@ -6,13 +6,15 @@ import { SystemSupport } from './system-support.entity';
 import { SupportGateway } from './support.gateway';
 import { TicketModule } from '../ticket/ticket.module';
 import { TicketMessagesModule } from '../ticket-messages/ticket-messages.module';
+import { SystemSupportAttachmentService } from 'src/system-support-attachment/system-support-attachment.service';
+import { SystemSupportAttachment } from 'src/system-support-attachment/system-support-attachment.entity';
 
 @Module({
   controllers: [SystemSupportController],
-  providers: [SystemSupportService, SupportGateway],
+  providers: [SystemSupportService, SupportGateway,SystemSupportAttachmentService],
   exports: [SystemSupportService],
   imports: [
-    TypeOrmModule.forFeature([SystemSupport]),
+    TypeOrmModule.forFeature([SystemSupport,SystemSupportAttachment]),
     TicketModule,
     TicketMessagesModule,
   ],
