@@ -4,9 +4,9 @@ import { SystemSupport } from './system-support.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { TicketMessagesService } from '../ticket-messages/ticket-messages.service';
-import { FindOptions } from '../common/types/find-options.type';
-import { Route } from '../route/entities/route.entity';
 import { convertToImage } from '../common/constants/base64.image';
+import { SystemSupportAttachmentService } from 'src/system-support-attachment/system-support-attachment.service';
+
 
 @Injectable()
 export class SystemSupportService extends TypeOrmCrudService<SystemSupport> {
@@ -14,6 +14,7 @@ export class SystemSupportService extends TypeOrmCrudService<SystemSupport> {
     @InjectRepository(SystemSupport)
     private systemSupportRepository: Repository<SystemSupport>,
     private ticketMessage: TicketMessagesService,
+    private SystemSupportAttachmentService : SystemSupportAttachmentService,
   ) {
     super(systemSupportRepository);
   }
@@ -26,6 +27,14 @@ export class SystemSupportService extends TypeOrmCrudService<SystemSupport> {
         payload.attachment.extension,
       );
     }
-    return this.ticketMessage.saveOne(payload);
+    const newMessage = await this.ticketMessage.saveOne(payload);
+    console.log(typeof(newMessage));
+    console.log(payload.attachment);  
+    const data = {
+      ticket_id : payload.ticket_id, 
+      message_id : newMessage['id'],
+      attachment : payload.attachment         
+    } 
+    return await this.SystemSupportAttachmentService.saveOne(data);  
   }
 }
