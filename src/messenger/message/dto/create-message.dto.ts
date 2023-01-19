@@ -5,8 +5,13 @@ import { Column } from 'typeorm';
 export class CreateMessageDto {
   @IsOptional()
   @ApiProperty({ example: 'edb8f39a-0d06-4466-ba25-253c0ac54522' })
-  @Column({ type: 'uuid', nullable: false })
-  user_id?: string;
+  @Column({ type: 'string', nullable: false })
+  user_id: string;
+
+  @IsOptional()
+  @ApiProperty({ example: 'edb8f39a-0d06-4466-ba25-253c0ac54522' })
+  @Column({ type: 'string', nullable: false })
+  room_id: string;
 
   @IsOptional()
   @ApiProperty({ example: 'edb8f39a-0d06-4466-ba25-253c0ac54522' })

@@ -19,8 +19,9 @@ export class SystemSupportService extends TypeOrmCrudService<SystemSupport> {
     super(systemSupportRepository);
   }
 
-  async addMessage(payload: any) {
+  async addMessage(userId: string, payload: any) {
     const attachment = null;
+    payload.user_id = userId;
     if (payload.attachment) {
       payload.attachment = convertToImage(
         payload.attachment.base64,

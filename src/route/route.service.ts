@@ -13,9 +13,6 @@ import { SaveRouteDto } from './dto/save-route-dto';
 import { SavedRoute } from './entities/saved-routs.entity';
 import { UpdateRouteDto } from './dto/update-route.dto';
 import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
-import { skip } from 'rxjs';
-import { paginateResponse } from 'src/common/paginate.response';
-import { Role } from 'src/roles/role.entity';
 import { StatusEnum } from 'src/auth/status.enum';
 
 @Injectable()
@@ -104,7 +101,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     for (let i = 0; i < routes.length; i++) {
       const user = [];
       const leaderStats = await LeaderBoard.createQueryBuilder('leader')
-        .where('leader.route_id = :id AND leader.user_id != :user ', { id: routes[i].id, user: id })
+        .where('leader.route_id = :id', { id: routes[i].id })
         .leftJoinAndMapOne(
           'leader.user',
           UserEntity,
@@ -168,6 +165,17 @@ export class RouteService extends TypeOrmCrudService<Route> {
         results.push(routes[i]);
       }
     }
+    if (results.length === 0) {
+      return {
+        message: 'No routes found within 5km of the given latitude and longitude',
+        data: [],
+        count: 0,
+        currentPage: 0,
+        prevPage: null,
+        totalPage: 0,
+      };
+    }
+
     const totalPage = Math.ceil(total / limit);
     const currentPage = parseInt(String(page));
     const prevPage = page > 1 ? page - 1 : null;

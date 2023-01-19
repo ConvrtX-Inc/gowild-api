@@ -148,7 +148,6 @@ export class UserEntity extends AbstractBaseEntity {
   })
   last_seen: Date;
 
-
   @ApiProperty()
   @Column({
     nullable: true,

@@ -35,26 +35,24 @@ export class SupportGateway
   @SubscribeMessage('msgToAdmin')
   public async adminMessage(client: Socket, payload: any): Promise<void> {
     const ticketMessage = {
-      user_id: payload.user_id,
       ticket_id: payload.ticket_id,
       message: payload.message,
       role: RoleEnum.USER,
       attachment: payload.attachment,
     };
-    const message = await this.supportService.addMessage(ticketMessage);
+    const message = await this.supportService.addMessage(payload.user_id, ticketMessage);
     this.wss.emit('msgSupport', message);
   }
 
   @SubscribeMessage('msgToUser')
   public async userMessage(client: Socket, payload: any): Promise<void> {
     const ticketMessage = {
-      user_id: payload.user_id,
       ticket_id: payload.ticket_id,
       message: payload.message,
       role: RoleEnum.ADMIN,
       attachment: payload.attachment,
     };
-    const message = await this.supportService.addMessage(ticketMessage);
+    const message = await this.supportService.addMessage(payload.user_id, ticketMessage);
     this.wss.emit('msgSupport', message);
   }
 }

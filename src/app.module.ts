@@ -81,7 +81,7 @@ import { LeaderBoardModule } from './leader-board/leader-board.module';
         googleConfig,
         twitterConfig,
         appleConfig,
-        firebaseConfig
+        firebaseConfig,
       ],
       envFilePath: ['.env'],
       expandVariables: true,

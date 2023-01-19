@@ -103,30 +103,40 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
     );
   }
 
-  async pushNotification(id:string , dto: pushNotificationDto) {
+  async pushNotification(id: string, dto: pushNotificationDto) {
     const user = await UserEntity.findOne({
       where: {
-        email: dto.email
-      }
-    })
+        email: dto.email,
+      },
+    });
     if (user.fcm_token) {
       var message = {
         notification: {
           title: dto.title,
-          body: dto.message
+          body: dto.message,
         },
         token: user.fcm_token,
       };
       const sent = await admin.messaging().send(message);
-      if(sent){
-
-        return { message : "Notication Pushed Successfully" , message_code : sent }
-      }else{
-        new BadGatewayException( {
-          message : "Something Went Wrong"
-        })
+      if (sent) {
+        let addAdminNotification = new Notification();
+        addAdminNotification.title = dto.title;
+        addAdminNotification.notification_msg = dto.message;
+        addAdminNotification.msg_code = sent;
+        addAdminNotification.user_id = user.id;
+        addAdminNotification.type = 'push'
+        addAdminNotification.role = RoleEnum.ADMIN;
+        await this.saveEntity(addAdminNotification);
+        return {
+          message: 'Notification Pushed Successfully',
+          message_code: sent,
+        };
+      } else {
+        new BadGatewayException({
+          message: 'Something Went Wrong',
+        });
       }
     }
-    return {message : "Token Not Found"};
+    return { message: 'Token Not Found' };
   }
 }

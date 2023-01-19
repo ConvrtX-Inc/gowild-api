@@ -42,7 +42,7 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly statusService: StatusService,
     private readonly roleService: RoleService,
-  ) { }
+  ) {}
 
   public async validateLogin(
     loginDto: AuthEmailLoginDto,

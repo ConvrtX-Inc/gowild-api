@@ -31,6 +31,6 @@ export class LeaderBoard extends AbstractBaseEntity {
   @Column({ nullable: false, name: 'completion_time' })
   completionTime: time;
 
-    @Column({nullable: true, name: 'rank'})
-    rank: number;
+  @Column({ nullable: true, name: 'rank' })
+  rank: number;
 }

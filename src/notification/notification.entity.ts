@@ -33,4 +33,14 @@ export class Notification extends AbstractBaseEntity {
   @ApiProperty({ example: 'admin' })
   @Column({ length: 100, nullable: false, default: 'user' })
   role?: string;
+
+  @IsOptional()
+  @ApiProperty({ example: 'Message Title' })
+  @Column({ length: 100, nullable: true })
+  title?: string;
+
+  @IsOptional()
+  @ApiProperty({ example: 'link string' })
+  @Column({ length: 200, nullable: true })
+  msg_code?: string;
 }

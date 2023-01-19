@@ -12,8 +12,6 @@ import { Server, Socket } from 'socket.io';
 import { RoomService } from '../room/room.service';
 import { ClientSocketInfo } from './clientSocketInfo';
 import { RoomInfo } from './roomInfo';
-import { MessageDetail, MessageStatus } from '../message/messageDetail';
-import { convertToImage } from '../../common/constants/base64.image';
 
 @WebSocketGateway({ namespace: '/chat', cors: true })
 export class ChatGateway
