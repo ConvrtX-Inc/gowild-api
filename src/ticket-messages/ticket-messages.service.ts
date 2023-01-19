@@ -47,7 +47,7 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
     return { message: 'Message Created', data: messages };
   }
   async getTicketMessages(ticketId: string, pageNo: number) {
-    const take = 50;
+    const take = 10;
     const page = pageNo || 1;
     const skip = (page - 1) * take;
 
