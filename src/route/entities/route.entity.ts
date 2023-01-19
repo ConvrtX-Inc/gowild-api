@@ -5,6 +5,7 @@ import { Column, Entity, OneToMany } from 'typeorm';
 import { RouteHistoricalEvent } from '../../route-historical-events/entities/route-historical-event.entity';
 import { RoleEnum } from '../../roles/roles.enum';
 import { Coordinates } from '../../common/coordinates';
+import { float } from 'aws-sdk/clients/lightsail';
 
 export enum RouteStatusEnum {
   Approved = 'approved',
@@ -76,7 +77,7 @@ export class Route extends AbstractBaseEntity {
 
   @ApiProperty({ example: '2 Miles' })
   @Column({ nullable: true, name: 'distance_miles' })
-  distance_miles: number;
+  distance_miles: float;
 
   @ApiProperty({ example: '500m' })
   @Column({ nullable: true, name: 'distance_meters' })

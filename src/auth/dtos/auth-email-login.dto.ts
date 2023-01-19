@@ -6,7 +6,7 @@ import { Transform } from 'class-transformer';
 export class AuthEmailLoginDto {
   @ApiProperty({ example: 'admin@convrtx.com' })
   @Transform((value: string) => value.toLowerCase().trim())
-  @Validate(IsExist, ['UserEntity'], {
+  @Validate(IsExist, ['UserEntity'], {    
     message: 'Email does not exists!',
   })
   email: string;

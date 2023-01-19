@@ -48,7 +48,7 @@ export class AuthController {
   public async login(
     @Session() session: Record<string, unknown>,
     @Body() loginDto: AuthEmailLoginDto,
-  ): Promise<TokenResponse> {
+  ) {
     const token = await this.service.validateLogin(loginDto);
     session[userTokenCookieKey] = token;
     return token;
