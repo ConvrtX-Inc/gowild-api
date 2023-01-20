@@ -23,19 +23,18 @@ export class SystemSupportService extends TypeOrmCrudService<SystemSupport> {
     const attachment = null;
     payload.user_id = userId;
     if (payload.attachment) {
-      payload.attachment = convertToImage(
+      payload.attachment = await convertToImage(
         payload.attachment.base64,
         payload.attachment.extension,
       );
     }
-    const newMessage = await this.ticketMessage.saveOne(payload);
-    console.log(typeof(newMessage));
-    console.log(payload.attachment);  
+    const newMessage = await this.ticketMessage.saveOne(payload); 
     const data = {
       ticket_id : payload.ticket_id, 
       message_id : newMessage['id'],
       attachment : payload.attachment         
     } 
-    return await this.SystemSupportAttachmentService.saveOne(data);  
+    await this.SystemSupportAttachmentService.saveOne(data);  
+    return newMessage
   }
 }
