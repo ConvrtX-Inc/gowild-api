@@ -14,7 +14,7 @@ export class SystemSupportService extends TypeOrmCrudService<SystemSupport> {
     @InjectRepository(SystemSupport)
     private systemSupportRepository: Repository<SystemSupport>,
     private ticketMessage: TicketMessagesService,
-    private SystemSupportAttachmentService : SystemSupportAttachmentService,
+    private SystemSupportAttachmentService: SystemSupportAttachmentService,
   ) {
     super(systemSupportRepository);
   }
@@ -29,13 +29,18 @@ export class SystemSupportService extends TypeOrmCrudService<SystemSupport> {
       );
     }
     const newMessage = await this.ticketMessage.saveOne(payload);
-    console.log(typeof(newMessage));
-    console.log(payload.attachment);  
-    const data = {
-      ticket_id : payload.ticket_id, 
-      message_id : newMessage['id'],
-      attachment : payload.attachment         
-    } 
-    return await this.SystemSupportAttachmentService.saveOne(data);  
+
+    if (payload.attachment) {
+      const data = {
+        ticket_id: payload.ticket_id,
+        message_id: newMessage['id'],
+        attachment: payload.attachment
+      }
+      const newAttachment = await this.SystemSupportAttachmentService.saveOne(data);
+      newMessage['attachment']  = newAttachment['attachment'];
+      return newMessage;
+    }
+    newMessage['attachment']  = "";
+    return newMessage;
   }
 }
