@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { DeepPartial } from 'src/common/types/deep-partial.type';
 import { FindOptions } from 'src/common/types/find-options.type';
-import { Not, Repository } from 'typeorm';
+import { getRepository, Not, Repository } from 'typeorm';
 import { Route, RouteStatusEnum } from './entities/route.entity';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { RoleEnum } from '../roles/roles.enum';
@@ -29,10 +29,19 @@ export class RouteService extends TypeOrmCrudService<Route> {
   }
 
   async findOneEntity(options: FindOptions<Route>) {
-    return this.routeRepository.findOne({
+    const route = await this.routeRepository.findOne({
       where: options.where,
     });
+
+    const user = await getRepository(UserEntity).findOne({where:{id : route.user_id}});
+
+    route['firstName'] = user.firstName
+    route['lastName'] = user.lastName
+    route['userPicture'] = user.picture
+    return {route: route}
   }
+
+
 
   async findManyEntities(options: FindOptions<Route>) {
     return this.routeRepository.find({
