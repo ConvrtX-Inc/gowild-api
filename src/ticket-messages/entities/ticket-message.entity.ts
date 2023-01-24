@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { IsExist } from 'src/common/validators/is-exists.validator';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { IsOptional, Validate } from 'class-validator';
+import { SystemSupportAttachment } from 'src/system-support-attachment/system-support-attachment.entity';
 
 @Entity('gw_ticket_messages')
 export class TicketMessage extends AbstractBaseEntity {
@@ -36,8 +37,4 @@ export class TicketMessage extends AbstractBaseEntity {
   @Column({ type: 'varchar', default: 'user' })
   role?: string;
 
-  /*@IsOptional()
-  @ApiProperty({ example: 'Attachment' })
-  @Column({ nullable: true })
-  attachment: string;*/
 }

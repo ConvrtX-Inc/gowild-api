@@ -61,13 +61,12 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
       )
       .skip(skip)
       .take(limit)
-      .orderBy('ticketMessage.createdDate', 'ASC')
+      .orderBy('ticketMessage.createdDate', 'DESC')
       .getManyAndCount();
 
 
     data.forEach((obj,index) =>{
        var customArr = []
-
       customArr = [...obj['attachment']]
       var attachmentString = []
       customArr.forEach(singleAttachment =>{
@@ -76,7 +75,6 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
       delete obj['attachment'];
       obj['attachment'] =  attachmentString;
     })
-
 
     const totalPage = Math.ceil(total / limit);
     const currentPage = parseInt(String(page));
