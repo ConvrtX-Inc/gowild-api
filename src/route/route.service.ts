@@ -154,7 +154,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
           routes[i].start.latitude,
           routes[i].start.longitude,
           'K',
-        ) <= 5
+        ) >= 0
       ) {
         results.push(routes[i]);
       }
