@@ -7,7 +7,6 @@ import {
   UserTreasureHuntEntity,
   UserTreasureHuntStatusEnum,
 } from 'src/user-treasure-hunt/user-treasure-hunt.entity';
-import { Http2ServerRequest } from 'http2';
 
 @Injectable()
 export class TreasureChestService extends TypeOrmCrudService<TreasureChest> {
@@ -45,7 +44,7 @@ export class TreasureChestService extends TypeOrmCrudService<TreasureChest> {
     const hunt = await UserTreasureHuntEntity.findOne({
       where: {
         id: id,
-        status: UserTreasureHuntStatusEnum.PENDING,
+        //status: UserTreasureHuntStatusEnum.PENDING,
       },
     });
 
@@ -66,6 +65,10 @@ export class TreasureChestService extends TypeOrmCrudService<TreasureChest> {
       return { data: updated };
     } else if (dto.status == UserTreasureHuntStatusEnum.DISAPPROVE) {
       hunt.status = UserTreasureHuntStatusEnum.DISAPPROVE;
+      const updated = await hunt.save();
+      return { data: updated };
+    } else if (dto.status == UserTreasureHuntStatusEnum.APPROVED) {
+      hunt.status = UserTreasureHuntStatusEnum.APPROVED;
       const updated = await hunt.save();
       return { data: updated };
     } else {
