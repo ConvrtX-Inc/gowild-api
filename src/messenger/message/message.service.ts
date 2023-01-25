@@ -136,9 +136,11 @@ if (room){
         'message.user_id',
         'message.message',
         'message.attachment',
+        'message.createdDate'
       ])
       .skip(skip)
       .take(take)
+      .orderBy('message.createdDate', 'DESC')
       .getManyAndCount();
     
     return paginateResponse(data, page, take);
