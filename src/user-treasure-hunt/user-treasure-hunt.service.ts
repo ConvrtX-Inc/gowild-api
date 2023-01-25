@@ -131,4 +131,6 @@ export class UserTreasureHuntService extends TypeOrmCrudService<UserTreasureHunt
       where: options.where,
     });
   }
+
+
 }

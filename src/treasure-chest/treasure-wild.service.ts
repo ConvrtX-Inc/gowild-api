@@ -19,6 +19,8 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
   constructor(
     @InjectRepository(TreasureChest)
     private treasureChestRepository: Repository<TreasureChest>,
+    @InjectRepository(UserTreasureHuntEntity)
+    private UserTreasureHuntRepository: Repository<UserTreasureHuntEntity>,
     private readonly UserTreasureHuntService: UserTreasureHuntService,
     private readonly NotificationService: NotificationService,
   ) {
@@ -29,31 +31,51 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     Register User for Treaure Hunt 
     */
   async registerTreasureHunt(dto: RegisterTreasureHuntDto, req) {
-    const isExist = await this.UserTreasureHuntService.findOne({
+
+    const isExist = await this.UserTreasureHuntRepository.createQueryBuilder("treasure_hunt")
+        .where("treasure_hunt.user_id = :user_id", { user_id: req.user.sub })
+        .andWhere("treasure_hunt.status = :status1 OR treasure_hunt.status = :status2",
+            { status1: UserTreasureHuntStatusEnum.PENDING, status2: UserTreasureHuntStatusEnum.PROCESSING })
+        .leftJoinAndMapMany('treasure_hunt.chest', TreasureChest,'chest',
+            'treasure_hunt.treasure_chest_id = chest.id')
+        .orderBy('chest.eventDate','DESC')
+        .getMany();
+    /*const isExist = await this.UserTreasureHuntService.findManyEntities({
       where: {
         user_id: req.user.sub,
         status:
           UserTreasureHuntStatusEnum.PENDING ||
           UserTreasureHuntStatusEnum.PROCESSING,
       },
-    });
-    if (isExist) {
-      var eventDate = await this.treasureChestRepository.findOne({
+    });*/
+    console.log(isExist)
+    if (isExist.length !== 0) {
+      let eventDate = await this.treasureChestRepository.findOne({
         where: {
-          id: isExist.treasure_chest_id,
+          id: isExist[0].treasure_chest_id,
         },
       });
+
+      const event = eventDate.eventDate
+      const currentDate = new Date(Date.now())
+      console.log(event)
+      console.log(currentDate)
+
+      if (event >= currentDate) {
+        return { errors: [ { message: "You're Already Register in a Hunt"} ] };
+      }
     }
 
-    if (isExist && eventDate.eventDate.getDate < Date.now) {
-      return {
-        errors: [
-          {
-            message: "You're Already Register in a Hunt",
-          },
-        ],
-      };
+    let newEventDate = await this.treasureChestRepository.findOne({
+      where: {
+        id: dto.treasure_chest_id,
+      },
+    });
+
+    if(newEventDate.eventDate < new Date(Date.now())){
+      return { errors: [ { message: "Treasure Chest Expired!"} ] };
     }
+
     const data = {
       treasure_chest_id: dto.treasure_chest_id,
       user_id: req.user.sub,
