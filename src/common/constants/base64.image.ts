@@ -9,11 +9,11 @@ import { S3 } from 'aws-sdk';
 
 
 // export function convertToImage(image: Base64String, extension: string): string {
-  
+
 //   const fileName = `${uuidv4()}.${extension}`;
 //   const buffer = Buffer.from(image, 'base64');
 //  const  driver = process.env.FILE_DRIVER
-  
+
 //   if (driver == 's3'){
 //        /* set for S3 */
 //    const s3 = new S3({
@@ -45,7 +45,7 @@ import { S3 } from 'aws-sdk';
 //   return `/${process.env.API_PREFIX}/v1/${filePath}`;
 //   }
 
-  
+
 // }
 
 
@@ -55,7 +55,7 @@ export function convertToImage(image: Base64String, extension: string): Promise<
   const fileName = `${uuidv4()}.${extension}`;
   const buffer = Buffer.from(image, 'base64');
   const driver = process.env.FILE_DRIVER;
-  
+
   if (driver == 's3'){
     /* set for S3 */
     const s3 = new S3({
@@ -84,8 +84,8 @@ export function convertToImage(image: Base64String, extension: string): Promise<
     // Currently set for local path only
     const filePath = `/files/${fileName}`;
     fs.writeFileSync(`${process.cwd()}${filePath}`, buffer);
-    return Promise.resolve(`/${process.env.API_PREFIX}/v1/${filePath}`);
+    return Promise.resolve(`/${process.env.API_PREFIX}/v1${filePath}`);
   }
-  
+
 }
 
