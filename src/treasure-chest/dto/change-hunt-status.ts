@@ -3,7 +3,7 @@ import { IsNotEmpty } from 'class-validator';
 import { UserTreasureHuntStatusEnum } from 'src/user-treasure-hunt/user-treasure-hunt.entity';
 
 export class ChangeHuntStatusDto {
-  @ApiProperty({ example: 'processing / approved / disapprove' })
+  @ApiProperty({ example: 'processing, disapprove' })
   @IsNotEmpty()
   status: UserTreasureHuntStatusEnum;
 }
