@@ -103,15 +103,27 @@ export class MessageController implements CrudController<Message> {
     };
   }
 
+  // @ApiResponse({ type: Message })
+  // @ApiOperation({ summary: 'Get User Messages' })
+  // @Get('/:roomId')
+  // async getUserMessages(
+  //   @Request() req,
+  //   @Param('roomId') roomId,
+  //   @Query() query,
+  // ) {
+  //   return await this.service.userMessages(req.user.sub, roomId, query.page);
+  // }
+
+// Testing
   @ApiResponse({ type: Message })
-  @ApiOperation({ summary: 'Get User Messages' })
-  @Get('/:roomId')
-  async getUserMessages(
+  @ApiOperation({ summary: 'Get Test User Messages' })
+  @Get('/:friendId')
+  async getFriendMessages(
     @Request() req,
-    @Param('roomId') roomId,
+    @Param('friendId') friendId,
     @Query() query,
   ) {
-    return await this.service.userMessages(req.user.sub, roomId, query.page);
+    return await this.service.FriendsMessages(req.user.sub, friendId, query.page);
   }
 
   @ApiOperation({ summary: 'Clean Conversation' })

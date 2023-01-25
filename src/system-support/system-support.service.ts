@@ -23,7 +23,7 @@ export class SystemSupportService extends TypeOrmCrudService<SystemSupport> {
     const attachment = null;
     payload.user_id = userId;
     if (payload.attachment) {
-      payload.attachment = convertToImage(
+      payload.attachment = await convertToImage(
         payload.attachment.base64,
         payload.attachment.extension,
       );
