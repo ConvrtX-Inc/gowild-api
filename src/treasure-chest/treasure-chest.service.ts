@@ -44,7 +44,6 @@ export class TreasureChestService extends TypeOrmCrudService<TreasureChest> {
     const hunt = await UserTreasureHuntEntity.findOne({
       where: {
         id: id,
-        status: UserTreasureHuntStatusEnum.PENDING,
       },
     });
 
