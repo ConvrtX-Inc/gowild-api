@@ -102,7 +102,7 @@ export class RoomService extends TypeOrmCrudService<Room> {
   public async saveMessagesofRoom(room_id: string, msg: any) {
     let attachment = null;
     if (msg.attachment) {
-      attachment = convertToImage(
+      attachment = await convertToImage(
         msg.attachment.base64,
         msg.attachment.extension,
       );
