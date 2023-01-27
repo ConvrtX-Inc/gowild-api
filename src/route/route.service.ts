@@ -373,6 +373,8 @@ export class RouteService extends TypeOrmCrudService<Route> {
       .take(limit)
       .getManyAndCount();
 
+      
+
     if (!savedRoutes) {
       return {
         errors: [
@@ -394,9 +396,20 @@ export class RouteService extends TypeOrmCrudService<Route> {
           'user',
           'leader.user_id = user.id',
         )
-        .orderBy('leader.completionTime', 'ASC')
-        .limit(4)
+        .orderBy('leader.rank', 'ASC')
+        .limit(3)
         .getMany();
+
+    const currentUser = await LeaderBoard.createQueryBuilder('leader')
+        .where('leader.route_id = :id ', { id: savedRoutes[i].route_id })
+        .andWhere('leader.user_id = :userId', {userId: id})
+        .leftJoinAndMapOne(
+          'leader.user',
+          UserEntity,
+          'user',
+          'leader.user_id = user.id',
+        )
+        .getOne();
 
       if (leaderStats) {
         leaderStats.forEach((state) => {
@@ -409,6 +422,18 @@ export class RouteService extends TypeOrmCrudService<Route> {
           );
           user.push(leaderboard);
         });
+      }
+      if (currentUser) {
+        const currentUserData = this.mapLeaderboard(
+          currentUser.id,
+          currentUser.user_id,
+          currentUser['user'].firstName,
+          currentUser['user'].picture,
+          currentUser.rank,
+        );
+        savedRoutes[i]['currentUser'] = currentUserData;
+      } else {
+        savedRoutes[i]['currentUser'] = null;
       }
       savedRoutes[i]['leaderboard'] = user;
       results.push(savedRoutes[i]);
