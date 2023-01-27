@@ -8,6 +8,7 @@ import { PostFeed } from 'src/post-feed/entities/post-feed.entity';
 import { UserEntity } from '../users/user.entity';
 import { PostFeedAttachment } from 'src/post-feed-attchment/post-feed-attachment.entity';
 import { ConstraintMetadata } from 'class-validator/types/metadata/ConstraintMetadata';
+import { Comment } from 'src/comment/entities/comment.entity';
 
 @Injectable()
 export class LikeService extends TypeOrmCrudService<Like> {
@@ -16,6 +17,7 @@ export class LikeService extends TypeOrmCrudService<Like> {
     private likeRepository: Repository<Like>,
     @InjectRepository(PostFeed)
     private postFeedRepository: Repository<PostFeed>,
+   
   ) {
     super(likeRepository);
   }
@@ -50,7 +52,7 @@ export class LikeService extends TypeOrmCrudService<Like> {
     const attachments = await PostFeedAttachment.find({
       where: { postfeed_id: post.id },
     });
-
+const comments = await Comment.count({where: { postfeed_id: dto.postfeed_id }});
     const isExist = await this.likeRepository.findOne({
       where: {
         user_id: req,
@@ -91,6 +93,7 @@ export class LikeService extends TypeOrmCrudService<Like> {
       post['likes'] = likes;
       post['likes_images'] = like_images;
       post['attachment'] = attachments;
+      post['comments'] = comments;
       return {
         message: 'Post Un-Liked Successfully',
         data: post,
@@ -132,6 +135,7 @@ export class LikeService extends TypeOrmCrudService<Like> {
     post['likes'] = likes;
     post['likes_images'] = like_images;
     post['attachment'] = attachments;
+    post['comments'] = comments
 
     return {
       message: 'Post Liked Successfully',
