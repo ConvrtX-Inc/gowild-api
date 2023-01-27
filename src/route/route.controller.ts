@@ -156,13 +156,11 @@ export class RouteController implements CrudController<Route> {
   @Roles(RoleEnum.USER)
   @Get('created-routes')
   @ApiOperation({ summary: 'Get All User Created Routes' })
-  async getUserCreatedRoutes(@Request() req) {
-    return {
-      message: 'User Created routes Fetched Successfully!',
-      data: await this.service.findManyEntities({
+  async getUserCreatedRoutes(@Request() req, @Query() query) {
+    return await this.service.findAndCountManyEntities({
         where: { user_id: req.user.sub },
-      }),
-    };
+      }, query.page)
+
   }
   @Roles(RoleEnum.USER)
   @Post('save')

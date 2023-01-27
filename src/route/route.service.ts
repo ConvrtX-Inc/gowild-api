@@ -14,6 +14,7 @@ import { SavedRoute } from './entities/saved-routs.entity';
 import { UpdateRouteDto } from './dto/update-route.dto';
 import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
 import { StatusEnum } from 'src/auth/status.enum';
+import {paginateResponse} from "../common/paginate.response";
 
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
@@ -43,10 +44,18 @@ export class RouteService extends TypeOrmCrudService<Route> {
 
 
 
-  async findManyEntities(options: FindOptions<Route>) {
-    return this.routeRepository.find({
+  async findAndCountManyEntities(options: FindOptions<Route>, pageNo: number) {
+    const take = 10;
+    const page = pageNo || 1;
+    const skip = (page - 1) * take;
+
+    const createdRoutes = await this.routeRepository.findAndCount({
       where: options.where,
+      skip: skip,
+      take: take
     });
+    return paginateResponse(createdRoutes, page, take)
+
   }
 
   async saveOne(data) {
