@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsUUID, Validate } from 'class-validator';
+import { IsExist } from 'src/common/validators/is-exists.validator';
 
 export class CreateLeaderBoardDto {
   @ApiProperty({
@@ -7,6 +8,9 @@ export class CreateLeaderBoardDto {
     example: '08be3c69-5783-4a4f-95b3-5ee67c38ebb6',
   })
   @IsNotEmpty()
+  @Validate(IsExist, ['Route', 'id'], {
+    message: 'Route does not Exist!',
+  })
   @IsUUID()
   route_id: string;
 

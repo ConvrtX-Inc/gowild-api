@@ -62,9 +62,10 @@ export class LeaderBoardController implements CrudController<LeaderBoard> {
   ) {
     return this.service.createLeaderBoard(req.user.sub, dto);
   }
+
   @Override('getManyBase')
   @ApiOperation({ summary: 'Get Rankings' })
-  public async getAllRankings(@Request() req) {
+  public async getAllRankings(@Request() req) {  
     return this.service.getPosition(req.user.sub);
   }
 

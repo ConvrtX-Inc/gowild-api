@@ -7,6 +7,7 @@ import { LessThan, LessThanOrEqual, MoreThan, Repository } from 'typeorm';
 import { CreateLeaderBoardDto } from './dto/create-leader-board.dto';
 import { LeaderBoard } from './entities/leader-board.entity';
 import * as moment from 'moment';
+import { Route } from 'src/route/entities/route.entity';
 
 @Injectable()
 export class LeaderBoardService extends TypeOrmCrudService<LeaderBoard> {
@@ -129,10 +130,23 @@ export class LeaderBoardService extends TypeOrmCrudService<LeaderBoard> {
   }
 
   async getPosition(userId: string) {
-    const data = await this.Repository.createQueryBuilder('leaderBoard')
+    const data = await this.Repository.createQueryBuilder('leaderBoard')    
       .where('leaderBoard.user_id = :userId', { userId })
+      .leftJoinAndMapOne('leaderBoard.route', Route, 'route', 'leaderBoard.route_id = route.id')
       .orderBy('leaderBoard.completionTime', 'ASC')
-      .getRawMany();
+      .getMany();
+
+    if (!data) {
+      return {
+        errors: [
+          {
+            message: 'User Leader Board Does not exist',
+          },
+        ],
+      };
+    }
+    console.log(data);
+    return { message: "Current User Leader Board fetched", data: data }
   }
 
   private async updateRecentRank(lowerUserRecord, completionTime, dto) {
