@@ -33,4 +33,10 @@ export class LeaderBoard extends AbstractBaseEntity {
 
   @Column({ nullable: true, name: 'rank' })
   rank: number;
+
+  @Column({ nullable: false, name: 'start_location' })
+  startLocation: string;
+
+  @Column({ nullable: false, name: 'end_location' })
+  endLocation: string;
 }

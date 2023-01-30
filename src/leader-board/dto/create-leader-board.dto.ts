@@ -14,6 +14,14 @@ export class CreateLeaderBoardDto {
   @IsUUID()
   route_id: string;
 
+  @ApiProperty({ example: 'School District 82 ( Coast Mountains )' })
+  @IsNotEmpty()
+  startLocation: string;
+
+  @ApiProperty({ example: 'Alexander Ave. ( St.Mathew Platform )' })
+  @IsNotEmpty()
+  endLocation: string;
+
   @ApiProperty({ example: '2023-01-09T11:33:36.404Z' })
   @IsNotEmpty()
   startDate: Date;

@@ -29,6 +29,8 @@ export class LeaderBoardService extends TypeOrmCrudService<LeaderBoard> {
     record.completionTime = completionTime;
     record.startDate = dto.startDate;
     record.endDate = dto.endDate;
+    record.startLocation = dto.startLocation;
+    record.endLocation = dto.endLocation;
     const bestUserRecord = await this.Repository.findOne({
       user_id: userId,
       route_id: dto.route_id,
@@ -130,7 +132,7 @@ export class LeaderBoardService extends TypeOrmCrudService<LeaderBoard> {
   }
 
   async getPosition(userId: string) {
-    const data = await this.Repository.createQueryBuilder('leaderBoard')    
+    const data = await this.Repository.createQueryBuilder('leaderBoard')
       .where('leaderBoard.user_id = :userId', { userId })
       .leftJoinAndMapOne('leaderBoard.route', Route, 'route', 'leaderBoard.route_id = route.id')
       .orderBy('leaderBoard.completionTime', 'ASC')
@@ -144,7 +146,7 @@ export class LeaderBoardService extends TypeOrmCrudService<LeaderBoard> {
           },
         ],
       };
-    }   
+    }
     return { message: "Current User Leader Board fetched", data: data }
   }
 

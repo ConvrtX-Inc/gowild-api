@@ -166,6 +166,19 @@ export class RouteService extends TypeOrmCrudService<Route> {
         routes[i]['crr_user_leaderboard'] = null;
       }
       routes[i]['leaderboard'] = user;
+
+      // Checking the Current is Saved by Logged in User Or Not
+      const saved = await SavedRoute.findOne({
+        where: {
+          user_id: id,
+          route_id: routes[i].id
+        }
+      });
+      if (saved) {
+        routes[i]['saved'] = true;
+      } else {
+        routes[i]['saved'] = false;
+      }
       if (
         this.closestLocation(
           parseFloat(lat),
@@ -378,8 +391,6 @@ export class RouteService extends TypeOrmCrudService<Route> {
       .skip(skip)
       .take(limit)
       .getManyAndCount();
-
-
 
     if (!savedRoutes) {
       return {
