@@ -14,7 +14,8 @@ import { SavedRoute } from './entities/saved-routs.entity';
 import { UpdateRouteDto } from './dto/update-route.dto';
 import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
 import { StatusEnum } from 'src/auth/status.enum';
-import {paginateResponse} from "../common/paginate.response";
+import { paginateResponse } from "../common/paginate.response";
+import { throws } from 'assert';
 
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
@@ -34,12 +35,12 @@ export class RouteService extends TypeOrmCrudService<Route> {
       where: options.where,
     });
 
-    const user = await getRepository(UserEntity).findOne({where:{id : route.user_id}});
+    const user = await getRepository(UserEntity).findOne({ where: { id: route.user_id } });
 
     route['firstName'] = user.firstName
     route['lastName'] = user.lastName
     route['userPicture'] = user.picture
-    return {route: route}
+    return { route: route }
   }
 
 
@@ -348,20 +349,16 @@ export class RouteService extends TypeOrmCrudService<Route> {
       },
     });
     if (isExist) {
-      return {
-        errors: [
-          {
-            message: "You've Already Saved this Route",
-          },
-        ],
-      };
+      const deleteRoute = await this.saveRouteRepository.delete(isExist.id);
+      console.log(deleteRoute);
+      return { message: 'Route unsaved Successfully', data: false };
     }
     const data = {
       user_id: user.sub,
       route_id: dto.route_id,
     };
     await this.saveRouteRepository.save(this.saveRouteRepository.create(data));
-    return { message: 'Route Saved Successfully' };
+    return { message: 'Route Saved Successfully', data: true };
   }
 
   public async getSaveRoute(id: string, pageNo: number) {
@@ -382,7 +379,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
       .take(limit)
       .getManyAndCount();
 
-      
+
 
     if (!savedRoutes) {
       return {
@@ -409,9 +406,9 @@ export class RouteService extends TypeOrmCrudService<Route> {
         .limit(3)
         .getMany();
 
-    const currentUser = await LeaderBoard.createQueryBuilder('leader')
+      const currentUser = await LeaderBoard.createQueryBuilder('leader')
         .where('leader.route_id = :id ', { id: savedRoutes[i].route_id })
-        .andWhere('leader.user_id = :userId', {userId: id})
+        .andWhere('leader.user_id = :userId', { userId: id })
         .leftJoinAndMapOne(
           'leader.user',
           UserEntity,

@@ -144,8 +144,7 @@ export class LeaderBoardService extends TypeOrmCrudService<LeaderBoard> {
           },
         ],
       };
-    }
-    console.log(data);
+    }   
     return { message: "Current User Leader Board fetched", data: data }
   }
 
