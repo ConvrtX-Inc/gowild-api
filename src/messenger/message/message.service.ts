@@ -10,6 +10,7 @@ import { ParticipantService } from '../participant/participant.service';
 import { paginateResponse } from 'src/common/paginate.response';
 import { Participant } from '../participant/participant.entity';
 import { DeletedMessage } from './delete.message.entity';
+import { NotFoundException } from 'src/exceptions/not-found.exception';
 
 @Injectable()
 export class MessageService extends TypeOrmCrudService<Message> {
@@ -147,5 +148,30 @@ if (room){
 }else{
   return {message: "No room found"}
 }
+  }
+  
+
+
+  // Update Image Api
+  public async updateImage(id: string, image: string) {
+    const message = await this.messageRepository.findOne({
+      where: { id: id },
+    });
+
+    if (!message) {
+      throw new NotFoundException({
+        errors: [
+          {
+            message: 'Message does not exist',
+          },
+        ],
+      });
+    }
+
+    message.attachment = image;
+    return {
+      message: 'Message Image Saved Successfully!',
+      data: await message.save(),
+    };
   }
 }

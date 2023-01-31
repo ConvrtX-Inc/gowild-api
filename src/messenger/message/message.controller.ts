@@ -6,9 +6,11 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { Post, Query } from '@nestjs/common/decorators';
+import { HttpCode, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common/decorators';
 import {
   ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -22,6 +24,10 @@ import { MessageService } from './message.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { RoomService } from '../room/room.service';
 import {CreateMessageDto} from "./dto/create-message.dto";
+import { HttpStatus } from '@nestjs/common/enums';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ConfigService } from '@nestjs/config';
+import { FilesService } from 'src/files/files.service';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -62,11 +68,43 @@ export class MessageController implements CrudController<Message> {
     public participantService: ParticipantService,
     public roomService: RoomService,
     public deleteMessageService: DeleteMessageService,
+    private readonly filesService: FilesService,
+    private readonly configService: ConfigService,
   ) {}
 
   get base(): CrudController<Message> {
     return this;
   }
+
+    // Image Update
+    @ApiResponse({ type: Message })
+    @ApiConsumes('multipart/form-data')
+    @ApiBody({
+      schema: {
+        type: 'object',
+        properties: {
+          file: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+      },
+    })
+    @Post(':id/update-image')
+    @HttpCode(HttpStatus.OK)
+    @UseInterceptors(FileInterceptor('file'))
+    public async updateImage(
+      @Param('id') id: string,
+      @UploadedFile() file: Express.Multer.File,
+    ) {
+      const driver = this.configService.get('file.driver');
+      const picture = {
+        local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
+        s3: file.location,
+        firebase: file.publicUrl,
+      };
+      return this.service.updateImage(id, picture[driver]);
+    }
 
   @ApiOperation({ summary: 'Get Inbox' })
   @Get('/inbox')
@@ -151,4 +189,6 @@ export class MessageController implements CrudController<Message> {
       messageId,
     );
   }
+
+
 }
