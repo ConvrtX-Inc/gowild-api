@@ -105,4 +105,10 @@ export class Route extends AbstractBaseEntity {
     default: RouteStatusEnum.Pending,
   })
   status: RouteStatusEnum;
+
+  @Column({ nullable: true, name: 'start_location' })
+  startLocation: string;
+
+  @Column({ nullable: true, name: 'end_location' })
+  endLocation: string;
 }

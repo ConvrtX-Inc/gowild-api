@@ -29,8 +29,6 @@ export class LeaderBoardService extends TypeOrmCrudService<LeaderBoard> {
     record.completionTime = completionTime;
     record.startDate = dto.startDate;
     record.endDate = dto.endDate;
-    record.startLocation = dto.startLocation;
-    record.endLocation = dto.endLocation;
     const bestUserRecord = await this.Repository.findOne({
       user_id: userId,
       route_id: dto.route_id,
