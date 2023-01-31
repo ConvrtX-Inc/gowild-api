@@ -5,9 +5,10 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {Query, UseGuards} from '@nestjs/common/decorators';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import {NotFoundException} from "../exceptions/not-found.exception";
+import {AdminRolesGuard} from "../roles/admin.roles.guard";
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, AdminRolesGuard)
 @ApiTags('Dashboard')
 @Controller({
   path: 'dashboard',
