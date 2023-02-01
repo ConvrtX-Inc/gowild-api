@@ -90,7 +90,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     });
     return {
       message: 'Route Updated Successfully',
-      route: route,
+      data: route,
     };
   }
 
@@ -345,7 +345,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
         }),
       );
     } else {
-      return await this.routeRepository.save(
+      const data = await this.routeRepository.save(
         this.routeRepository.create({
           user_id: userId,
           status: RouteStatusEnum.Pending,
@@ -353,6 +353,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
           ...dto,
         }),
       );
+      return{ data: data }
     }
   }
 
