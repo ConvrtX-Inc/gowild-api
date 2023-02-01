@@ -330,7 +330,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     console.log(file);
     route.picture = file;
     const res = await route.save();
-    return { data: res };
+    return { message: 'Route Created Successfully!', data: res };
   }
 
   public async create(userId: string, role: RoleEnum, dto: CreateRouteDto) {
@@ -353,7 +353,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
           ...dto,
         }),
       );
-      return{ data: data }
+      return{ message: 'Route Created Successfully!', data: data }
     }
   }
 
