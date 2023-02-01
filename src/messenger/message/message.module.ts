@@ -93,7 +93,7 @@ import { UnprocessableEntityException } from '@nestjs/common/exceptions';
 
         return {
           fileFilter: (request, file, callback) => {
-            if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
+            if (!file.originalname.match(/\.(jpg|jpeg|png|gif|pdf|txt)$/i)) {
               return callback(
                 new UnprocessableEntityException({
                   errors: [
