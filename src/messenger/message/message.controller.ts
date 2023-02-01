@@ -90,11 +90,12 @@ export class MessageController implements CrudController<Message> {
         },
       },
     })
-    @Post(':id/update-image')
+    @Post(':friendId/update-image')
     @HttpCode(HttpStatus.OK)
     @UseInterceptors(FileInterceptor('file'))
     public async updateImage(
-      @Param('id') id: string,
+      @Request() request: Express.Request,
+      @Param('friendId') friendId: string,
       @UploadedFile() file: Express.Multer.File,
     ) {
       const driver = this.configService.get('file.driver');
@@ -103,7 +104,7 @@ export class MessageController implements CrudController<Message> {
         s3: file.location,
         firebase: file.publicUrl,
       };
-      return this.service.updateImage(id, picture[driver]);
+      return this.service.updateImage(request.user.sub,friendId, picture[driver]);
     }
 
   @ApiOperation({ summary: 'Get Inbox' })
@@ -152,9 +153,8 @@ export class MessageController implements CrudController<Message> {
   //   return await this.service.userMessages(req.user.sub, roomId, query.page);
   // }
 
-// Testing
   @ApiResponse({ type: Message })
-  @ApiOperation({ summary: 'Get Test User Messages' })
+  @ApiOperation({ summary: 'Get User Messages' })
   @Get('/:friendId')
   async getFriendMessages(
     @Request() req,
