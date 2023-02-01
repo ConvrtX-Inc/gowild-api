@@ -93,7 +93,7 @@ export class MessageService extends TypeOrmCrudService<Message> {
   //   return paginateResponse(data, page, take);
   // }
 
-  /* testing friends Chat */
+  /* friends Chat */
   async FriendsMessages(userId: string, friendId: string, pageNo: number) {
     const take = 20;
     const page = pageNo || 1;
@@ -127,10 +127,11 @@ if (room){
         { userId: userId },
       )
       .where('message.room_id = :roomId', { roomId: participant_room_id})
-      .andWhere('deletedmessage.message_id IS Null')
       .andWhere(
-        'participants.last_deleted_at IS NULL OR (participants.last_deleted_at IS NOT NULL AND participants.create_date > participants.last_deleted_at)',
+        'participants.last_deleted_at IS NULL OR (message.create_date > participants.last_deleted_at AND participants.room_id = :roomId)', { roomId: participant_room_id}
       )
+      .andWhere('deletedmessage.message_id IS Null')
+      
       .select([
         'message.id',
         'message.room_id',
@@ -153,25 +154,33 @@ if (room){
 
 
   // Update Image Api
-  public async updateImage(id: string, image: string) {
-    const message = await this.messageRepository.findOne({
-      where: { id: id },
+  public async updateImage(userId, friendId: string, image: string) {
+
+    const room= await Participant.createQueryBuilder("participant")
+.where("participant.user_id = :userId", { userId: userId })
+.andWhere("participant.room_id IN (SELECT room_id from gw_participants where user_id = :friendId)", { friendId: friendId })
+.getRawOne();
+if(room){
+  const {participant_room_id} = room
+ const data = await this.saveOne({
+    room_id: participant_room_id,
+    user_id: userId,
+    message: '',
+    attachment: image,
+  });
+  return {
+    message: 'Image Sent Successfully!',
+    data: data,
+  };
+  }else{
+    throw new NotFoundException({
+      errors: [
+        {
+          message: 'Room does not exist',
+        },
+      ],
     });
-
-    if (!message) {
-      throw new NotFoundException({
-        errors: [
-          {
-            message: 'Message does not exist',
-          },
-        ],
-      });
-    }
-
-    message.attachment = image;
-    return {
-      message: 'Message Image Saved Successfully!',
-      data: await message.save(),
-    };
   }
-}
+
+
+  }}
