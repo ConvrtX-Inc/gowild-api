@@ -15,7 +15,6 @@ import { UpdateRouteDto } from './dto/update-route.dto';
 import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
 import { StatusEnum } from 'src/auth/status.enum';
 import { paginateResponse } from "../common/paginate.response";
-import { throws } from 'assert';
 
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
@@ -49,11 +48,14 @@ export class RouteService extends TypeOrmCrudService<Route> {
     const take = 10;
     const page = pageNo || 1;
     const skip = (page - 1) * take;
+    //const order = options.order ? options.order : undefined;
 
     const createdRoutes = await this.routeRepository.findAndCount({
       where: options.where,
+      order: options.order,
       skip: skip,
-      take: take
+      take: take,
+
     });
     return paginateResponse(createdRoutes, page, take)
 
