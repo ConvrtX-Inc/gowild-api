@@ -36,4 +36,12 @@ export class CreateRouteDto {
   @IsOptional()
   @IsNotEmpty()
   route_path: string;
+
+  @ApiProperty({ example: 'School District 82 ( Coast Mountains )' })
+  @IsNotEmpty()
+  startLocation: string;
+
+  @ApiProperty({ example: 'Alexander Ave. ( St.Mathew Platform )' })
+  @IsNotEmpty()
+  endLocation: string;
 }
