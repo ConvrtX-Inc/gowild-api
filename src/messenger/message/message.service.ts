@@ -127,10 +127,11 @@ if (room){
         { userId: userId },
       )
       .where('message.room_id = :roomId', { roomId: participant_room_id})
-      .andWhere('deletedmessage.message_id IS Null')
       .andWhere(
-        'participants.last_deleted_at IS NULL OR (participants.last_deleted_at IS NOT NULL AND message.create_date > participants.last_deleted_at)',
+        'participants.last_deleted_at IS NULL OR (message.create_date > participants.last_deleted_at AND participants.room_id = :roomId)', { roomId: participant_room_id}
       )
+      .andWhere('deletedmessage.message_id IS Null')
+      
       .select([
         'message.id',
         'message.room_id',
