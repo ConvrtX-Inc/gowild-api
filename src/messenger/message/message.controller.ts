@@ -165,27 +165,27 @@ export class MessageController implements CrudController<Message> {
   }
 
   @ApiOperation({ summary: 'Clean Conversation' })
-  @Post('/:roomId')
+  @Post('/:friendId')
   public async cleanConversation(
     @Request() request: Express.Request,
-    @Param('roomId') roomId,
+    @Param('friendId') friendId,
   ) {
     return await this.participantService.cleanConversation(
       request.user.sub,
-      roomId,
+      friendId,
     );
   }
 
   @ApiOperation({ summary: 'Delete single message' })
-  @Post('/:roomId/:messageId')
+  @Post('/:friendId/:messageId')
   public async deleteMessage(
     @Request() request: Express.Request,
-    @Param('roomId') roomId,
+    @Param('friendId') friendId,
     @Param('messageId') messageId,
   ) {
     return await this.deleteMessageService.deleteMessage(
       request.user.sub,
-      roomId,
+      friendId,
       messageId,
     );
   }

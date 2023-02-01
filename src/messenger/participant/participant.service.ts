@@ -7,6 +7,7 @@ import { FindOptions } from '../../common/types/find-options.type';
 
 import { Participant } from './participant.entity';
 import { UserEntity } from '../../users/user.entity';
+import {NotFoundException} from "../../exceptions/not-found.exception";
 
 @Injectable()
 export class ParticipantService extends TypeOrmCrudService<Participant> {
@@ -83,16 +84,29 @@ export class ParticipantService extends TypeOrmCrudService<Participant> {
   clean conversation
   */
 
-  async cleanConversation(userId: string, roomId: string) {
-    await this.participantRepository
-      .createQueryBuilder()
-      .update('gw_participants')
-      .set({ last_deleted_at: new Date() })
-      .where('user_id = :user_id AND room_id = :room_id', {
-        user_id: userId,
-        room_id: roomId,
-      })
-      .execute();
+  async cleanConversation(userId: string, friendId: string) {
+    const room= await Participant.createQueryBuilder("participant")
+        .where("participant.user_id = :userId", { userId: userId })
+        .andWhere("participant.room_id IN (SELECT room_id from gw_participants where user_id = :friendId)", { friendId: friendId })
+        .getRawOne();
+
+    if(room){
+
+      const {participant_room_id} = room
+
+      await this.participantRepository
+          .createQueryBuilder()
+          .update('gw_participants')
+          .set({ last_deleted_at: new Date() })
+          .where('user_id = :user_id AND room_id = :room_id', {
+            user_id: userId,
+            room_id: participant_room_id,
+          })
+          .execute();
+    } else {
+      throw new NotFoundException({ message: "No Room Found!" })
+    }
+
 
     return { message: 'Conversation deleted' };
   }
