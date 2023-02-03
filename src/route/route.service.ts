@@ -15,6 +15,8 @@ import { UpdateRouteDto } from './dto/update-route.dto';
 import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
 import { StatusEnum } from 'src/auth/status.enum';
 import { paginateResponse } from "../common/paginate.response";
+import {NotificationTypeEnum} from "../notification/notification-type.enum";
+import {NotificationService} from "../notification/notification.service";
 
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
@@ -25,6 +27,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     private readonly routeRepository: Repository<Route>,
     @InjectRepository(SavedRoute)
     private readonly saveRouteRepository: Repository<SavedRoute>,
+    private readonly NotificationService: NotificationService,
   ) {
     super(routeRepository);
   }
@@ -169,7 +172,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
       }
       routes[i]['leaderboard'] = user;
 
-      // Checking the Current is Saved by Logged in User Or Not
+      // Checking the Current is Saved by Logged-in User Or Not
       const saved = await SavedRoute.findOne({
         where: {
           user_id: id,
@@ -490,6 +493,11 @@ export class RouteService extends TypeOrmCrudService<Route> {
     }
     status.status = RouteStatusEnum.Approved;
     await status.save();
+    await this.NotificationService.createNotification(
+        status.user_id,
+        `${status.title} Route approved Successfully!`, NotificationTypeEnum.APPROVE
+    );
+
     return {
       message: 'Status Changed Successfully (Route Approved!)!',
     };

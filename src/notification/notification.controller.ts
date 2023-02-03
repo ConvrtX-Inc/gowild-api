@@ -16,6 +16,7 @@ import { RoleEnum } from '../roles/roles.enum';
 import { RolesGuard } from '../roles/roles.guard';
 import { Roles } from '../roles/roles.decorator';
 import { pushNotificationDto } from './dtos/push-notification.dto';
+import {NotificationTypeEnum} from "./notification-type.enum";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -52,7 +53,7 @@ export class NotificationController implements CrudController<Notification> {
 
   @Override('createOneBase')
   public async createNotification(@Request() request) {
-    return this.service.createNotification(request.user?.sub, 'user created!');
+    return this.service.createNotification(request.user?.sub, 'user created!', NotificationTypeEnum.GO_WILD);
   }
 
   //@Get()

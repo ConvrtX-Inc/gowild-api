@@ -14,12 +14,13 @@ import path from 'path';
 import { AdminRouteController } from './admin.route.controller';
 import { SavedRoute } from './entities/saved-routs.entity';
 import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
+import {NotificationModule} from "../notification/notification.module";
 
 @Module({
   controllers: [RouteController, AdminRouteController],
   providers: [RouteService, ConfigModule, ConfigService],
   exports: [RouteService],
-  imports: [
+  imports: [NotificationModule,
     TypeOrmModule.forFeature([Route, SavedRoute, LeaderBoard]),
     FilesModule,
     MulterModule.registerAsync({

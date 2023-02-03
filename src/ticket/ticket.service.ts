@@ -9,6 +9,7 @@ import { NotFoundException } from '../exceptions/not-found.exception';
 import { SystemSupportAttachmentService } from '../system-support-attachment/system-support-attachment.service';
 import { NotificationService } from '../notification/notification.service';
 import { TicketMessagesService } from '../ticket-messages/ticket-messages.service';
+import {NotificationTypeEnum} from "../notification/notification-type.enum";
 
 @Injectable()
 export class TicketService extends TypeOrmCrudService<Ticket> {
@@ -50,7 +51,7 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
 
     await this.notificationService.createNotificationAdmin(
       `${user.firstName} ${user.lastName} created a new ticket!`,
-      'support',
+        NotificationTypeEnum.SUPPORT,
     );
 
     return {
