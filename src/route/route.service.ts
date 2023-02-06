@@ -15,6 +15,7 @@ import { UpdateRouteDto } from './dto/update-route.dto';
 import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
 import { StatusEnum } from 'src/auth/status.enum';
 import { paginateResponse } from "../common/paginate.response";
+import { RouteHistoricalEvent } from 'src/route-historical-events/entities/route-historical-event.entity';
 
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
@@ -108,6 +109,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
       limit = 10;
     const [routes, total] = await this.routeRepository.findAndCount({
       where: { status: StatusEnum.Approved },
+     relations: ['historicalEvents'],
       skip: (page - 1) * limit,
       take: limit,
     });

@@ -20,27 +20,22 @@ export class SystemSupportService extends TypeOrmCrudService<SystemSupport> {
   }
 
   async addMessage(userId: string, payload: any) {
-    const attachment = null;
+    
     payload.user_id = userId;
-    if (payload.attachment) {
-      payload.attachment = await convertToImage(
-        payload.attachment.base64,
-        payload.attachment.extension,
-      );
-    }
+  
     const newMessage = await this.ticketMessage.saveOne(payload);
-
-    if (payload.attachment) {
-      const data = {
-        ticket_id: payload.ticket_id,
-        message_id: newMessage['id'],
-        attachment: payload.attachment
-      }
-      const newAttachment = await this.SystemSupportAttachmentService.saveOne(data);
-      newMessage['attachment']  = newAttachment['attachment'];
-      return newMessage;
-    }
     newMessage['attachment']  = "";
-    return newMessage;
+    return {data : newMessage};
   }
+async updateFile(ticket_id: string, message_id: string, attachment: string){
+  const data = {
+    ticket_id: ticket_id,
+    message_id: message_id,
+    attachment: attachment
+  }
+  const newAttachment = await this.SystemSupportAttachmentService.saveOne(data);
+return {data: newAttachment }
+
+}
+
 }
