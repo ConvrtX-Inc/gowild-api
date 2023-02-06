@@ -10,6 +10,7 @@ import { SystemSupportAttachmentService } from '../system-support-attachment/sys
 import { NotificationService } from '../notification/notification.service';
 import { TicketMessagesService } from '../ticket-messages/ticket-messages.service';
 import {NotificationTypeEnum} from "../notification/notification-type.enum";
+import {TicketMessage} from "../ticket-messages/entities/ticket-message.entity";
 
 @Injectable()
 export class TicketService extends TypeOrmCrudService<Ticket> {
@@ -101,7 +102,8 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
     const skip = (page - 1) * take;
     const [tickets,total] = await this.ticketRepository.createQueryBuilder('ticket')
         .leftJoinAndMapOne('ticket.user', UserEntity, 'user', 'ticket.user_id = user.id')
-        .select(['ticket', 'user.firstName','user.lastName', 'user.username', 'user.email', 'user.picture'])
+        .leftJoinAndMapOne('ticket.message', TicketMessage, 'message', 'message.ticket_id = ticket.id')
+        .select(['ticket', 'message', 'user.firstName','user.lastName', 'user.username', 'user.email', 'user.picture'])
         .skip(skip)
         .take(take)
         .orderBy('ticket.createdDate', 'DESC')
