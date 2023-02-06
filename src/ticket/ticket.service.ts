@@ -95,10 +95,19 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
   }
 
   // get all tickets
-  async getAllTickets() {
-    const tickets = await this.ticketRepository.find({});
+  async getAllTickets(pageNo: number) {
+    const take = 10;
+    const page = pageNo || 1;
+    const skip = (page - 1) * take;
+    const [tickets,total] = await this.ticketRepository.createQueryBuilder('ticket')
+        .leftJoinAndMapOne('ticket.user', UserEntity, 'user', 'ticket.user_id = user.id')
+        .select(['ticket', 'user.firstName','user.lastName', 'user.username', 'user.email', 'user.picture'])
+        .skip(skip)
+        .take(take)
+        .orderBy('ticket.createdDate', 'DESC')
+        .getManyAndCount();
 
-    if (!tickets) {
+    if (tickets.length === 0) {
       throw new NotFoundException({
         errors: [
           {
@@ -107,7 +116,17 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
         ],
       });
     }
-    return tickets;
+    const totalPage = Math.ceil(total / take);
+    const currentPage = parseInt(String(page));
+    const prevPage = page > 1 ? page - 1 : null;
+    return {
+      message: 'Tickets fetched Successfully!',
+      data: tickets,
+      count: total,
+      currentPage,
+      prevPage,
+      totalPage,
+    };
   }
 
   async updateTicketPicture(id: string, message_id: string, image: string) {
