@@ -159,6 +159,7 @@ export class RouteController implements CrudController<Route> {
   async getUserCreatedRoutes(@Request() req, @Query() query) {
     return await this.service.findAndCountManyEntities({
         where: { user_id: req.user.sub },
+        relations: ['historicalEvents'],
         order: {createdDate: "DESC"}
       }, query.page)
 

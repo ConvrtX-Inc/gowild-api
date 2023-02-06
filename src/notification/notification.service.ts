@@ -19,10 +19,12 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
   ) {
     super(destinationsRepository);
   }
-  public async createNotification(UserId: string, message: string) {
+  public async createNotification(UserId: string, message: string, type: string) {
     let addNotification = new Notification();
     addNotification.user_id = UserId;
     addNotification.notification_msg = message;
+    addNotification.type = type;
+    addNotification.role = RoleEnum.USER;
     addNotification = await this.saveEntity(addNotification);
     return {
       data: addNotification,
