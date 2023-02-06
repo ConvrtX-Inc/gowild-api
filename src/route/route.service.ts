@@ -17,6 +17,7 @@ import { StatusEnum } from 'src/auth/status.enum';
 import { paginateResponse } from "../common/paginate.response";
 import {NotificationTypeEnum} from "../notification/notification-type.enum";
 import {NotificationService} from "../notification/notification.service";
+import {RouteHistoricalEvent} from "../route-historical-events/entities/route-historical-event.entity";
 
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
@@ -56,6 +57,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     const createdRoutes = await this.routeRepository.findAndCount({
       where: options.where,
       order: options.order,
+      relations: options.relations,
       skip: skip,
       take: take,
 
@@ -111,6 +113,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
       limit = 10;
     const [routes, total] = await this.routeRepository.findAndCount({
       where: { status: StatusEnum.Approved },
+      relations: ['historicalEvents'],
       skip: (page - 1) * limit,
       take: limit,
     });
@@ -226,6 +229,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
   public async getAllAdminRoutes() {
     const routes = await this.routeRepository.find({
       where: { role: Not(RoleEnum.USER) },
+      relations: ['historicalEvents'],
       order: { createdDate: 'DESC' },
     });
 
@@ -393,7 +397,12 @@ export class RouteService extends TypeOrmCrudService<Route> {
         Route,
         'route',
         'route.id = saved.route_id',
-      )
+      ).leftJoinAndMapMany(
+            'route.historicalEvents',
+            RouteHistoricalEvent,
+            'historicalEvents',
+            'historicalEvents.route_id = route.id'
+        )
       .skip(skip)
       .take(limit)
       .getManyAndCount();
