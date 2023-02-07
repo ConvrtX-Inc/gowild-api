@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { DeepPartial } from 'src/common/types/deep-partial.type';
 import { FindOptions } from 'src/common/types/find-options.type';
-import { getRepository, Not, Repository } from 'typeorm';
+import { getRepository, Not, Repository, SimpleConsoleLogger } from 'typeorm';
 import { Route, RouteStatusEnum } from './entities/route.entity';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { RoleEnum } from '../roles/roles.enum';
@@ -16,8 +16,8 @@ import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
 import { StatusEnum } from 'src/auth/status.enum';
 import { paginateResponse } from "../common/paginate.response";
 import { RouteHistoricalEvent } from 'src/route-historical-events/entities/route-historical-event.entity';
-import {NotificationTypeEnum} from "../notification/notification-type.enum";
-import {NotificationService} from "../notification/notification.service";
+import { NotificationTypeEnum } from "../notification/notification-type.enum";
+import { NotificationService } from "../notification/notification.service";
 
 
 @Injectable()
@@ -354,16 +354,21 @@ export class RouteService extends TypeOrmCrudService<Route> {
           ...dto,
         }),
       );
+
       if (dto.historical_route) {
-        dto.historical_route.forEach(async (historcal) => {
+        var resArr = [];
+        for (let i = 0; i < dto.historical_route.length; i++) {
           let myhistorical = {};
-          myhistorical = historcal;
+          myhistorical = dto.historical_route[i];
           myhistorical['route_id'] = newRoute.id;
-          await this.routeHistoricalEventRepository.save(
+          const newHistorical = await this.routeHistoricalEventRepository.save(
             this.routeHistoricalEventRepository.create(myhistorical),
           );
-        })
+          console.log(newHistorical);
+          resArr.push(newHistorical)
+        }
       }
+      newRoute['historical_route'] = resArr;
       return newRoute;
     } else {
       const data = await this.routeRepository.save(
@@ -374,7 +379,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
           ...dto,
         }),
       );
-      return{ message: 'Route Created Successfully!', data: data }
+      return { message: 'Route Created Successfully!', data: data }
     }
   }
 
@@ -412,11 +417,11 @@ export class RouteService extends TypeOrmCrudService<Route> {
         'route',
         'route.id = saved.route_id',
       ).leftJoinAndMapMany(
-            'route.historicalEvents',
-            RouteHistoricalEvent,
-            'historicalEvents',
-            'historicalEvents.route_id = route.id'
-        )
+        'route.historicalEvents',
+        RouteHistoricalEvent,
+        'historicalEvents',
+        'historicalEvents.route_id = route.id'
+      )
       .skip(skip)
       .take(limit)
       .getManyAndCount();
@@ -517,8 +522,8 @@ export class RouteService extends TypeOrmCrudService<Route> {
     status.status = RouteStatusEnum.Approved;
     await status.save();
     await this.NotificationService.createNotification(
-        status.user_id,
-        `${status.title} Route approved Successfully!`, NotificationTypeEnum.APPROVE
+      status.user_id,
+      `${status.title} Route approved Successfully!`, NotificationTypeEnum.APPROVE
     );
 
     return {
