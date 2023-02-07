@@ -8,11 +8,8 @@ import { DeepPartial } from 'src/common/types/deep-partial.type';
 import { StatusEnum } from 'src/auth/status.enum';
 import { MailService } from 'src/mail/mail.service';
 import { StatusService } from '../statuses/status.service';
-import { FilesService } from '../files/files.service';
-import { FileEntity } from '../files/file.entity';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { RoleEnum } from 'src/roles/roles.enum';
-import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class UsersService extends TypeOrmCrudService<UserEntity> {
@@ -110,7 +107,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
       user.frontImage = frontImage;
     }
     if (backImage) {
-      user.backImage = picture;
+      user.backImage = backImage;
     }
 
     return { message: 'User Updated Successfully!', user: await user.save() };
