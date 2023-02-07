@@ -15,6 +15,7 @@ import { UpdateRouteDto } from './dto/update-route.dto';
 import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
 import { StatusEnum } from 'src/auth/status.enum';
 import { paginateResponse } from "../common/paginate.response";
+import { RouteHistoricalEvent } from 'src/route-historical-events/entities/route-historical-event.entity';
 
 @Injectable()
 export class RouteService extends TypeOrmCrudService<Route> {
@@ -25,6 +26,8 @@ export class RouteService extends TypeOrmCrudService<Route> {
     private readonly routeRepository: Repository<Route>,
     @InjectRepository(SavedRoute)
     private readonly saveRouteRepository: Repository<SavedRoute>,
+    @InjectRepository(RouteHistoricalEvent)
+    private routeHistoricalEventRepository: Repository<RouteHistoricalEvent>
   ) {
     super(routeRepository);
   }
@@ -334,9 +337,9 @@ export class RouteService extends TypeOrmCrudService<Route> {
   }
 
   public async create(userId: string, role: RoleEnum, dto: CreateRouteDto) {
-    // @ts-ignore
+    // @ts-ignore    
     if (role === RoleEnum.ADMIN || role === RoleEnum.SUPER_ADMIN) {
-      return await this.routeRepository.save(
+      const newRoute = await this.routeRepository.save(
         this.routeRepository.create({
           user_id: userId,
           status: RouteStatusEnum.Approved,
@@ -344,6 +347,17 @@ export class RouteService extends TypeOrmCrudService<Route> {
           ...dto,
         }),
       );
+      if (dto.historical_route) {
+        dto.historical_route.forEach(async (historcal) => {
+          let myhistorical = {};
+          myhistorical = historcal;
+          myhistorical['route_id'] = newRoute.id;
+          await this.routeHistoricalEventRepository.save(
+            this.routeHistoricalEventRepository.create(myhistorical),
+          );
+        })
+      }
+      return newRoute;
     } else {
       return await this.routeRepository.save(
         this.routeRepository.create({

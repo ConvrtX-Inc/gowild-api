@@ -36,6 +36,8 @@ export class RouteHistoricalEventsService extends TypeOrmCrudService<RouteHistor
         message: `Route with ID ${routeId} not found!`,
       });
     }
+
+    console.log(dto);
     return await this.routeHistoricalEventRepository.save(
       this.routeHistoricalEventRepository.create({ route_id: routeId, ...dto }),
     );

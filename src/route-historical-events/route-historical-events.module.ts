@@ -118,5 +118,6 @@ import { RouteModule } from '../route/route.module';
       },
     }),
   ],
+  exports : [RouteHistoricalEventsService,RouteHistoricalEventMediasService]
 })
 export class RouteHistoricalEventsModule {}
