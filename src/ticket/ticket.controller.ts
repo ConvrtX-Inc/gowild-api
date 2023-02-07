@@ -9,7 +9,7 @@ import {
   Request,
   UseGuards,
   UseInterceptors,
-  UploadedFiles,
+  UploadedFiles, Query,
 } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import {
@@ -81,12 +81,9 @@ export class TicketController implements CrudController<Ticket> {
 
   @Override('getManyBase')
   @Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
-  @ApiOperation({ summary: 'Retrieve all tickets' })
-  async getManyTickets() {
-    return {
-      message: 'Tickets fetched Successfully!',
-      data: await this.service.getAllTickets(),
-    };
+  @ApiOperation({ summary: 'Retrieve all tickets (Pagination applied)' })
+  async getManyTickets(@Query() query) {
+    return await this.service.getAllTickets(query.page)
   }
 
   @Get('users/:user_id')

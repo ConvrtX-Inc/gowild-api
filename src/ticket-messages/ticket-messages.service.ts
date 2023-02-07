@@ -53,12 +53,16 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
     const [data,total] = await this.ticketMessageRepository
       .createQueryBuilder('ticketMessage')
       .where('ticketMessage.ticket_id = :ticketId', { ticketId })
-      .leftJoinAndMapMany(
+        .leftJoinAndMapOne('ticketMessage.user',
+            UserEntity, 'user', 'ticketMessage.user_id = user.id')
+        .leftJoinAndMapMany(
         'ticketMessage.attachment',
         SystemSupportAttachment,
         'attachment',
         'ticketMessage.id = attachment.message_id',
       )
+        .select(['ticketMessage', 'attachment',
+          'user.firstName','user.lastName', 'user.username', 'user.email', 'user.picture'])
       .skip(skip)
       .take(limit)
       .orderBy('ticketMessage.createdDate', 'DESC')

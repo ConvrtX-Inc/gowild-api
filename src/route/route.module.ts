@@ -14,18 +14,16 @@ import path from 'path';
 import { AdminRouteController } from './admin.route.controller';
 import { SavedRoute } from './entities/saved-routs.entity';
 import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
-import { RouteHistoricalEventsService } from 'src/route-historical-events/route-historical-events.service';
-import { RouteHistoricalEventsModule } from 'src/route-historical-events/route-historical-events.module';
-import { RouteHistoricalEventMediasService } from 'src/route-historical-events/route-historical-events-medias.service';
 import { RouteHistoricalEvent } from 'src/route-historical-events/entities/route-historical-event.entity';
-
+import { NotificationModule } from "../notification/notification.module";
 
 @Module({
   controllers: [RouteController, AdminRouteController],
   providers: [RouteService, ConfigModule, ConfigService],
   exports: [RouteService],
   imports: [
-    TypeOrmModule.forFeature([Route, SavedRoute, LeaderBoard,RouteHistoricalEvent]),
+    NotificationModule,
+    TypeOrmModule.forFeature([Route, SavedRoute, LeaderBoard, RouteHistoricalEvent]),
     FilesModule,
     MulterModule.registerAsync({
       imports: [ConfigModule],
