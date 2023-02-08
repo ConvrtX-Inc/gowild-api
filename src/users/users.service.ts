@@ -1,15 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { UserEntity } from './user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+import {Injectable, NotFoundException} from '@nestjs/common';
+import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
+import {UserEntity} from './user.entity';
+import {InjectRepository} from '@nestjs/typeorm';
 import {Between, Repository} from 'typeorm';
-import { FindOptions } from 'src/common/types/find-options.type';
-import { DeepPartial } from 'src/common/types/deep-partial.type';
-import { StatusEnum } from 'src/auth/status.enum';
-import { MailService } from 'src/mail/mail.service';
-import { StatusService } from '../statuses/status.service';
-import { UpdateUserDto } from './dtos/update-user.dto';
-import { RoleEnum } from 'src/roles/roles.enum';
+import {FindOptions} from 'src/common/types/find-options.type';
+import {DeepPartial} from 'src/common/types/deep-partial.type';
+import {StatusEnum} from 'src/auth/status.enum';
+import {MailService} from 'src/mail/mail.service';
+import {StatusService} from '../statuses/status.service';
+import {UpdateUserDto} from './dtos/update-user.dto';
+import {RoleEnum} from 'src/roles/roles.enum';
 
 @Injectable()
 export class UsersService extends TypeOrmCrudService<UserEntity> {

@@ -12,14 +12,11 @@ import { GuidelineService } from './guideline.service';
 import { Guideline } from './guideline.entity';
 import { GuidelineLogsService } from 'src/guideline-logs/guideline-logs.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Roles } from '../roles/roles.decorator';
-import { RoleEnum } from '../roles/roles.enum';
 import { AdminRolesGuard } from '../roles/admin.roles.guard';
 import { CreateGuidelineDto } from './dtos/Create.dto';
 
 @ApiBearerAuth()
-//@UseGuards(JwtAuthGuard)
-//@Roles(RoleEnum.ADMIN)
+@UseGuards(JwtAuthGuard,AdminRolesGuard)
 @ApiTags('Admin Guidelines')
 @Crud({
   model: {
