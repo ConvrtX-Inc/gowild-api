@@ -96,8 +96,8 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
   }
 
   // get all tickets
-  async getAllTickets(pageNo: number) {
-    const take = 10;
+  async getAllTickets(pageNo: number, limit: number) {
+    const take = limit || 10;
     const page = pageNo || 1;
     const skip = (page - 1) * take;
     const [tickets,total] = await this.ticketRepository.createQueryBuilder('ticket')

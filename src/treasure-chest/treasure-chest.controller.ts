@@ -8,7 +8,7 @@ import {
   UseGuards,
   UseInterceptors,
   Body,
-  Get,
+  Get, Res,
 } from '@nestjs/common';
 import { TreasureChestService } from './treasure-chest.service';
 import { Crud, CrudController } from '@nestjsx/crud';
@@ -117,5 +117,16 @@ export class TreasureChestController implements CrudController<TreasureChest> {
   @ApiOperation({ summary: 'Retrieve all user Hunts!' })
   async getAllUserHunts() {
     return await this.userTreasureHuntService.getAllHunts();
+  }
+  @ApiOperation({ summary: 'Download CSV file' })
+  @Get('csv')
+  async downloadCsv(@Res() res) {
+
+    const data = await this.userTreasureHuntService.getAllHunts();
+    const csvData = await this.userTreasureHuntService.createCSVData(data)
+    const csv =  await this.userTreasureHuntService.convertToCsv(csvData);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="user_hunt_data.csv"');
+    res.send(csv);
   }
 }

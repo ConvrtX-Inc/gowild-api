@@ -46,8 +46,8 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
 
     return { message: 'Message Created', data: messages };
   }
-  async getTicketMessages(userId: string, ticketId: string, pageNo: number) {
-    const limit = 10;
+  async getTicketMessages(userId: string, ticketId: string, pageNo: number, limitNo: number) {
+    const limit = limitNo || 10;
     const page = pageNo || 1;
     const skip = (page - 1) * limit;
 

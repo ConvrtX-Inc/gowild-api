@@ -83,7 +83,7 @@ export class TicketController implements CrudController<Ticket> {
   @Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
   @ApiOperation({ summary: 'Retrieve all tickets (Pagination applied)' })
   async getManyTickets(@Query() query) {
-    return await this.service.getAllTickets(query.page)
+    return await this.service.getAllTickets(query.page, query.limit)
   }
 
   @Get('users/:user_id')

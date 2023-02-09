@@ -31,7 +31,7 @@ export class TicketMessagesController implements CrudController<TicketMessage> {
     @Param('ticket_id') ticketId: string,
     @Query() query,
   ) {
-    return this.service.getTicketMessages(req.user.sub,ticketId, query.page);
+    return this.service.getTicketMessages(req.user.sub,ticketId, query.page, query.limit);
   }
 
   @ApiOperation({ summary: 'Create Ticket Messages' })

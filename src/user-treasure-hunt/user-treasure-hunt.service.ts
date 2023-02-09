@@ -142,5 +142,34 @@ export class UserTreasureHuntService extends TypeOrmCrudService<UserTreasureHunt
     });
   }
 
+  async convertToCsv(data) {
+    const headers = Object.keys(data[0]);
+    const csvData = data.map(row => headers.map(header => row[header]).join(','));
+    return [headers.join(','), ...csvData].join('\n');
+  }
+
+  async createCSVData(hunts) {
+    const mappedHunts = hunts.map((hunt) => {
+      return {
+       // id: hunt.id,
+       // user_id: hunt.user_id,
+       // treasure_chest_id: hunt.treasure_chest_id,
+        treasure_chest_title: hunt.treasure_chest.title,
+        treasure_chest_status: hunt.treasure_chest.status,
+        firstName: hunt.user.firstName,
+        lastName: hunt.user.lastName,
+        username: hunt.user.username,
+        email: hunt.user.email,
+        birthDate: hunt.user.birthDate,
+        // picture: hunt.user.picture,
+        phoneNo: hunt.user.phoneNo,
+        gender: hunt.user.gender,
+        user_hunt_status: hunt.status,
+        // frontImage: hunt.user.frontImage,
+        // backImage: hunt.user.backImage,
+      };
+    });
+    return mappedHunts;
+  }
 
 }
