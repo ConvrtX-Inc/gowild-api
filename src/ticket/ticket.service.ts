@@ -106,8 +106,25 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
         .select(['ticket', 'message', 'user.firstName','user.lastName', 'user.username', 'user.email', 'user.picture'])
         .skip(skip)
         .take(take)
-        .orderBy('ticket.createdDate', 'DESC')
+        .orderBy('message.createdDate', 'DESC')
         .getManyAndCount();
+
+    const messageCount = await this.ticketRepository.createQueryBuilder('ticket')
+        .leftJoinAndMapMany('ticket.message', TicketMessage, 'message', 'message.ticket_id = ticket.id AND message.user_id = ticket.user_id')
+        .select(['ticket','message'])
+        .orderBy('message.createdDate', 'DESC')
+        .getMany()
+
+    tickets.forEach(ticket => {
+      let unreadMessageCount = 0;
+      messageCount.forEach(item => {
+        if (ticket['id'] === item['id']) {
+          const filteredMessages = item['message'].filter(message => message.adminSeen === false);
+          unreadMessageCount = filteredMessages.length;
+        }
+      });
+      ticket['unread_message_count'] = unreadMessageCount;
+    });
 
     if (tickets.length === 0) {
       throw new NotFoundException({
