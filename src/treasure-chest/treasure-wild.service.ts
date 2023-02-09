@@ -150,28 +150,56 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
       )
       .getManyAndCount();
 
-    const parrentArray = [];
-    const customArray = [];
+// return {data:data, currentUser: crrUser}; 
 
-    data[0].map((chest, index) => {
-      const userHunt = crrUser[0];
-      if (userHunt[index]['treasureHunts'][0]) {
-        const userHuntid = userHunt[index]['treasureHunts'][0];
-        if (userHuntid.treasure_chest_id == chest.id) {
-          console.log('If condition is true');
-          chest['current_user_hunt'] = userHunt[index]['treasureHunts'][0];
-          customArray.push(chest);
-        } else {
-          chest['current_user_hunt'] = null;
-          customArray.push(chest);
-        }
-      } else {
-        chest['current_user_hunt'] = null;
-        customArray.push(chest);
-      }
-    });
-    parrentArray.push(customArray);
-    parrentArray.push(data[1]);
+const parrentArray = [];
+const customArray = [];
+
+for (let index = 0; index < data[0].length; index++) {
+  const chest = data[0][index];
+  const userHunt = crrUser[0];
+  if (userHunt[index]['treasureHunts'][0]) {
+    const userHuntid = userHunt[index]['treasureHunts'][0];
+    if (userHuntid.treasure_chest_id == chest.id) {
+      chest['current_user_hunt'] = userHunt[index]['treasureHunts'][0];
+      customArray.push(chest);
+    } else {
+      chest['current_user_hunt'] = null;
+      customArray.push(chest);
+    }
+  } else {
+    chest['current_user_hunt'] = null;
+    customArray.push(chest);
+  }
+}
+
+parrentArray.push(customArray);
+parrentArray.push(data[1]);
+
+
+/*   */
+    // const parrentArray = [];
+    // const customArray = [];
+
+    // data[0].map((chest, index) => {
+    //   const userHunt = crrUser[0];
+    //   if (userHunt[index]['treasureHunts'][0]) {
+    //     const userHuntid = userHunt[index]['treasureHunts'][0];
+    //     if (userHuntid.treasure_chest_id == chest.id) {
+    //       console.log('If condition is true');
+    //       chest['current_user_hunt'] = userHunt[index]['treasureHunts'][0];
+    //       customArray.push(chest);
+    //     } else {
+    //       chest['current_user_hunt'] = null;
+    //       customArray.push(chest);
+    //     }
+    //   } else {
+    //     chest['current_user_hunt'] = null;
+    //     customArray.push(chest);
+    //   }
+    // });
+    // parrentArray.push(customArray);
+    // parrentArray.push(data[1]);
     return paginateResponse(parrentArray, page, take);
   }
 
