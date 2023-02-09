@@ -149,6 +149,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
       onlineStatus: boolean;
       location: string;
       accountStatus: string;
+      frontImage:string;
+        backImage:string
     } = {
       id: user.id,
       firstName: user.firstName,
@@ -157,6 +159,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
       onlineStatus: user.updatedDate > tenMinutesBefore ? true : false,
       location: `${user.addressOne}, ${user.addressTwo}`,
       accountStatus: user.status.statusName,
+      frontImage:user.frontImage,
+      backImage: user.backImage
     };
 
     return container;
@@ -188,6 +192,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         onlineStatus: boolean;
         location: string;
         accountStatus: string;
+        frontImage:string;
+        backImage:string
       } = {
         id: obj.id,
         firstName: obj.firstName,
@@ -200,6 +206,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         onlineStatus: obj.updatedDate > tenMinutesBefore ? true : false,
         location: `${obj.addressOne}, ${obj.addressTwo}`,
         accountStatus: obj.status.statusName,
+        frontImage:obj.frontImage,
+        backImage: obj.backImage
       };
       return container;
     });
@@ -281,6 +289,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         location_1: string;
         location_2: string;
         accountStatus: string;
+        frontImage:string;
+        backImage:string
       } = {
         firstName: obj.firstName,
         lastName: obj.lastName,
@@ -293,6 +303,9 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         location_1: obj.addressOne,
         location_2: obj.addressTwo,
         accountStatus: obj.status.statusName,
+        frontImage:obj.frontImage,
+        backImage: obj.backImage
+
       };
       return container;
     });
@@ -324,6 +337,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         location_1: string;
         location_2: string;
         accountStatus: string;
+        frontImage:string;
+        backImage:string
       } = {
         firstName: obj.firstName,
         lastName: obj.lastName,
@@ -336,6 +351,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         location_1: obj.addressOne,
         location_2: obj.addressTwo,
         accountStatus: obj.status.statusName,
+        frontImage:obj.frontImage,
+        backImage: obj.backImage
       };
       return container;
     });

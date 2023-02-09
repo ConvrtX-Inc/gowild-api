@@ -55,6 +55,8 @@ export class UserTreasureHuntService extends TypeOrmCrudService<UserTreasureHunt
             username: hunt['user'].username,
             email: hunt['user'].email,
             picture: hunt['user'].picture,
+            frontImage: hunt['user'].frontImage,
+            backImage: hunt['user'].backImage
           },
           treasure_chest: {
             id: hunt['treasure_chest'].id,
@@ -90,6 +92,8 @@ export class UserTreasureHuntService extends TypeOrmCrudService<UserTreasureHunt
             username: hunt['user'].username,
             email: hunt['user'].email,
             picture: hunt['user'].picture,
+            frontImage: hunt['user'].frontImage,
+            backImage: hunt['user'].backImage
           },
           treasure_chest: {},
         };
