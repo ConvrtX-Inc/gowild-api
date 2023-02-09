@@ -16,7 +16,7 @@ import { AdminRolesGuard } from '../roles/admin.roles.guard';
 import { CreateGuidelineDto } from './dtos/Create.dto';
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard,AdminRolesGuard)
+@UseGuards(JwtAuthGuard)
 @ApiTags('Admin Guidelines')
 @Crud({
   model: {
@@ -54,7 +54,6 @@ export class GuidelinesController implements CrudController<Guideline> {
   @Override('createOneBase')
   @ApiOperation({ summary: 'Create or Update Admin Guidelines' })
   @UseGuards(JwtAuthGuard, AdminRolesGuard)
-  //@Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
   async createOne(
     @Body() createGuidelineDto: CreateGuidelineDto,
     @Request() req,
@@ -64,7 +63,6 @@ export class GuidelinesController implements CrudController<Guideline> {
 
   @Get('/:type')
   @ApiOperation({ summary: 'Get Terms and Conditions by Type' })
-  // @Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN, RoleEnum.USER)
   getTermsByType(@Param('type') type: string) {
     return this.service.getTermsByType(type);
   }
