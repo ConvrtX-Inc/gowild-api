@@ -78,7 +78,7 @@ export class SystemSupportController implements CrudController<SystemSupport> {
      s3: file.location,
      firebase: file.publicUrl,
    };
-   return this.service.updateFile(ticket_id,message_id, attachment[driver]);
+   return this.service.updateFile(ticket_id,message_id,request.user.sub, attachment[driver]);
  }
 
 
