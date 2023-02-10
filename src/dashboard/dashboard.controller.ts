@@ -28,7 +28,7 @@ export class DashboardController {
   @ApiOperation({ summary: 'Retrieve all Users' })
   @Get('users')
   async getAllUsers() {
-   return{ data: await this.service.getAllUserData() }
+   return{ data: await this.service.getAllUserGraphData() }
   }
 
   @ApiOperation({ summary: 'Download CSV file' })

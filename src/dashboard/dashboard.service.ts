@@ -11,8 +11,8 @@ export class DashboardService {
     return this.userService.getUserCount();
   }
 
-  async getAllUserData() {
-    return this.userService.findUnmappedUsers();
+  async getAllUserGraphData() {
+    return this.userService.getGraphUsers();
   }
 
   async getUsersByCreatedDate(createdDate){
