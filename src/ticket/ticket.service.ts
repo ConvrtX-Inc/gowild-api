@@ -9,6 +9,8 @@ import { NotFoundException } from '../exceptions/not-found.exception';
 import { SystemSupportAttachmentService } from '../system-support-attachment/system-support-attachment.service';
 import { NotificationService } from '../notification/notification.service';
 import { TicketMessagesService } from '../ticket-messages/ticket-messages.service';
+import {NotificationTypeEnum} from "../notification/notification-type.enum";
+import {TicketMessage} from "../ticket-messages/entities/ticket-message.entity";
 
 @Injectable()
 export class TicketService extends TypeOrmCrudService<Ticket> {
@@ -50,7 +52,7 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
 
     await this.notificationService.createNotificationAdmin(
       `${user.firstName} ${user.lastName} created a new ticket!`,
-      'support',
+        NotificationTypeEnum.SUPPORT,
     );
 
     return {
@@ -94,10 +96,37 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
   }
 
   // get all tickets
-  async getAllTickets() {
-    const tickets = await this.ticketRepository.find({});
+  async getAllTickets(pageNo: number, limit: number) {
+    const take = limit || 10;
+    const page = pageNo || 1;
+    const skip = (page - 1) * take;
+    const [tickets,total] = await this.ticketRepository.createQueryBuilder('ticket')
+        .leftJoinAndMapOne('ticket.user', UserEntity, 'user', 'ticket.user_id = user.id')
+        .leftJoinAndMapOne('ticket.message', TicketMessage, 'message', 'message.ticket_id = ticket.id')
+        .select(['ticket', 'message', 'user.firstName','user.lastName', 'user.username', 'user.email', 'user.picture'])
+        .skip(skip)
+        .take(take)
+        .orderBy('message.createdDate', 'DESC')
+        .getManyAndCount();
 
-    if (!tickets) {
+    const messageCount = await this.ticketRepository.createQueryBuilder('ticket')
+        .leftJoinAndMapMany('ticket.message', TicketMessage, 'message', 'message.ticket_id = ticket.id AND message.user_id = ticket.user_id')
+        .select(['ticket','message'])
+        .orderBy('message.createdDate', 'DESC')
+        .getMany()
+
+    tickets.forEach(ticket => {
+      let unreadMessageCount = 0;
+      messageCount.forEach(item => {
+        if (ticket['id'] === item['id']) {
+          const filteredMessages = item['message'].filter(message => message.adminSeen === false);
+          unreadMessageCount = filteredMessages.length;
+        }
+      });
+      ticket['unread_message_count'] = unreadMessageCount;
+    });
+
+    if (tickets.length === 0) {
       throw new NotFoundException({
         errors: [
           {
@@ -106,7 +135,17 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
         ],
       });
     }
-    return tickets;
+    const totalPage = Math.ceil(total / take);
+    const currentPage = parseInt(String(page));
+    const prevPage = page > 1 ? page - 1 : null;
+    return {
+      message: 'Tickets fetched Successfully!',
+      data: tickets,
+      count: total,
+      currentPage,
+      prevPage,
+      totalPage,
+    };
   }
 
   async updateTicketPicture(id: string, message_id: string, image: string) {

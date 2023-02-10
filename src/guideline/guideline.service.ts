@@ -1,14 +1,14 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptions } from '../common/types/find-options.type';
-import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { DeepPartial } from '../common/types/deep-partial.type';
-import { Guideline } from './guideline.entity';
-import { GuidelineLogsService } from 'src/guideline-logs/guideline-logs.service';
-import { GuidelineLog } from 'src/guideline-logs/guideline-log.entity';
-import { CreateGuidelineDto } from './dtos/Create.dto';
-import { GuidelineTypesEnum } from './guideline.enum';
+import {HttpStatus, Injectable, NotFoundException} from '@nestjs/common';
+import {Repository} from 'typeorm';
+import {InjectRepository} from '@nestjs/typeorm';
+import {FindOptions} from '../common/types/find-options.type';
+import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
+import {DeepPartial} from '../common/types/deep-partial.type';
+import {Guideline} from './guideline.entity';
+import {GuidelineLogsService} from 'src/guideline-logs/guideline-logs.service';
+import {GuidelineLog} from 'src/guideline-logs/guideline-log.entity';
+import {CreateGuidelineDto} from './dtos/Create.dto';
+import {GuidelineTypesEnum} from './guideline.enum';
 
 @Injectable()
 export class GuidelineService extends TypeOrmCrudService<Guideline> {
@@ -26,19 +26,39 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
     entity.description = dto.description;
     entity.last_updated_user = req;
 
-    if (
-      dto.type === GuidelineTypesEnum.FAQ ||
-      GuidelineTypesEnum.HUNT_E_WAIVER ||
+    const searchData = await this.guidelinesRepository.findOne({where:{ type: dto.type}})
+
+    if(dto.type === GuidelineTypesEnum.FAQ) {
+      entity.question = dto.question;
+      if (!dto.question){
+        throw new NotFoundException({message: "Question is Missing, Please enter a Question!"})
+      }
+    }
+    else if (
+      dto.type === GuidelineTypesEnum.HUNT_E_WAIVER ||
       GuidelineTypesEnum.E_WAIVER ||
       GuidelineTypesEnum.TERMS_CONDITIONS
     ) {
+      if (searchData){
+        await this.guidelinesRepository.update(searchData.id,entity)
+        const logData = new GuidelineLog();
+        logData.guideline_type = entity.type;
+        logData.userId = entity.last_updated_user;
+        const saveLog = await this.guidelineLogsService.saveOne(logData);
+
+        return {
+          status: HttpStatus.OK,
+          message: 'Admin Guideline Updated successfully!',
+          data: saveLog,
+        };
+      }
     } else {
       throw new NotFoundException({
         message: `Admin Guideline cannot be added!`,
       });
     }
 
-    await this.guidelinesRepository.upsert([entity], ['type']);
+    await entity.save();
     const logData = new GuidelineLog();
     logData.guideline_type = entity.type;
     logData.userId = entity.last_updated_user;

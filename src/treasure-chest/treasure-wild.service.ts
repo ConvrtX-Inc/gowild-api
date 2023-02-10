@@ -13,6 +13,7 @@ import { Sponsor } from 'src/sponsor/entities/sponsor.entity';
 import { UserEntity } from 'src/users/user.entity';
 import { NotificationService } from '../notification/notification.service';
 import { paginateResponse } from 'src/common/paginate.response';
+import {NotificationTypeEnum} from "../notification/notification-type.enum";
 
 @Injectable()
 export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
@@ -85,7 +86,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     const newRegister = await this.UserTreasureHuntService.saveOne(data);
     await this.NotificationService.createNotification(
       data.user_id,
-      'TreasureHunt created successfully!',
+      'TreasureHunt created successfully!', NotificationTypeEnum.TREASURE_CHEST
     );
     return { message: 'Successfully Registered', data: newRegister };
   }

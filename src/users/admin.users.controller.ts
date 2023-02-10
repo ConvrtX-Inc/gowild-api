@@ -87,7 +87,7 @@ export class AdminUsersController implements CrudController<UserEntity> {
   @HttpCode(HttpStatus.OK)
   @Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
   public async approveUser(@Param('id') id: string) {
-    return this.service.updateUserStatus(id, StatusEnum.Approved);
+    return this.service.updateUserStatus(id, StatusEnum.Active);
   }
 
   @ApiResponse({ type: UserEntity })
@@ -96,7 +96,7 @@ export class AdminUsersController implements CrudController<UserEntity> {
   @HttpCode(HttpStatus.OK)
   @Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
   public async rejectUser(@Param('id') id: string) {
-    return this.service.updateUserStatus(id, StatusEnum.Rejected);
+    return this.service.updateUserStatus(id, StatusEnum.Inactive);
   }
 
   @ApiResponse({ type: UserEntity })

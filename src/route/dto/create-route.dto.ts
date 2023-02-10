@@ -32,9 +32,8 @@ export class CreateRouteDto {
   @IsNotEmpty()
   estimate_time: string;
 
-  @ApiProperty({ example: '' })
+  @ApiProperty({ example: 'abc' })
   @IsOptional()
-  @IsNotEmpty()
   route_path: string;
 
   @ApiProperty({ example: 'School District 82 ( Coast Mountains )' })
@@ -44,4 +43,8 @@ export class CreateRouteDto {
   @ApiProperty({ example: 'Alexander Ave. ( St.Mathew Platform )' })
   @IsNotEmpty()
   endLocation: string;
+
+  @ApiProperty({ example: [] })
+  @IsOptional()
+  historical_route: [];
 }

@@ -7,8 +7,13 @@ import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 export class Guideline extends AbstractBaseEntity {
   @IsOptional()
   @ApiProperty({ example: 'waiver' })
-  @Column({ unique: true, nullable: true, type: 'text' })
+  @Column({ nullable: true, type: 'text' })
   type?: string;
+
+  @IsOptional()
+  @ApiProperty({ example: 'FAQ Questions' })
+  @Column({ nullable: true, type: 'text' })
+  question?: string;
 
   @IsOptional()
   @ApiProperty({ example: 'description' })

@@ -14,80 +14,83 @@ import path from 'path';
 import { AdminRouteController } from './admin.route.controller';
 import { SavedRoute } from './entities/saved-routs.entity';
 import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
+import { RouteHistoricalEvent } from 'src/route-historical-events/entities/route-historical-event.entity';
+import { NotificationModule } from "../notification/notification.module";
 
 @Module({
   controllers: [RouteController, AdminRouteController],
   providers: [RouteService, ConfigModule, ConfigService],
   exports: [RouteService],
   imports: [
-    TypeOrmModule.forFeature([Route, SavedRoute, LeaderBoard]),
+    NotificationModule,
+    TypeOrmModule.forFeature([Route, SavedRoute, LeaderBoard, RouteHistoricalEvent]),
     FilesModule,
     MulterModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const storages: Record<files.FileType, files.VoidStorageEngineConfig> =
-          {
-            local: () =>
-              diskStorage({
-                destination: './files',
-                filename: (request, file, callback) => {
-                  callback(
-                    null,
-                    `${randomStringGenerator()}.${file.originalname
-                      .split('.')
-                      .pop()
-                      .toLowerCase()}`,
-                  );
-                },
-              }),
-            s3: () => {
-              const s3 = new AWS.S3();
-              AWS.config.update({
-                accessKeyId: configService.get('file.accessKeyId'),
-                secretAccessKey: configService.get('file.secretAccessKey'),
-                region: configService.get('file.awsS3Region'),
-              });
+        {
+          local: () =>
+            diskStorage({
+              destination: './files',
+              filename: (request, file, callback) => {
+                callback(
+                  null,
+                  `${randomStringGenerator()}.${file.originalname
+                    .split('.')
+                    .pop()
+                    .toLowerCase()}`,
+                );
+              },
+            }),
+          s3: () => {
+            const s3 = new AWS.S3();
+            AWS.config.update({
+              accessKeyId: configService.get('file.accessKeyId'),
+              secretAccessKey: configService.get('file.secretAccessKey'),
+              region: configService.get('file.awsS3Region'),
+            });
 
-              return multerS3({
-                s3: s3,
-                bucket: configService.get('file.awsDefaultS3Bucket'),
-                acl: 'public-read',
-                contentType: multerS3.AUTO_CONTENT_TYPE,
-                key: (request, file, callback) => {
-                  callback(
-                    null,
-                    `${randomStringGenerator()}.${file.originalname
-                      .split('.')
-                      .pop()
-                      .toLowerCase()}`,
-                  );
-                },
-              });
-            },
-            firebase: () => {
-              const FirebaseStorage = require('multer-firebase-storage');
-              const googleFileConfig = path.join(
-                process.cwd(),
-                configService.get('file.firebaseConfigFilePath'),
-              );
-              const googleConfigFile = require(googleFileConfig);
+            return multerS3({
+              s3: s3,
+              bucket: configService.get('file.awsDefaultS3Bucket'),
+              acl: 'public-read',
+              contentType: multerS3.AUTO_CONTENT_TYPE,
+              key: (request, file, callback) => {
+                callback(
+                  null,
+                  `${randomStringGenerator()}.${file.originalname
+                    .split('.')
+                    .pop()
+                    .toLowerCase()}`,
+                );
+              },
+            });
+          },
+          firebase: () => {
+            const FirebaseStorage = require('multer-firebase-storage');
+            const googleFileConfig = path.join(
+              process.cwd(),
+              configService.get('file.firebaseConfigFilePath'),
+            );
+            const googleConfigFile = require(googleFileConfig);
 
-              return FirebaseStorage({
-                bucketName: googleConfigFile.project_id + '.appspot.com',
-                credentials: {
-                  clientEmail: googleConfigFile.client_email,
-                  privateKey: googleConfigFile.private_key,
-                  projectId: googleConfigFile.project_id,
-                },
-                appName: 'convrtx-dev',
-                namePrefix: 'gw-',
-                nameSuffix: '-npi--',
-                unique: true,
-                public: true,
-              });
-            },
-          };
+            return FirebaseStorage({
+              bucketName: googleConfigFile.project_id + '.appspot.com',
+              credentials: {
+                clientEmail: googleConfigFile.client_email,
+                privateKey: googleConfigFile.private_key,
+                projectId: googleConfigFile.project_id,
+              },
+              appName: 'convrtx-dev',
+              namePrefix: 'gw-',
+              nameSuffix: '-npi--',
+              unique: true,
+              public: true,
+            });
+          },
+        };
 
         return {
           fileFilter: (request, file, callback) => {
@@ -115,4 +118,4 @@ import { LeaderBoard } from 'src/leader-board/entities/leader-board.entity';
     }),
   ],
 })
-export class RouteModule {}
+export class RouteModule { }

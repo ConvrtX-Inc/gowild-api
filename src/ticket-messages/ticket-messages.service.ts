@@ -7,6 +7,7 @@ import { DeepPartial } from '../common/types/deep-partial.type';
 import { UserEntity } from '../users/user.entity';
 import { SystemSupportAttachment } from '../system-support-attachment/system-support-attachment.entity';
 import { FindOptions } from '../common/types/find-options.type';
+import {RoleEnum} from "../roles/roles.enum";
 
 @Injectable()
 export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
@@ -45,20 +46,24 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
 
     return { message: 'Message Created', data: messages };
   }
-  async getTicketMessages(ticketId: string, pageNo: number) {
-    const limit = 10;
+  async getTicketMessages(userId: string, ticketId: string, pageNo: number, limitNo: number) {
+    const limit = limitNo || 10;
     const page = pageNo || 1;
     const skip = (page - 1) * limit;
 
     const [data,total] = await this.ticketMessageRepository
       .createQueryBuilder('ticketMessage')
       .where('ticketMessage.ticket_id = :ticketId', { ticketId })
-      .leftJoinAndMapMany(
+        .leftJoinAndMapOne('ticketMessage.user',
+            UserEntity, 'user', 'ticketMessage.user_id = user.id')
+        .leftJoinAndMapMany(
         'ticketMessage.attachment',
         SystemSupportAttachment,
         'attachment',
         'ticketMessage.id = attachment.message_id',
       )
+        .select(['ticketMessage', 'attachment',
+          'user.firstName','user.lastName', 'user.username', 'user.email', 'user.picture'])
       .skip(skip)
       .take(limit)
       .orderBy('ticketMessage.createdDate', 'DESC')
@@ -75,6 +80,19 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
       delete obj['attachment'];
       obj['attachment'] =  attachmentString;
     })
+
+    console.log(userId)
+    const user = await UserEntity.findOne({
+      where:{
+        id: userId,
+      }
+    })
+    if(user.role.name === (RoleEnum.SUPER_ADMIN || RoleEnum.ADMIN) ){
+      await this.ticketMessageRepository.update(
+          {ticket_id: ticketId },
+          { adminSeen: true }
+      );
+    }
 
     const totalPage = Math.ceil(total / limit);
     const currentPage = parseInt(String(page));
