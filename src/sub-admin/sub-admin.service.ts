@@ -5,13 +5,13 @@ import { NotFoundException } from 'src/exceptions/not-found.exception';
 import { RoleService } from 'src/roles/role.service';
 import { RoleEnum } from 'src/roles/roles.enum';
 import { StatusService } from 'src/statuses/status.service';
-import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
 import { PasswordService } from 'src/users/password.service';
 import { UserEntity } from 'src/users/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { getConnection, Repository } from 'typeorm';
 import { CreateSubAdminDto } from './dto/create-sub-admin.dto';
 import { Password } from '../users/password.entity';
+import {UpdateSubAdminDto} from "./dto/update-sub-admin.dto";
 
 @Injectable()
 export class SubAdminService {
@@ -109,7 +109,7 @@ export class SubAdminService {
 
   public async updateSubAdmin(
     id: string,
-    dto: UpdateUserDto,
+    dto: UpdateSubAdminDto,
   ): Promise<UserEntity> {
     const admin = await this.usersRepository.findOne({
       where: { id: id },
@@ -129,7 +129,7 @@ export class SubAdminService {
     admin.lastName = dto.lastName;
     admin.birthDate = dto.birthDate;
     admin.addressOne = dto.addressOne;
-    admin.username = dto.username;
+
 
     await admin.save();
     return admin;

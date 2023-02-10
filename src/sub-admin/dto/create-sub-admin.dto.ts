@@ -4,11 +4,10 @@ import {
   IsEmail,
   IsEnum,
   IsOptional,
-  MinLength,
   Validate,
 } from 'class-validator';
 import { IsNotExist } from 'src/common/validators/is-not-exists.validator';
-import { Exclude, Transform } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import { GenderEnum } from 'src/users/gender.enum';
 import { Column } from 'typeorm';
 
@@ -61,9 +60,7 @@ export class CreateSubAdminDto {
   @ApiProperty({
     nullable: true,
   })
-  /* @Allow()
-  @Exclude()
-  addressTwo: string;*/
+
   @IsOptional()
   @ApiProperty({ example: '1999-12-12 11:11:11', nullable: true })
   @Column({ type: 'timestamp', nullable: true })

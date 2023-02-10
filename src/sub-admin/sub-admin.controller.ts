@@ -19,12 +19,12 @@ import {
 } from '@nestjs/swagger';
 import { UserEntity } from 'src/users/user.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { UpdateUserDto } from 'src/users/dtos/update-user.dto';
 import { Roles } from 'src/roles/roles.decorator';
 import { RoleEnum } from 'src/roles/roles.enum';
 import { Crud, CrudController, CrudService, Override } from '@nestjsx/crud';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { Password } from 'src/users/password.entity';
+import {UpdateSubAdminDto} from "./dto/update-sub-admin.dto";
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -63,7 +63,7 @@ export class SubAdminController implements CrudController<UserEntity> {
   }
 
   @Override('updateOneBase')
-  async updateOneEntity(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+  async updateOneEntity(@Param('id') id: string, @Body() dto: UpdateSubAdminDto) {
     return this.subAdminService.updateSubAdmin(id, dto);
   }
 

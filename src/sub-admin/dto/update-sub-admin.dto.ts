@@ -1,19 +1,16 @@
-import { PartialType, ApiProperty } from '@nestjs/swagger';
-import { CreateSubAdminDto } from './create-sub-admin.dto';
-import { Allow, IsEmail, IsOptional, Validate } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { Allow, IsEmail, IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { IsNotExist } from '../../common/validators/is-not-exists.validator';
 
-export class UpdateSubAdminDto extends PartialType(CreateSubAdminDto) {
+export class UpdateSubAdminDto{
   @ApiProperty({ example: 'test1@example.com', nullable: true })
   @Transform((value: string) => value.toLowerCase().trim())
-  @Validate(IsNotExist, ['UserEntity'], {
+ /* @Validate(IsNotExist, ['UserEntity'], {
     message: 'emailAlreadyExists',
-  })
+  })*/
   @IsEmail()
   @IsOptional()
   email: string;
-
   @ApiProperty({ example: 'username', nullable: true })
   @Allow()
   username: string;
@@ -23,11 +20,11 @@ export class UpdateSubAdminDto extends PartialType(CreateSubAdminDto) {
   @Allow()
   addressOne: string;
 
-  @ApiProperty({
+ /* @ApiProperty({
     nullable: true,
   })
   @Allow()
-  addressTwo: string;
+  addressTwo: string;*/
 
   @ApiProperty({ example: 'John', nullable: true })
   @Allow()
@@ -36,4 +33,8 @@ export class UpdateSubAdminDto extends PartialType(CreateSubAdminDto) {
   @ApiProperty({ example: 'Doe', nullable: true })
   @Allow()
   lastName: string | null;
+
+  @ApiProperty({ example: '1999-12-12 11:11:11', nullable: true })
+  @Allow()
+  birthDate: Date;
 }
