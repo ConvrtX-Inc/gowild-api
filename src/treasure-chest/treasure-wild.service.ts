@@ -218,7 +218,7 @@ parrentArray.push(data[1]);
       if (hunt.code == dto.code) {
         hunt.status = UserTreasureHuntStatusEnum.APPROVED;
         const updated = await hunt.save();
-        return { data: updated };
+        return {message: 'Success', data: updated };
       } else {
         return {
           errors: [
