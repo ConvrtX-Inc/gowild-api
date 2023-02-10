@@ -43,7 +43,7 @@ export class AdminRouteController {
     readonly service: RouteService,
     private readonly filesService: FilesService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   @Get('users')
   @ApiOperation({ summary: 'Get User Routes' })
@@ -110,7 +110,7 @@ export class AdminRouteController {
   @Get(':id')
   @ApiOperation({ summary: 'Get Single Route' })
   async findOneRoute(@Param('id') id: string) {
-    return await this.service.findOneEntity({ where: { id: id } });
+    return await this.service.findOneRoute(id);
   }
 
   @Post(':id/approve')
