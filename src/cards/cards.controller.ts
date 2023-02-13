@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -108,8 +109,8 @@ export class CardsController implements CrudController<Card> {
     return this.cardsService.findOneCard(id);
   }
   @Get()
-  public async findAllCards() {
-    return this.cardsService.findAllCards();
+  public async findAllCards(@Query() query,) {
+    return this.cardsService.findAllCards(query.limit, query.page);
   }
 
   @Patch(':id')

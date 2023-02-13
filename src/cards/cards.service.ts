@@ -8,6 +8,7 @@ import { DeepPartial } from '../common/types/deep-partial.type';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getConnection, Repository } from 'typeorm';
 import { NotFoundException } from '../exceptions/not-found.exception';
+import { paginateResponse } from 'src/common/paginate.response';
 
 @Injectable()
 export class CardsService {
@@ -80,11 +81,16 @@ export class CardsService {
     return container;
   }
 
-  async findAllCards() {
-    const getCards = this.cardRepository.find({
+  async findAllCards(limit: number, page: number) {
+    const take = limit || 100;
+    const pageNo = page || 1;
+    const skip = (page - 1) * take;
+    const getCards = await this.cardRepository.findAndCount({
       relations: ['status'],
+      take: take,
+      skip: skip
     });
-    return getCards;
+    return paginateResponse(getCards, pageNo, take);
   }
 
   async updateCard(id: string, dto: UpdateCardDto) {
