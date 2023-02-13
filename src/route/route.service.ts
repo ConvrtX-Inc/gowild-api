@@ -51,8 +51,8 @@ export class RouteService extends TypeOrmCrudService<Route> {
 
 
 
-  async findAndCountManyEntities(options: FindOptions<Route>, pageNo: number) {
-    const take = 10;
+  async findAndCountManyEntities(options: FindOptions<Route>, pageNo: number, limitNo: number) {
+    const take = limitNo || 100;
     const page = pageNo || 1;
     const skip = (page - 1) * take;
     //const order = options.order ? options.order : undefined;
@@ -111,9 +111,10 @@ export class RouteService extends TypeOrmCrudService<Route> {
     lat?: string,
     long?: string,
     pageNo?: number,
+    limitNo?: number,
   ) {
     const page = pageNo || 1,
-      limit = 10;
+      limit = limitNo || 100;
     const [routes, total] = await this.routeRepository.findAndCount({
       where: { status: StatusEnum.Approved },
       relations: ['historicalEvents'],
@@ -403,9 +404,9 @@ export class RouteService extends TypeOrmCrudService<Route> {
     return { message: 'Route Saved Successfully', data: true };
   }
 
-  public async getSaveRoute(id: string, pageNo: number) {
+  public async getSaveRoute(id: string, pageNo: number, limitNo: number) {
     const page = pageNo || 1,
-      limit = 10,
+      limit = limitNo || 100,
       skip = (page - 1) * limit;
 
     const [savedRoutes, total] = await this.saveRouteRepository

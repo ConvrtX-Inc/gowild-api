@@ -87,7 +87,7 @@ export class TreasureWildController implements CrudController<TreasureChest> {
   @ApiOperation({ summary: 'Get All listings' })
   @HttpCode(HttpStatus.OK)
   async getAllListings(@Query() query, @Request() req) {
-    return this.service.getTreasureWild(query.page, req.user.sub);
+    return this.service.getTreasureWild(query.limit, query.page, req.user.sub);
   }
   @Post('verify')
   @HttpCode(HttpStatus.OK)

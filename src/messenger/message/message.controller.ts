@@ -161,7 +161,7 @@ export class MessageController implements CrudController<Message> {
     @Param('friendId') friendId,
     @Query() query,
   ) {
-    return await this.service.FriendsMessages(req.user.sub, friendId, query.page);
+    return await this.service.FriendsMessages(req.user.sub, friendId, query.page, query.limit);
   }
 
   @ApiOperation({ summary: 'Clean Conversation' })

@@ -72,6 +72,6 @@ export class LeaderBoardController implements CrudController<LeaderBoard> {
   @ApiOperation({ summary: 'Get Rankings By route id main listings' })
   @Get('/:route_id')
   public async getByRoute(@Param('route_id') routeId, @Query() query) {
-    return this.service.rankByRoute(routeId, query.page);
+    return this.service.rankByRoute(routeId, query.page, query.limit);
   }
 }

@@ -113,22 +113,21 @@ export class LeaderBoardService extends TypeOrmCrudService<LeaderBoard> {
   }
 
   // Get by Route Id 'main leader board listings'
-  async rankByRoute(routeId: string, pageNo: number) {
-    const take = 10;
-    const page = pageNo || 1;
-    const skip = (page - 1) * take;
+  async rankByRoute(routeId: string, page: number, limit: number) {
+   
+    const take = limit || 100;
+    const pageNo = page || 1;
+    const skip = (pageNo - 1) * take;
 
     const data = await this.Repository.createQueryBuilder('leaderBoard')
     
       .leftJoinAndMapOne('leaderBoard.user', UserEntity, 'user','user.id = user_id and leaderBoard.route_id = :routeId', { routeId: routeId })
       .leftJoinAndMapOne('leaderBoard.route',Route, 'route', 'route.id = leaderBoard.route_id')
-      // .where()
-      // .andWhere()
       .orderBy('leaderBoard.rank', 'ASC')
       .skip(skip)
       .take(take)
       .getManyAndCount();
-    return paginateResponse(data, page, take);
+    return paginateResponse(data, pageNo, take);
   }
 
   async getPosition(userId: string) {

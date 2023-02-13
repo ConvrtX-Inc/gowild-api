@@ -99,8 +99,8 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     return { data: all };
   }
 
-  async getTreasureWild(pageNo: number, id: string) {
-    const take = 10;
+  async getTreasureWild(limit: number, pageNo: number, id: string) {
+    const take = limit || 100;
     const page = pageNo || 1;
     const skip = (page - 1) * take;
 

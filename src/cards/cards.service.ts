@@ -84,7 +84,7 @@ export class CardsService {
   async findAllCards(limit: number, page: number) {
     const take = limit || 100;
     const pageNo = page || 1;
-    const skip = (page - 1) * take;
+    const skip = (pageNo - 1) * take;
     const getCards = await this.cardRepository.findAndCount({
       relations: ['status'],
       take: take,
