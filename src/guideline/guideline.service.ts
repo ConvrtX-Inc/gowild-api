@@ -106,14 +106,25 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
   }
 
   async getTermsByType(type: string) {
-    /*const result = */
-    return {
-      data: await this.guidelinesRepository.findOne({
+
+    if(type === GuidelineTypesEnum.FAQ){
+
+      const getFaqTerms = await this.guidelinesRepository.find({
         where: {
           type: type,
         },
-      }),
-    };
+      })
+      return{ data: null, faq: getFaqTerms }
+    }else{
+      const getTerms = await this.guidelinesRepository.findOne({
+        where: {
+          type: type,
+        },
+      })
+      return{data: getTerms, faq: []}
+    }
+
+
   }
   public async findByEnum(guidelineEnum: GuidelineTypesEnum) {
     return this.guidelinesRepository.findOne({

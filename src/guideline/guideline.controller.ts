@@ -15,8 +15,6 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AdminRolesGuard } from '../roles/admin.roles.guard';
 import { CreateGuidelineDto } from './dtos/Create.dto';
 
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 @ApiTags('Admin Guidelines')
 @Crud({
   model: {
@@ -51,6 +49,7 @@ export class GuidelinesController implements CrudController<Guideline> {
     return this;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Override('createOneBase')
   @ApiOperation({ summary: 'Create or Update Admin Guidelines' })
   @UseGuards(JwtAuthGuard, AdminRolesGuard)

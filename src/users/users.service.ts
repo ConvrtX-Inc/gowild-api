@@ -2,7 +2,7 @@ import {Injectable, NotFoundException} from '@nestjs/common';
 import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
 import {UserEntity} from './user.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Between, MoreThanOrEqual, Repository} from 'typeorm';
+import {Between, Repository} from 'typeorm';
 import {FindOptions} from 'src/common/types/find-options.type';
 import {DeepPartial} from 'src/common/types/deep-partial.type';
 import {StatusEnum} from 'src/auth/status.enum';
@@ -10,8 +10,6 @@ import {MailService} from 'src/mail/mail.service';
 import {StatusService} from '../statuses/status.service';
 import {UpdateUserDto} from './dtos/update-user.dto';
 import {RoleEnum} from 'src/roles/roles.enum';
-import {groupBy} from "rxjs";
-import {Role} from "../roles/role.entity";
 
 @Injectable()
 export class UsersService extends TypeOrmCrudService<UserEntity> {
@@ -217,12 +215,26 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
     return data;
   }
 
+
+
+
   async getGraphUsers() {
     const currentDate = new Date();
     const sixteenDaysAgo = new Date(currentDate.getTime() - 16 * 24 * 60 * 60 * 1000);
     sixteenDaysAgo.setHours(0, 0, 0, 0);
 
-    const data = await this.usersRepository
+
+    const onlineUsers = await this.usersRepository
+        .createQueryBuilder("user")
+        .select("DATE(user.createdDate) as date")
+        .addSelect("COUNT(*) as count")
+        .innerJoin("user.role", "role", "role.name = :roleName", { roleName: RoleEnum.USER })
+        .innerJoin("user.status", "status", "status.statusName = :statusName", { statusName: StatusEnum.Active })
+        .where("user.createdDate >= :sixteenDaysAgo", { sixteenDaysAgo: sixteenDaysAgo })
+        .groupBy("date")
+        .getRawMany();
+
+    const newUsers = await this.usersRepository
         .createQueryBuilder("user")
         .select("DATE(user.createdDate) as date")
         .addSelect("COUNT(*) as count")
@@ -231,7 +243,17 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         .groupBy("date")
         .getRawMany();
 
-    return data;
+    const bannedUsers = await this.usersRepository
+        .createQueryBuilder("user")
+        .select("DATE(user.createdDate) as date")
+        .addSelect("COUNT(*) as count")
+        .innerJoin("user.role", "role", "role.name = :roleName", { roleName: RoleEnum.USER })
+        .innerJoin("user.status", "status", "status.statusName = :statusName", { statusName: StatusEnum.Inactive })
+        .where("user.createdDate >= :sixteenDaysAgo", { sixteenDaysAgo: sixteenDaysAgo })
+        .groupBy("date")
+        .getRawMany();
+
+    return {newUsers: newUsers, onlineUsers: onlineUsers, bannedUsers: bannedUsers };
   }
 
   async getUserCount() {
