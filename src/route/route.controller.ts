@@ -161,7 +161,7 @@ export class RouteController implements CrudController<Route> {
         where: { user_id: req.user.sub },
         relations: ['historicalEvents'],
         order: {createdDate: "DESC"}
-      }, query.page)
+      }, query.page, query.limit)
 
   }
   @Roles(RoleEnum.USER)
@@ -173,6 +173,6 @@ export class RouteController implements CrudController<Route> {
   @Roles(RoleEnum.USER)
   @Get('save')
   async getSaveRoute(@Request() req, @Query() query) {
-    return await this.service.getSaveRoute(req.user.sub, query.pageNo);
+    return await this.service.getSaveRoute(req.user.sub, query.pageNo, query.limitNo);
   }
 }

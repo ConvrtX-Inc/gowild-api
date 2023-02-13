@@ -94,10 +94,11 @@ export class MessageService extends TypeOrmCrudService<Message> {
   // }
 
   /* friends Chat */
-  async FriendsMessages(userId: string, friendId: string, pageNo: number) {
-    const take = 20;
-    const page = pageNo || 1;
-    const skip = (page - 1) * take;
+  async FriendsMessages(userId: string, friendId: string, page: number, limit: number) {
+    
+    const take = limit || 100;
+    const pageNo = page || 1;
+    const skip = (pageNo - 1) * take;
 
 const room= await Participant.createQueryBuilder("participant")
 .where("participant.user_id = :userId", { userId: userId })
@@ -145,7 +146,7 @@ if (room){
       .orderBy('message.createdDate', 'DESC')
       .getManyAndCount();
     
-    return paginateResponse(data, page, take);
+    return paginateResponse(data, pageNo, take);
 }else{
   return {message: "No room found"}
 }
