@@ -564,7 +564,11 @@ export class RouteService extends TypeOrmCrudService<Route> {
         route_id: id
       }
     })
-    if (historical) {
+    const user = await getRepository(UserEntity).findOne({ where: { id: route.user_id } });
+    route['firstName'] = user.firstName
+    route['lastName'] = user.lastName
+    route['userPicture'] = user.picture   
+    if (historical) {      
       route['historical_event'] = historical
     } else {
       route['historical_event'] = []
