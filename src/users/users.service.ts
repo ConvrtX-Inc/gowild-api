@@ -147,6 +147,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
       email: string;
       onlineStatus: boolean;
       location: string;
+      locationTwo: string;
       accountStatus: string;
       frontImage:string;
         backImage:string
@@ -156,7 +157,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
       lastName: user.lastName,
       email: user.email,
       onlineStatus: user.updatedDate > tenMinutesBefore ? true : false,
-      location: `${user.addressOne}, ${user.addressTwo}`,
+      location: `${user.addressOne}`,
+      locationTwo: `${user.addressTwo}`,
       accountStatus: user.status.statusName,
       frontImage:user.frontImage,
       backImage: user.backImage
@@ -190,6 +192,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         dateOfBirth: Date;
         onlineStatus: boolean;
         location: string;
+        locationTwo: string;
         accountStatus: string;
         frontImage:string;
         backImage:string
@@ -203,7 +206,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         email: obj.email,
         dateOfBirth: obj.birthDate,
         onlineStatus: obj.updatedDate > tenMinutesBefore ? true : false,
-        location: `${obj.addressOne}, ${obj.addressTwo}`,
+        location: `${obj.addressOne}`,
+        locationTwo: `${obj.addressTwo}`,
         accountStatus: obj.status.statusName,
         frontImage:obj.frontImage,
         backImage: obj.backImage
@@ -292,8 +296,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         email: string;
         dateOfBirth: Date;
         onlineStatus: boolean;
-        location_1: string;
-        location_2: string;
+        location: string;
+        locationTwo: string;
         accountStatus: string;
         frontImage:string;
         backImage:string
@@ -306,8 +310,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         email: obj.email,
         dateOfBirth: obj.birthDate,
         onlineStatus: obj.updatedDate > tenMinutesBefore,
-        location_1: obj.addressOne,
-        location_2: obj.addressTwo,
+        location: obj.addressOne,
+        locationTwo: obj.addressTwo,
         accountStatus: obj.status.statusName,
         frontImage:obj.frontImage,
         backImage: obj.backImage
@@ -340,8 +344,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         email: string;
         dateOfBirth: Date;
         onlineStatus: boolean;
-        location_1: string;
-        location_2: string;
+        addressOne: string;
+        addressTwo: string;
         accountStatus: string;
         frontImage:string;
         backImage:string
@@ -354,8 +358,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         email: obj.email,
         dateOfBirth: obj.birthDate,
         onlineStatus: obj.updatedDate > tenMinutesBefore,
-        location_1: obj.addressOne,
-        location_2: obj.addressTwo,
+        addressOne: obj.addressOne,
+        addressTwo: obj.addressTwo,
         accountStatus: obj.status.statusName,
         frontImage:obj.frontImage,
         backImage: obj.backImage

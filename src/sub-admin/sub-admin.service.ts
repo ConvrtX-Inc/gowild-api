@@ -39,6 +39,7 @@ export class SubAdminService {
         onlineStatus: boolean;
         picture: string;
         location: string;
+        locationTwo:string;
         accountStatus: string;
       } = {
         id: obj.id,
@@ -49,7 +50,8 @@ export class SubAdminService {
         dateOfBirth: obj.birthDate,
         onlineStatus: obj.updatedDate > tenMinutesBefore ? true : false,
         picture: obj.picture,
-        location: `${obj.addressOne},${obj.addressTwo}`,
+        location: `${obj.addressOne}`,
+        locationTwo: `${obj.addressTwo}`,
         accountStatus: obj.status.statusName,
       };
       return container;
@@ -150,6 +152,7 @@ export class SubAdminService {
       dateOfBirth: Date;
       onlineStatus: boolean;
       location: string;
+      locationTwO: string;
       accountStatus: string;
     } = {
       id: id,
@@ -160,6 +163,7 @@ export class SubAdminService {
       dateOfBirth: admin.birthDate,
       onlineStatus: admin.updatedDate > tenMinutesBefore ? true : false,
       location: `${admin.addressOne}`,
+      locationTwO:`${admin.addressTwo}`,
       accountStatus: admin.status.statusName,
     };
     return container;
