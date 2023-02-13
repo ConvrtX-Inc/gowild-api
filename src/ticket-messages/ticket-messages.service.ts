@@ -66,7 +66,7 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
           'user.firstName','user.lastName', 'user.username', 'user.email', 'user.picture'])
       .skip(skip)
       .take(limit)
-      .orderBy('ticketMessage.createdDate', 'DESC')
+      .orderBy('ticketMessage.createdDate', 'ASC')
       .getManyAndCount();
 
 

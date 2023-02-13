@@ -2,7 +2,7 @@ import {Injectable, NotFoundException} from '@nestjs/common';
 import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
 import {UserEntity} from './user.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Between, Repository} from 'typeorm';
+import {Between, MoreThanOrEqual, Repository} from 'typeorm';
 import {FindOptions} from 'src/common/types/find-options.type';
 import {DeepPartial} from 'src/common/types/deep-partial.type';
 import {StatusEnum} from 'src/auth/status.enum';
@@ -10,6 +10,8 @@ import {MailService} from 'src/mail/mail.service';
 import {StatusService} from '../statuses/status.service';
 import {UpdateUserDto} from './dtos/update-user.dto';
 import {RoleEnum} from 'src/roles/roles.enum';
+import {groupBy} from "rxjs";
+import {Role} from "../roles/role.entity";
 
 @Injectable()
 export class UsersService extends TypeOrmCrudService<UserEntity> {
@@ -211,14 +213,21 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
     return data;
   }
 
-  async findUnmappedUsers(){
-    const users = await this.usersRepository.find({
-      relations: ['role'],
-      where: {
-        role: { name: RoleEnum.USER }}
-    });
+  async getGraphUsers() {
+    const currentDate = new Date();
+    const sixteenDaysAgo = new Date(currentDate.getTime() - 16 * 24 * 60 * 60 * 1000);
+    sixteenDaysAgo.setHours(0, 0, 0, 0);
 
-    return users
+    const data = await this.usersRepository
+        .createQueryBuilder("user")
+        .select("DATE(user.createdDate) as date")
+        .addSelect("COUNT(*) as count")
+        .innerJoin("user.role", "role", "role.name = :roleName", { roleName: RoleEnum.USER })
+        .where("user.createdDate >= :sixteenDaysAgo", { sixteenDaysAgo: sixteenDaysAgo })
+        .groupBy("date")
+        .getRawMany();
+
+    return data;
   }
 
   async getUserCount() {

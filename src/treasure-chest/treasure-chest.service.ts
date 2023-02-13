@@ -7,6 +7,7 @@ import {
   UserTreasureHuntEntity,
   UserTreasureHuntStatusEnum,
 } from 'src/user-treasure-hunt/user-treasure-hunt.entity';
+import {Sponsor} from "../sponsor/entities/sponsor.entity";
 
 @Injectable()
 export class TreasureChestService extends TypeOrmCrudService<TreasureChest> {
@@ -75,6 +76,19 @@ export class TreasureChestService extends TypeOrmCrudService<TreasureChest> {
           },
         ],
       };
+    }
+  }
+
+  async getAllChests(){
+
+    const chests = await this.treasureChestRepository.createQueryBuilder('chest')
+        .leftJoinAndMapMany('chest.sponsor', Sponsor,'sponsor', 'sponsor.treasure_chest = chest.id')
+        .select(['chest','sponsor.link', 'sponsor.img'])
+        .getMany();
+
+    return{
+      message: "All Treasure Chests Successfully!",
+      data: chests
     }
   }
 }

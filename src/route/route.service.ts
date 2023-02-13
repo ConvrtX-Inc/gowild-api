@@ -549,4 +549,26 @@ export class RouteService extends TypeOrmCrudService<Route> {
       message: 'Status Changed Successfully (Route Rejected!)',
     };
   }
+
+  /*
+   * Find One Admin Route 
+   */
+  async findOneRoute(id: string) {
+    const route = await this.routeRepository.findOne({
+      where: {
+        id: id
+      }
+    })
+    const historical = await this.routeHistoricalEventRepository.find({
+      where: {
+        route_id: id
+      }
+    })
+    if (historical) {
+      route['historical_event'] = historical
+    } else {
+      route['historical_event'] = []
+    }
+    return route;
+  }
 }

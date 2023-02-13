@@ -11,7 +11,7 @@ import {
   Get, Res,
 } from '@nestjs/common';
 import { TreasureChestService } from './treasure-chest.service';
-import { Crud, CrudController } from '@nestjsx/crud';
+import {Crud, CrudController, Override} from '@nestjsx/crud';
 import { TreasureChest } from './entities/treasure-chest.entity';
 import {
   ApiBearerAuth,
@@ -77,6 +77,12 @@ export class TreasureChestController implements CrudController<TreasureChest> {
 
   get base(): CrudController<TreasureChest> {
     return this;
+  }
+
+  @Override('getManyBase')
+  @ApiOperation({ summary: 'Retrieve all Treasure Chests!' })
+  async getAllTreasureChest() {
+    return await this.service.getAllChests();
   }
 
   @ApiResponse({ type: TreasureChest })

@@ -49,3 +49,4 @@ export class Comment extends AbstractBaseEntity {
   @UpdateDateColumn()
   updatedDate: Date;
 }
+    
