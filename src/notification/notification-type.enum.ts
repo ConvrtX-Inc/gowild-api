@@ -6,5 +6,6 @@ export enum NotificationTypeEnum {
     SUPPORT = 'support',
     TREASURE_CHEST = 'treasureChest',
     NOTIFICATION = 'notification',
-    APPROVE = 'approve'
+    APPROVE = 'approve',
+    PUSH = 'push'
 }
