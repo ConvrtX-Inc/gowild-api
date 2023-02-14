@@ -120,6 +120,9 @@ export class RouteService extends TypeOrmCrudService<Route> {
       relations: ['historicalEvents'],
       skip: (page - 1) * limit,
       take: limit,
+      order:{
+        createdDate: 'DESC'
+      }
     });
 
     if (!routes) {
@@ -310,6 +313,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
         'status',
         'status.id = user.status_id',
       )
+      .orderBy('route.createdDate', 'DESC')
       .getMany();
 
     if (!routes) {
@@ -425,6 +429,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
       )
       .skip(skip)
       .take(limit)
+      .orderBy('saved.createdDate', 'DESC')
       .getManyAndCount();
 
     if (!savedRoutes) {
