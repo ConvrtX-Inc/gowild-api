@@ -66,6 +66,9 @@ import { PostFeedAttachmentModule } from './post-feed-attchment/post-feed-attach
 import { SystemSupportModule } from './system-support/system-support.module';
 import { cronJobModule } from './jobs/cronjob.module';
 import { LeaderBoardModule } from './leader-board/leader-board.module';
+import awsConfig from './config/aws.config';
+
+
 
 @Module({
   imports: [
@@ -82,6 +85,7 @@ import { LeaderBoardModule } from './leader-board/leader-board.module';
         twitterConfig,
         appleConfig,
         firebaseConfig,
+        awsConfig
       ],
       envFilePath: ['.env'],
       expandVariables: true,
@@ -174,4 +178,4 @@ import { LeaderBoardModule } from './leader-board/leader-board.module';
   ],
   controllers: [DashboardController],
 })
-export class AppModule {}
+export class AppModule { }
