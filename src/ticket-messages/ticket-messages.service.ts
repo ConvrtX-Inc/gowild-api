@@ -111,4 +111,19 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
       where: options.where,
     });
   }
+
+  // attachment
+  async updateFile(ticket_id: string, message_id, user_id: string, attachment: string){
+    const data = {
+      ticket_id: ticket_id,
+      message_id: message_id,
+      user_id: user_id,
+      attachment: attachment
+    }
+    const user = await UserEntity.findOne(user_id); 
+  const newAttachment = await SystemSupportAttachment.save(SystemSupportAttachment.create(data))
+  newAttachment['user'] = user
+  return {data: newAttachment }
+  }
+  
 }
