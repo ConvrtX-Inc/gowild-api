@@ -12,8 +12,8 @@ import {RoleEnum} from "../roles/roles.enum";
 @Injectable()
 export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
   constructor(
-    @InjectRepository(TicketMessage)
-    private ticketMessageRepository: Repository<TicketMessage>,
+      @InjectRepository(TicketMessage)
+      private ticketMessageRepository: Repository<TicketMessage>,
   ) {
     super(ticketMessageRepository);
   }
@@ -24,7 +24,13 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
 
   async saveEntity(data: DeepPartial<TicketMessage>[]) {
     return this.ticketMessageRepository.save(
-      this.ticketMessageRepository.create(data),
+        this.ticketMessageRepository.create(data),
+    );
+  }
+
+  async saveOneEntity(data: DeepPartial<TicketMessage>) {
+    return this.ticketMessageRepository.save(
+        this.ticketMessageRepository.create(data),
     );
   }
 
@@ -35,7 +41,6 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
       },
     });
     const userRole = user.role.name;
-    console.log(userRole);
     const newMessage = {
       user_id: userId,
       ticket_id: ticketId,
@@ -52,26 +57,26 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
     const skip = (page - 1) * limit;
 
     const [data,total] = await this.ticketMessageRepository
-      .createQueryBuilder('ticketMessage')
-      .where('ticketMessage.ticket_id = :ticketId', { ticketId })
+        .createQueryBuilder('ticketMessage')
+        .where('ticketMessage.ticket_id = :ticketId', { ticketId })
         .leftJoinAndMapOne('ticketMessage.user',
             UserEntity, 'user', 'ticketMessage.user_id = user.id')
         .leftJoinAndMapMany(
-        'ticketMessage.attachment',
-        SystemSupportAttachment,
-        'attachment',
-        'ticketMessage.id = attachment.message_id',
-      )
+            'ticketMessage.attachment',
+            SystemSupportAttachment,
+            'attachment',
+            'ticketMessage.id = attachment.message_id',
+        )
         .select(['ticketMessage', 'attachment',
           'user.firstName','user.lastName', 'user.username', 'user.email', 'user.picture'])
-      .skip(skip)
-      .take(limit)
-      .orderBy('ticketMessage.createdDate', 'ASC')
-      .getManyAndCount();
+        .skip(skip)
+        .take(limit)
+        .orderBy('ticketMessage.createdDate', 'ASC')
+        .getManyAndCount();
 
 
     data.forEach((obj,index) =>{
-       var customArr = []
+      var customArr = []
       customArr = [...obj['attachment']]
       var attachmentString = []
       customArr.forEach(singleAttachment =>{
@@ -80,8 +85,6 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
       delete obj['attachment'];
       obj['attachment'] =  attachmentString;
     })
-
-    console.log(userId)
     const user = await UserEntity.findOne({
       where:{
         id: userId,
@@ -113,17 +116,30 @@ export class TicketMessagesService extends TypeOrmCrudService<TicketMessage> {
   }
 
   // attachment
-  async updateFile(ticket_id: string, message_id, user_id: string, attachment: string){
+  async updateFile(ticketId: string, userId: string, attachment: string){
+    const user = await UserEntity.findOne(userId);
+    let ticketMessage = new TicketMessage();
+    ticketMessage.user_id = userId;
+    ticketMessage.ticket_id = ticketId;
+    ticketMessage.message = '';
+    ticketMessage.role = user.role.name;
+
+    const message = await this.saveOneEntity(ticketMessage);
     const data = {
-      ticket_id: ticket_id,
-      message_id: message_id,
-      user_id: user_id,
+      ticket_id: ticketId,
+      message_id: message.id,
+      user_id: userId,
       attachment: attachment
     }
-    const user = await UserEntity.findOne(user_id); 
-  const newAttachment = await SystemSupportAttachment.save(SystemSupportAttachment.create(data))
-  newAttachment['user'] = user
-  return {data: newAttachment }
+    const systemSupportAttachment = await SystemSupportAttachment.save(SystemSupportAttachment.create(data))
+    const response = await this.findOneEntity({
+      where: {
+        id: message.id
+      }
+    })
+    response['user'] = user
+    response['attachment'] = [systemSupportAttachment.attachment]
+    return {data: response }
   }
-  
+
 }
