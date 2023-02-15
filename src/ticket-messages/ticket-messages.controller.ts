@@ -42,13 +42,12 @@ export class TicketMessagesController implements CrudController<TicketMessage> {
      },
    },
  })
- @Post('/update-file/:ticket_id/:message_id')
+ @Post('/update-file/:ticket_id')
  @HttpCode(HttpStatus.OK)
  @UseInterceptors(FileInterceptor('file'))
  public async updateImage(
    @Request() request: Express.Request,
    @Param('ticket_id') ticket_id: string,
-   @Param('message_id') message_id: string,
    @UploadedFile() file: Express.Multer.File,
  ) {
    const driver = this.configService.get('file.driver');
@@ -57,7 +56,7 @@ export class TicketMessagesController implements CrudController<TicketMessage> {
      s3: file.location,
      firebase: file.publicUrl,
    };
-   return this.service.updateFile(ticket_id,message_id,request.user.sub, attachment[driver]);
+   return this.service.updateFile(ticket_id,request.user.sub, attachment[driver]);
  }
 
 
