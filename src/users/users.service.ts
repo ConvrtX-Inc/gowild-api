@@ -1,15 +1,15 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
-import {TypeOrmCrudService} from '@nestjsx/crud-typeorm';
-import {UserEntity} from './user.entity';
-import {InjectRepository} from '@nestjs/typeorm';
-import {Between, Repository} from 'typeorm';
-import {FindOptions} from 'src/common/types/find-options.type';
-import {DeepPartial} from 'src/common/types/deep-partial.type';
-import {StatusEnum} from 'src/auth/status.enum';
-import {MailService} from 'src/mail/mail.service';
-import {StatusService} from '../statuses/status.service';
-import {UpdateUserDto} from './dtos/update-user.dto';
-import {RoleEnum} from 'src/roles/roles.enum';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
+import { UserEntity } from './user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Between, Repository } from 'typeorm';
+import { FindOptions } from 'src/common/types/find-options.type';
+import { DeepPartial } from 'src/common/types/deep-partial.type';
+import { StatusEnum } from 'src/auth/status.enum';
+import { MailService } from 'src/mail/mail.service';
+import { StatusService } from '../statuses/status.service';
+import { UpdateUserDto } from './dtos/update-user.dto';
+import { RoleEnum } from 'src/roles/roles.enum';
 
 @Injectable()
 export class UsersService extends TypeOrmCrudService<UserEntity> {
@@ -147,8 +147,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
       location: string;
       locationTwo: string;
       accountStatus: string;
-      frontImage:string;
-        backImage:string
+      frontImage: string;
+      backImage: string
     } = {
       id: user.id,
       firstName: user.firstName,
@@ -158,7 +158,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
       location: `${user.addressOne}`,
       locationTwo: `${user.addressTwo}`,
       accountStatus: user.status.statusName,
-      frontImage:user.frontImage,
+      frontImage: user.frontImage,
       backImage: user.backImage
     };
 
@@ -192,8 +192,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         location: string;
         locationTwo: string;
         accountStatus: string;
-        frontImage:string;
-        backImage:string
+        frontImage: string;
+        backImage: string
       } = {
         id: obj.id,
         firstName: obj.firstName,
@@ -207,7 +207,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         location: `${obj.addressOne}`,
         locationTwo: `${obj.addressTwo}`,
         accountStatus: obj.status.statusName,
-        frontImage:obj.frontImage,
+        frontImage: obj.frontImage,
         backImage: obj.backImage
       };
       return container;
@@ -225,35 +225,35 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
 
 
     const onlineUsers = await this.usersRepository
-        .createQueryBuilder("user")
-        .select("DATE(user.createdDate) as date")
-        .addSelect("COUNT(*) as count")
-        .innerJoin("user.role", "role", "role.name = :roleName", { roleName: RoleEnum.USER })
-        .innerJoin("user.status", "status", "status.statusName = :statusName", { statusName: StatusEnum.Active })
-        .where("user.createdDate >= :sixteenDaysAgo", { sixteenDaysAgo: sixteenDaysAgo })
-        .groupBy("date")
-        .getRawMany();
+      .createQueryBuilder("user")
+      .select("DATE(user.createdDate) as date")
+      .addSelect("COUNT(*) as count")
+      .innerJoin("user.role", "role", "role.name = :roleName", { roleName: RoleEnum.USER })
+      .innerJoin("user.status", "status", "status.statusName = :statusName", { statusName: StatusEnum.Active })
+      .where("user.createdDate >= :sixteenDaysAgo", { sixteenDaysAgo: sixteenDaysAgo })
+      .groupBy("date")
+      .getRawMany();
 
     const newUsers = await this.usersRepository
-        .createQueryBuilder("user")
-        .select("DATE(user.createdDate) as date")
-        .addSelect("COUNT(*) as count")
-        .innerJoin("user.role", "role", "role.name = :roleName", { roleName: RoleEnum.USER })
-        .where("user.createdDate >= :sixteenDaysAgo", { sixteenDaysAgo: sixteenDaysAgo })
-        .groupBy("date")
-        .getRawMany();
+      .createQueryBuilder("user")
+      .select("DATE(user.createdDate) as date")
+      .addSelect("COUNT(*) as count")
+      .innerJoin("user.role", "role", "role.name = :roleName", { roleName: RoleEnum.USER })
+      .where("user.createdDate >= :sixteenDaysAgo", { sixteenDaysAgo: sixteenDaysAgo })
+      .groupBy("date")
+      .getRawMany();
 
     const bannedUsers = await this.usersRepository
-        .createQueryBuilder("user")
-        .select("DATE(user.createdDate) as date")
-        .addSelect("COUNT(*) as count")
-        .innerJoin("user.role", "role", "role.name = :roleName", { roleName: RoleEnum.USER })
-        .innerJoin("user.status", "status", "status.statusName = :statusName", { statusName: StatusEnum.Inactive })
-        .where("user.createdDate >= :sixteenDaysAgo", { sixteenDaysAgo: sixteenDaysAgo })
-        .groupBy("date")
-        .getRawMany();
+      .createQueryBuilder("user")
+      .select("DATE(user.createdDate) as date")
+      .addSelect("COUNT(*) as count")
+      .innerJoin("user.role", "role", "role.name = :roleName", { roleName: RoleEnum.USER })
+      .innerJoin("user.status", "status", "status.statusName = :statusName", { statusName: StatusEnum.Inactive })
+      .where("user.createdDate >= :sixteenDaysAgo", { sixteenDaysAgo: sixteenDaysAgo })
+      .groupBy("date")
+      .getRawMany();
 
-    return {newUsers: newUsers, onlineUsers: onlineUsers, bannedUsers: bannedUsers };
+    return { newUsers: newUsers, onlineUsers: onlineUsers, bannedUsers: bannedUsers };
   }
 
   async getUserCount() {
@@ -261,10 +261,10 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
     return {
       signup_users: await this.usersRepository.count({
         relations: ['role'],
-        where: { role:{ name: RoleEnum.USER } }
+        where: { role: { name: RoleEnum.USER } }
       }),
       active_users: await this.usersRepository.count({
-        relations: ['status','role'],
+        relations: ['status', 'role'],
         where: {
           role: {
             name: RoleEnum.USER
@@ -296,15 +296,15 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
     endOfDay.setHours(23, 59, 59, 999);
 
     const users = await this.usersRepository.find({
-      relations:['role'],
+      relations: ['role'],
 
       where: {
-        role:{ name: RoleEnum.USER },
+        role: { name: RoleEnum.USER },
         createdDate: Between(startOfDay, endOfDay)
       }
     });
-    if(!users){
-      throw new NotFoundException({message: "Users Not Found"})
+    if (!users) {
+      throw new NotFoundException({ message: "Users Not Found" })
     }
     const tenMinutesBefore = new Date();
     tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
@@ -321,8 +321,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         location: string;
         locationTwo: string;
         accountStatus: string;
-        frontImage:string;
-        backImage:string
+        frontImage: string;
+        backImage: string
       } = {
         firstName: obj.firstName,
         lastName: obj.lastName,
@@ -335,7 +335,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         location: obj.addressOne,
         locationTwo: obj.addressTwo,
         accountStatus: obj.status.statusName,
-        frontImage:obj.frontImage,
+        frontImage: obj.frontImage,
         backImage: obj.backImage
 
       };
@@ -369,8 +369,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         addressOne: string;
         addressTwo: string;
         accountStatus: string;
-        frontImage:string;
-        backImage:string
+        frontImage: string;
+        backImage: string
       } = {
         firstName: obj.firstName,
         lastName: obj.lastName,
@@ -383,11 +383,24 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         addressOne: obj.addressOne,
         addressTwo: obj.addressTwo,
         accountStatus: obj.status.statusName,
-        frontImage:obj.frontImage,
+        frontImage: obj.frontImage,
         backImage: obj.backImage
       };
       return container;
     });
     return data;
+  }
+
+  async selfieVerificationStatus(res: boolean, user_id: string) {
+    const user = await this.usersRepository.findOne({
+      where: {
+        id: user_id
+      }
+    })
+    if (user) {
+      user.selfie_verified = true;
+      return await user.save();
+
+    }
   }
 }

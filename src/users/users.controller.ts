@@ -129,7 +129,7 @@ export class UsersController implements CrudController<UserEntity> {
     ]),
   )
   public async updatePicture(
-    
+    @Request() req,
     @UploadedFiles()
     files: { image1?: Express.Multer.File; image2?: Express.Multer.File },
   ) {
@@ -147,12 +147,36 @@ export class UsersController implements CrudController<UserEntity> {
         };
       }
     }
+    try {      
+      const res = await this.imageVerificationService.verifyImagesAreSame(
+        images.image1,
+        images.image2,
+      )
+      if (res == true) {
+        const user = this.service.selfieVerificationStatus(res, req.user.sub);
+        console.log("user");
+        console.log("user");
+        console.log("user");
+        console.log(user);
+        console.log("user");
+        console.log("user");
+        return {
+          image_verified: res,
+          message: "Selfie verified successfull "
+        };
+      } else if (res == false) {
+        return {
+          image_verified: res,
+          message: "Selfie not verified "
+        };
+      }
+    } catch (error) {
+      return {
+        image_verified: false,
+        message: "Selfie verification failed"
+      };
+    }
 
-    const res = await this.imageVerificationService.verifyImagesAreSame(
-      images.image1,
-      images.image2,
-    )
-    return { image_verified: res };
   }
 
 }

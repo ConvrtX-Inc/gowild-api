@@ -127,6 +127,10 @@ export class UserEntity extends AbstractBaseEntity {
   })
   hash: string;
 
+
+  @Column({ default : false})
+  selfie_verified: boolean;
+
   @ApiHideProperty()
   @Exclude()
   @Column({
