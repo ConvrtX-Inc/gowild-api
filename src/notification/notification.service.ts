@@ -8,8 +8,8 @@ import { RoleEnum } from '../roles/roles.enum';
 import * as admin from 'firebase-admin';
 import { UserEntity } from 'src/users/user.entity';
 import { pushNotificationDto } from './dtos/push-notification.dto';
-import { ConsoleLogger } from '@nestjs/common/services';
 import { BadGatewayException } from '@nestjs/common/exceptions';
+import {NotificationTypeEnum} from "./notification-type.enum";
 
 @Injectable()
 export class NotificationService extends TypeOrmCrudService<Notification> {
@@ -126,7 +126,7 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
         addAdminNotification.notification_msg = dto.message;
         addAdminNotification.msg_code = sent;
         addAdminNotification.user_id = user.id;
-        addAdminNotification.type = 'push'
+        addAdminNotification.type = NotificationTypeEnum.PUSH;
         addAdminNotification.role = RoleEnum.ADMIN;
         await this.saveEntity(addAdminNotification);
         return {

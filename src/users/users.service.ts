@@ -68,14 +68,14 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
     user.status = status;
     await user.save();
 
-    await this.mailService.userUpdateStatus(
+    /*await this.mailService.userUpdateStatus(
       {
         to: user.email,
         name: user.fullName,
         data: {},
       },
       status,
-    );
+    );*/
 
     return user;
   }

@@ -7,7 +7,6 @@ import { UserEntity } from '../users/user.entity';
 import { AuthEmailLoginDto } from './dtos/auth-email-login.dto';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import * as crypto from 'crypto';
-import * as bcrypt from 'bcryptjs';
 import { SocialInterface } from 'src/social/interfaces/social.interface';
 import { AuthRegisterLoginDto } from './dtos/auth-register-login.dto';
 import { UsersService } from 'src/users/users.service';
@@ -24,12 +23,11 @@ import { TokenResponse } from './dtos/token';
 import { SmsService } from '../sms/sms.service';
 import { StatusEnum } from './status.enum';
 import { StatusService } from '../statuses/status.service';
-import { randomInt } from 'crypto';
 import { RoleService } from '../roles/role.service';
 import { RoleEnum } from '../roles/roles.enum';
 import { AuthVerifyUserDto } from './dtos/auth-verify-user.dto';
 import appConfig from 'src/config/app.config';
-import { BadGatewayException, BadRequestException } from '@nestjs/common/exceptions';
+import { BadRequestException } from '@nestjs/common/exceptions';
 
 @Injectable()
 export class AuthService {
@@ -55,6 +53,16 @@ export class AuthService {
         status: status.id,
       },
     });
+
+    if (!user){
+      throw new UnprocessableEntityException({
+        errors: [
+          {
+            message: 'This email is blocked by Admin!',
+          },
+        ],
+      });
+    }
     if (user.phoneVerified == true) {
       const isValidPassword = await this.passwordService.verifyPassword(
         user,
