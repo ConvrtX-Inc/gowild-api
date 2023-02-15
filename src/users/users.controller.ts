@@ -29,6 +29,7 @@ import { Roles } from '../roles/roles.decorator';
 import { RoleEnum } from '../roles/roles.enum';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { ConfigService } from '@nestjs/config';
+import { ImageVerificationService } from './image.verification.service';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -41,7 +42,8 @@ export class UsersController implements CrudController<UserEntity> {
   constructor(
     public service: UsersService,
     private readonly configService: ConfigService,
-  ) {}
+    private imageVerificationService: ImageVerificationService
+  ) { }
 
   get base(): CrudController<UserEntity> {
     return this;
@@ -99,14 +101,11 @@ export class UsersController implements CrudController<UserEntity> {
     };
     const keys = ['picture', 'frontImage', 'backImage'];
     const driver = this.configService.get('file.driver');
-    console.log(driver);
-    console.log('File Driver');
     for (const key of keys) {
       if (key in files) {
         images[key] = {
-          local: `/${this.configService.get('app.apiPrefix')}/v1/${
-            files[key][0].path
-          }`,
+          local: `/${this.configService.get('app.apiPrefix')}/v1/${files[key][0].path
+            }`,
           s3: files[key][0].location,
           firebase: files[key][0].publicUrl,
         };
@@ -119,4 +118,41 @@ export class UsersController implements CrudController<UserEntity> {
       images.backImage ? images.backImage[driver] : null,
     );
   }
+
+  @Post('image-verification')
+  @HttpCode(HttpStatus.OK)
+  @Roles(RoleEnum.USER)
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'image1', maxCount: 1 },
+      { name: 'image2', maxCount: 1 },
+    ]),
+  )
+  public async updatePicture(
+    
+    @UploadedFiles()
+    files: { image1?: Express.Multer.File; image2?: Express.Multer.File },
+  ) {
+    const images = {
+      image1: null,
+      image2: null,
+    };
+    const keys = ['image1', 'image2'];
+    for (const key of keys) {
+      if (key in files) {
+        images[key] = {
+          local: files[key][0].path,
+          s3: files[key][0].location,
+          firebase: files[key][0].publicUrl,
+        };
+      }
+    }
+
+    const res = await this.imageVerificationService.verifyImagesAreSame(
+      images.image1,
+      images.image2,
+    )
+    return { image_verified: res };
+  }
+
 }
