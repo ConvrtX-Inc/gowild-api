@@ -11,10 +11,16 @@ export class ImageVerificationService {
         console.log(image1['local']);
         console.log(image2['local']);
         console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+        console.log(this.configService.get('file.driver'));
+        console.log("@@@@@@@@@@@@@@@@@@@@@@@");
 
         const driver = this.configService.get('file.driver');
+        console.log(driver);
+        console.log("Driver")
+        console.log("@@@@@@@@@@@@@@@@@@@@@@@");
 
         const rekognition = new RekognitionClient({
+
             region: this.configService.get<string>('awsConfig.region'),
             credentials: {
                 accessKeyId: this.configService.get<string>('awsConfig.accessKeyId'),
@@ -22,11 +28,14 @@ export class ImageVerificationService {
             },
         });
 
+        console.log(rekognition);
+        console.log("@@@@@@@@@@@@@@@@@@@@@@@");
         let bytes1 = null;
         let bytes2 = null;
+        console.log("Hello");
         console.log(bytes1)
         console.log(bytes2)
-        if (driver == 's3') {        
+        if (driver == 's3') {
             bytes1 = fs.readFileSync(image1['s3']);
             bytes2 = fs.readFileSync(image2['s3']);
         } else {
