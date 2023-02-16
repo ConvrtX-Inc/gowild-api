@@ -15,18 +15,18 @@ export class SystemSupportService extends TypeOrmCrudService<SystemSupport> {
     @InjectRepository(SystemSupport)
     private systemSupportRepository: Repository<SystemSupport>,
     private ticketMessage: TicketMessagesService,
-    private SystemSupportAttachmentService: SystemSupportAttachmentService,   
+    private SystemSupportAttachmentService: SystemSupportAttachmentService,
   ) {
     super(systemSupportRepository);
   }
 
   async addMessage(userId: string, payload: any) {
-    
+
     payload.user_id = userId;
     const user = await UserEntity.findOne(userId);
-  
+
     const newMessage = await this.ticketMessage.saveOne(payload);
-    newMessage['attachment']  = "";
+    newMessage['attachment']  = [];
     newMessage['user'] = user
     return {data : newMessage};
   }
