@@ -140,7 +140,7 @@ export class UsersController implements CrudController<UserEntity> {
     for (const key of keys) {
       if (key in files) {
         images[key] = {
-          local: `/${this.configService.get('app.apiPrefix')}/v1/${files[key][0].path}`,
+         local: `api/v1/${files[key][0].path}`,
           s3: files[key][0].location,
           firebase: files[key][0].publicUrl,
         };
