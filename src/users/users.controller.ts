@@ -104,8 +104,7 @@ export class UsersController implements CrudController<UserEntity> {
     for (const key of keys) {
       if (key in files) {
         images[key] = {
-          local: `/${this.configService.get('app.apiPrefix')}/v1/${files[key][0].path
-            }`,
+          local: `/${this.configService.get('app.apiPrefix')}/v1/${files[key][0].path}`,
           s3: files[key][0].location,
           firebase: files[key][0].publicUrl,
         };
@@ -141,7 +140,7 @@ export class UsersController implements CrudController<UserEntity> {
     for (const key of keys) {
       if (key in files) {
         images[key] = {
-          local: files[key][0].path,
+          local: `/${this.configService.get('app.apiPrefix')}/v1/${files[key][0].path}`,
           s3: files[key][0].location,
           firebase: files[key][0].publicUrl,
         };

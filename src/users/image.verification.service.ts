@@ -41,8 +41,8 @@ export class ImageVerificationService {
         } else {
             console.log("Local")
             console.log("Local")
-            bytes1 = fs.readFileSync(`api/v1${image1['local']}`);
-            bytes2 = fs.readFileSync(`api/v1${image1['local']}`);
+            bytes1 = fs.readFileSync(image1['local']);
+            bytes2 = fs.readFileSync(image2['local']);
         }
 
         console.log("$$$$$$$$$$$$$$$$$$$$$$$$");
