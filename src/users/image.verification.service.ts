@@ -8,16 +8,8 @@ export class ImageVerificationService {
     constructor(private readonly configService: ConfigService) { }
 
     async verifyImagesAreSame(image1: Express.Multer.File, image2: Express.Multer.File) {
-        console.log(image1['local']);
-        console.log(image2['local']);
-        console.log("@@@@@@@@@@@@@@@@@@@@@@@");
-        console.log(this.configService.get('file.driver'));
-        console.log("@@@@@@@@@@@@@@@@@@@@@@@");
 
         const driver = this.configService.get('file.driver');
-        console.log(driver);
-        console.log("Driver")
-        console.log("@@@@@@@@@@@@@@@@@@@@@@@");
 
         const rekognition = new RekognitionClient({
 
@@ -30,24 +22,13 @@ export class ImageVerificationService {
 
         let bytes1 = null;
         let bytes2 = null;
-        console.log("Hello");
-        console.log(bytes1)
-        console.log(bytes2)
         if (driver == 's3') {
             bytes1 = fs.readFileSync(image1['s3']);
             bytes2 = fs.readFileSync(image2['s3']);
         } else {
-            console.log("Local")
-            console.log(image1['local'])
-            console.log("Local")
-            bytes1 = fs.readFileSync(image1.path);
-            bytes2 = fs.readFileSync(image2.path);
-            console.log(bytes1);
+            bytes1 = fs.readFileSync(image1['local'].path);
+            bytes2 = fs.readFileSync(image2['local'].path);
         }
-
-        console.log("$$$$$$$$$$$$$$$$$$$$$$$$");
-        console.log(bytes1)
-        console.log(bytes2)
 
         const command = new CompareFacesCommand({
             SourceImage: { Bytes: bytes1 },
