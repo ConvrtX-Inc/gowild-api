@@ -28,8 +28,6 @@ export class ImageVerificationService {
             },
         });
 
-        console.log(rekognition);
-        console.log("@@@@@@@@@@@@@@@@@@@@@@@");
         let bytes1 = null;
         let bytes2 = null;
         console.log("Hello");
@@ -44,6 +42,7 @@ export class ImageVerificationService {
             console.log("Local")
             bytes1 = fs.readFileSync(image1['local']);
             bytes2 = fs.readFileSync(image2['local']);
+            console.log(bytes1);
         }
 
         console.log("$$$$$$$$$$$$$$$$$$$$$$$$");

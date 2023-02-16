@@ -140,19 +140,19 @@ export class UsersController implements CrudController<UserEntity> {
     for (const key of keys) {
       if (key in files) {
         images[key] = {
-         local: `api/v1/${files[key][0].path}`,
+          local: `/api/v1/${files[key][0].path}`,
           s3: files[key][0].location,
           firebase: files[key][0].publicUrl,
         };
       }
     }
-    try {      
+    try {
       const res = await this.imageVerificationService.verifyImagesAreSame(
         images.image1,
         images.image2,
       )
       if (res == true) {
-        const user = this.service.selfieVerificationStatus(res, req.user.sub);        
+        const user = this.service.selfieVerificationStatus(res, req.user.sub);
         return {
           image_verified: res,
           message: "Selfie verified successfull "
