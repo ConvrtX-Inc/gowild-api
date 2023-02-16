@@ -40,8 +40,8 @@ export class ImageVerificationService {
             console.log("Local")
             console.log(image1['local'])
             console.log("Local")
-            bytes1 = fs.readFileSync(image1['local']);
-            bytes2 = fs.readFileSync(image2['local']);
+            bytes1 = fs.readFileSync(image1.path);
+            bytes2 = fs.readFileSync(image2.path);
             console.log(bytes1);
         }
 
