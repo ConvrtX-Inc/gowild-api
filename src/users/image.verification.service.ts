@@ -24,10 +24,14 @@ export class ImageVerificationService {
 
         let bytes1 = null;
         let bytes2 = null;
-        if (driver == 's3') {
+        console.log(bytes1)
+        console.log(bytes2)
+        if (driver == 's3') {        
             bytes1 = fs.readFileSync(image1['s3']);
             bytes2 = fs.readFileSync(image2['s3']);
         } else {
+            console.log("Local")
+            console.log("Local")
             bytes1 = fs.readFileSync(image1['local']);
             bytes2 = fs.readFileSync(image2['local']);
         }
