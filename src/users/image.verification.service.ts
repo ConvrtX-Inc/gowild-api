@@ -8,6 +8,9 @@ export class ImageVerificationService {
     constructor(private readonly configService: ConfigService) { }
 
     async verifyImagesAreSame(image1: Express.Multer.File, image2: Express.Multer.File) {
+        console.log(image1['local']);
+        console.log(image2['local']);
+        console.log("@@@@@@@@@@@@@@@@@@@@@@@");
 
         const driver = this.configService.get('file.driver');
 
@@ -29,10 +32,14 @@ export class ImageVerificationService {
             bytes2 = fs.readFileSync(image2['local']);
         }
 
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$");
+        console.log(bytes1)
+        console.log(bytes2)
+
         const command = new CompareFacesCommand({
             SourceImage: { Bytes: bytes1 },
             TargetImage: { Bytes: bytes2 },
-            SimilarityThreshold: 80,        
+            SimilarityThreshold: 80,
         });
 
         const result = await rekognition.send(command);
