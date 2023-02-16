@@ -8,7 +8,6 @@ export class CreateRouteDto {
   title: string;
 
   @ApiProperty({ example: 'Doe' })
-  @IsOptional()
   @IsNotEmpty()
   description?: string;
 
