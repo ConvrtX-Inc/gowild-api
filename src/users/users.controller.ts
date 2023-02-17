@@ -159,7 +159,7 @@ export class UsersController implements CrudController<UserEntity> {
         };
       } else if (res == false) {
         return {
-          image_verified: res,
+          selfie_verified: res,
           message: "Selfie not verified "
         };
       }
