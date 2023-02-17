@@ -69,7 +69,7 @@ export class SubAdminService {
     entity.phoneNo = dto.phoneNo;
     entity.addressOne = dto.addressOne;
     entity.birthDate = dto.birthDate;
-    entity.phoneVerified = false;
+    entity.phoneVerified = true;
 
     entity.status = await this.statusService.findByEnum(StatusEnum.Active);
     entity.role = await this.roleService.findByEnum(RoleEnum.ADMIN);
