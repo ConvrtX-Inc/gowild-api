@@ -18,6 +18,7 @@ import { paginateResponse } from "../common/paginate.response";
 import { RouteHistoricalEvent } from 'src/route-historical-events/entities/route-historical-event.entity';
 import { NotificationTypeEnum } from "../notification/notification-type.enum";
 import { NotificationService } from "../notification/notification.service";
+import { SimpleUser } from 'src/auth/dtos/token';
 
 
 @Injectable()
@@ -348,7 +349,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
     return { message: 'Route Created Successfully!', data: res };
   }
 
-  public async create(userId: string, role: RoleEnum, dto: CreateRouteDto) {
+  public async create(userId: string, role: RoleEnum, dto: CreateRouteDto, user?: SimpleUser) {
     // @ts-ignore    
     if (role === RoleEnum.ADMIN || role === RoleEnum.SUPER_ADMIN) {
       const newRoute = await this.routeRepository.save(
@@ -384,6 +385,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
           ...dto,
         }),
       );
+      await this.NotificationService.createNotificationAdmin(`${user.firstName} ${user.lastName} created a route "${data.title}"`, NotificationTypeEnum.ROUTES);
       return { message: 'Route Created Successfully!', data: data }
     }
   }

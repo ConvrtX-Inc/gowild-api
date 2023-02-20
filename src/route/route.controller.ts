@@ -103,7 +103,7 @@ export class RouteController implements CrudController<Route> {
     @Request() request: Express.Request,
     @Body() dto: CreateRouteDto,
   ) {
-    return this.service.create(request.user.sub, RoleEnum.USER, dto);
+    return this.service.create(request.user.sub, RoleEnum.USER, dto, request.user.user);
   }
 
   @Override('updateOneBase')
