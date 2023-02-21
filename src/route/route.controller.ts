@@ -88,11 +88,11 @@ export class RouteController implements CrudController<Route> {
   get base(): CrudController<Route> {
     return this;
   }
-@Get('/:id')
+/*@Get('/:id')
 @ApiOperation({ summary: 'Get One Route' })
 async getOneRoute(@Param('id') id: string){
  return this.service.getOneRoute(id);
-}
+}*/
 
 
   @Override('deleteOneBase')
