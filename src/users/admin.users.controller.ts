@@ -28,9 +28,10 @@ import { validationOptions } from '../common/validation-options';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
+import { AdminRolesGuard } from 'src/roles/admin.roles.guard';
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, AdminRolesGuard)
 @ApiTags('Admin-Users')
 @Crud({
   validation: validationOptions,
