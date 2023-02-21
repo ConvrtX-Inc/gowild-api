@@ -583,4 +583,17 @@ export class RouteService extends TypeOrmCrudService<Route> {
     }
     return route;
   }
+
+
+  async getOneRoute(routeId){
+    const route = await this.routeRepository.findOne({
+      where:{
+        id: routeId
+      },
+      relations: ['historicalEvents']
+      
+
+    });
+    return {data : route}
+  }
 }

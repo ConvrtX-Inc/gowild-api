@@ -21,7 +21,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Crud, CrudController, Override } from '@nestjsx/crud';
+import { Crud, CrudController, Override, ParsedRequest, CrudRequest } from '@nestjsx/crud';
 import { Route } from './entities/route.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateRouteDto } from './dto/create-route.dto';
@@ -43,7 +43,7 @@ import { UpdateRouteDto } from './dto/update-route.dto';
     type: Route,
   },
   routes: {
-    exclude: ['replaceOneBase', 'createManyBase'],
+    exclude: ['replaceOneBase', 'createManyBase','getOneBase'],
   },
   query: {
     maxLimit: 50,
@@ -55,11 +55,11 @@ import { UpdateRouteDto } from './dto/update-route.dto';
       },
       historicalEvents: {
         eager: true,
-        exclude: ['createdDate', 'updatedDate'],
+        exclude: ['createdDate', 'updatedDate', ],
       },
       'historicalEvents.image': {
         eager: true,
-        exclude: ['createdDate', 'updatedDate'],
+        exclude: ['createdDate', 'updatedDate',],
       },
     },
   },
@@ -88,6 +88,12 @@ export class RouteController implements CrudController<Route> {
   get base(): CrudController<Route> {
     return this;
   }
+@Get('/:id')
+@ApiOperation({ summary: 'Get One Route' })
+async getOneRoute(@Param('id') id: string){
+ return this.service.getOneRoute(id);
+}
+
 
   @Override('deleteOneBase')
   async deleteOneRoute(@Param('id') id: string) {
