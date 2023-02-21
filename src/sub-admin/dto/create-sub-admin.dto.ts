@@ -4,6 +4,7 @@ import {
   IsEmail,
   IsEnum,
   IsOptional,
+  MinLength,
   Validate,
 } from 'class-validator';
 import { IsNotExist } from 'src/common/validators/is-not-exists.validator';
@@ -65,4 +66,9 @@ export class CreateSubAdminDto {
   @ApiProperty({ example: '1999-12-12 11:11:11', nullable: true })
   @Column({ type: 'timestamp', nullable: true })
   birthDate?: Date;
+ 
+  @ApiProperty()
+  @MinLength(6)
+  password: string;
+
 }

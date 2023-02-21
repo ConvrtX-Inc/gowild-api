@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, IsEmail, IsOptional } from 'class-validator';
+import { Allow, IsEmail, IsOptional, MinLength } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class UpdateSubAdminDto{
@@ -37,4 +37,8 @@ export class UpdateSubAdminDto{
   @ApiProperty({ example: '1999-12-12 11:11:11', nullable: true })
   @Allow()
   birthDate: Date;
+
+  @ApiProperty()
+  @MinLength(6)
+  password: string;
 }

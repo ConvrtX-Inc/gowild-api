@@ -142,6 +142,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
       id: string;
       firstName: string;
       lastName: string;
+      username:string;
       email: string;
       onlineStatus: boolean;
       location: string;
@@ -153,6 +154,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
       id: user.id,
       firstName: user.firstName,
       lastName: user.lastName,
+      username: user.username,
       email: user.email,
       onlineStatus: user.updatedDate > tenMinutesBefore ? true : false,
       location: `${user.addressOne}`,
@@ -183,6 +185,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         id: string;
         firstName: string;
         lastName: string;
+        username:string;
         gender: string;
         phoneNo: string;
         picture: string;
@@ -198,6 +201,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         id: obj.id,
         firstName: obj.firstName,
         lastName: obj.lastName,
+        username:obj.username,
         gender: obj.gender,
         phoneNo: obj.phoneNo,
         picture: obj.picture,
