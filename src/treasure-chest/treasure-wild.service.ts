@@ -51,13 +51,13 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     });*/
     console.log("isExists ____________________",isExist)
     if (isExist.length !== 0) {
-      let eventDate = await this.treasureChestRepository.findOne({
+      let EventDate = await this.treasureChestRepository.findOne({
         where: {
-          id: isExist[0].treasure_chest_id,
+          id: isExist[0]?.treasure_chest_id,
         },
       });
-
-      const event = eventDate.eventDate
+console.log(',,,,,,,,,,,,,,,,,,,,,,inside isExist')
+      const event = EventDate?.eventDate
       const currentDate = new Date(Date.now())
       console.log("Event ____________________",event)
 
@@ -73,8 +73,8 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
         id: dto.treasure_chest_id,
       },
     });
-
-    if(newEventDate.eventDate < new Date(Date.now())){
+console.log('newEventDate.,...............', newEventDate.eventDate, newEventDate )
+    if(newEventDate?.eventDate < new Date(Date.now())){
       return { errors: [ { message: "Treasure Chest Expired!"} ] };
     }
 
