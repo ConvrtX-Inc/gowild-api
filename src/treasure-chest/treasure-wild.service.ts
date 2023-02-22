@@ -41,37 +41,24 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
         'treasure_hunt.treasure_chest_id = chest.id')
       .orderBy('chest.eventDate', 'DESC')
       .getMany();
-    /*const isExist = await this.UserTreasureHuntService.findManyEntities({
-      where: {
-        user_id: req.user.sub,
-        status:
-          UserTreasureHuntStatusEnum.PENDING ||
-          UserTreasureHuntStatusEnum.PROCESSING,
-      },
-    });*/
-    console.log("isExists ____________________", isExist)
+    
+    
     if (isExist.length != 0) {
-      let chestId = isExist[0]?.treasure_chest_id;
-      console.log("%+++++++++++++++++++++++++++++########", chestId)
-      if (chestId) {
-        var EventDate = await this.treasureChestRepository.findOne({
+      
+        let EventDate = await this.treasureChestRepository.findOne({
           where: {
-            id: chestId
+            id: isExist[0]?.treasure_chest_id
           },
         });
+      if(EventDate != null){
+        const event = EventDate?.eventDate
+        const currentDate = new Date(Date.now())
+  
+        if (event >= currentDate) {
+          return { errors: [{ message: "You're Already Register in a Hunt" }] };
+        }
       }
-
-      console.log(',,,,,,,,,,,,,,,,,,,,,,inside isExist')
-      console.log('........EventDate Query.......', EventDate);
-      const event = EventDate?.eventDate
-      const currentDate = new Date(Date.now())
-      console.log("Event ____________________", event)
-
-      console.log("current____________________", currentDate)
-
-      if (event >= currentDate) {
-        return { errors: [{ message: "You're Already Register in a Hunt" }] };
-      }
+     
     }
 
     let newEventDate = await this.treasureChestRepository.findOne({
@@ -79,7 +66,6 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
         id: dto.treasure_chest_id,
       },
     });
-    console.log('newEventDate.,...............', newEventDate.eventDate, newEventDate)
     if (newEventDate?.eventDate < new Date(Date.now())) {
       return { errors: [{ message: "Treasure Chest Expired!" }] };
     }
