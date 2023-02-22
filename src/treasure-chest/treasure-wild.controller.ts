@@ -79,7 +79,7 @@ export class TreasureWildController implements CrudController<TreasureChest> {
     @Body() dto: RegisterTreasureHuntDto,
     @Request() request,
   ) {
-    return this.service.registerTreasureHunt(dto, request);
+    return await this.service.registerTreasureHunt(dto, request);
   }
 
   @ApiResponse({ type: TreasureChest })
@@ -87,17 +87,17 @@ export class TreasureWildController implements CrudController<TreasureChest> {
   @ApiOperation({ summary: 'Get All listings' })
   @HttpCode(HttpStatus.OK)
   async getAllListings(@Query() query, @Request() req) {
-    return this.service.getTreasureWild(query.limit, query.page, req.user.sub);
+    return await this.service.getTreasureWild(query.limit, query.page, req.user.sub);
   }
   @Post('verify')
   @HttpCode(HttpStatus.OK)
   async veriifyHunt(@Body() dto: verifyHuntDto, @Request() req) {
-    return this.service.verifyHunt(dto, req.user);
+    return await this.service.verifyHunt(dto, req.user);
   }
 
   @Post('resend-code')
   @HttpCode(HttpStatus.OK)
   async resendCode(@Body() dto: RegisterTreasureHuntDto, @Request() req) {
-    return this.service.resendCode(dto, req.user.sub);
+    return await this.service.resendCode(dto, req.user.sub);
   }
 }
