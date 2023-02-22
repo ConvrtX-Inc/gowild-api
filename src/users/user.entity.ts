@@ -45,9 +45,6 @@ export class UserEntity extends AbstractBaseEntity {
 
   @Allow()
   @ApiProperty({ example: 'username', nullable: true })
-  @Transform((value: string | null) => value?.toLowerCase().trim())
-  @IsOptional({ groups: [CrudValidationGroups.UPDATE] })
-  @IsNotEmpty({ groups: [CrudValidationGroups.CREATE] })
   @Validate(IsNotExist, ['UserEntity'], {
     message: 'username already exists',
     groups: [CrudValidationGroups.CREATE],
