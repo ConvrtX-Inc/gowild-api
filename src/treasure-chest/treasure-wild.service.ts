@@ -134,9 +134,13 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
       .take(take)
       .getManyAndCount();
 
+
     const crrUser = await this.treasureChestRepository
       .createQueryBuilder('treasureChest')
-      .leftJoinAndMapMany(
+      .where('treasureChest.eventDate >= :currentDate', {
+        currentDate: currentDate,
+      })
+      .innerJoinAndMapOne(
         'treasureChest.treasureHunts',
         UserTreasureHuntEntity,
         'treasureHunts',
@@ -149,7 +153,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
         'user',
         'treasureHunts.user_id = user.id',
       )
-      .getManyAndCount();
+      .getOne();
 
 // return {data:data, currentUser: crrUser}; 
 
@@ -157,12 +161,14 @@ const parrentArray = [];
 const customArray = [];
 
 for (let index = 0; index < data[0].length; index++) {
+
   const chest = data[0][index];
-  const userHunt = crrUser[0];
-  if (userHunt[index]['treasureHunts'][0]) {
-    const userHuntid = userHunt[index]['treasureHunts'][0];
+  const userHunt = crrUser;
+ 
+  if (userHunt !=null) {
+    const userHuntid = userHunt['treasureHunts'];
     if (userHuntid.treasure_chest_id == chest.id) {
-      chest['current_user_hunt'] = userHunt[index]['treasureHunts'][0];
+      chest['current_user_hunt'] = userHunt['treasureHunts'];
       customArray.push(chest);
     } else {
       chest['current_user_hunt'] = null;

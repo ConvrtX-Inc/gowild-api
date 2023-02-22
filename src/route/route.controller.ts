@@ -88,11 +88,7 @@ export class RouteController implements CrudController<Route> {
   get base(): CrudController<Route> {
     return this;
   }
-@Get('/:id')
-@ApiOperation({ summary: 'Get One Route' })
-async getOneRoute(@Param('id') id: string){
- return this.service.getOneRoute(id);
-}
+
 
 
   @Override('deleteOneBase')
@@ -163,7 +159,9 @@ async getOneRoute(@Param('id') id: string){
   @Get('created-routes')
   @ApiOperation({ summary: 'Get All User Created Routes' })
   async getUserCreatedRoutes(@Request() req, @Query() query) {
+
     return await this.service.findAndCountManyEntities({
+
         where: { user_id: req.user.sub },
         relations: ['historicalEvents'],
         order: {createdDate: "DESC"}
@@ -181,4 +179,10 @@ async getOneRoute(@Param('id') id: string){
   async getSaveRoute(@Request() req, @Query() query) {
     return await this.service.getSaveRoute(req.user.sub, query.pageNo, query.limitNo);
   }
+
+@Get('/:id')
+@ApiOperation({ summary: 'Get One Route' })
+async getOneRoute(@Param('id') id: string){
+ return await this.service.getOneRoute(id);
+}
 }
