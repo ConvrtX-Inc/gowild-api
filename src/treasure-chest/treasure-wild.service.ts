@@ -49,7 +49,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
           UserTreasureHuntStatusEnum.PROCESSING,
       },
     });*/
-    console.log(isExist)
+    console.log("isExists ____________________",isExist)
     if (isExist.length !== 0) {
       let eventDate = await this.treasureChestRepository.findOne({
         where: {
@@ -59,8 +59,9 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
 
       const event = eventDate.eventDate
       const currentDate = new Date(Date.now())
-      console.log(event)
-      console.log(currentDate)
+      console.log("Event ____________________",event)
+
+      console.log("current____________________",currentDate)
 
       if (event >= currentDate) {
         return { errors: [ { message: "You're Already Register in a Hunt"} ] };
