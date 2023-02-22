@@ -13,7 +13,7 @@ import { Sponsor } from 'src/sponsor/entities/sponsor.entity';
 import { UserEntity } from 'src/users/user.entity';
 import { NotificationService } from '../notification/notification.service';
 import { paginateResponse } from 'src/common/paginate.response';
-import {NotificationTypeEnum} from "../notification/notification-type.enum";
+import { NotificationTypeEnum } from "../notification/notification-type.enum";
 
 @Injectable()
 export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
@@ -34,13 +34,13 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
   async registerTreasureHunt(dto: RegisterTreasureHuntDto, req) {
 
     const isExist = await this.UserTreasureHuntRepository.createQueryBuilder("treasure_hunt")
-        .where("treasure_hunt.user_id = :user_id", { user_id: req.user.sub })
-        .andWhere("treasure_hunt.status = :status1 OR treasure_hunt.status = :status2",
-            { status1: UserTreasureHuntStatusEnum.PENDING, status2: UserTreasureHuntStatusEnum.PROCESSING })
-        .leftJoinAndMapMany('treasure_hunt.chest', TreasureChest,'chest',
-            'treasure_hunt.treasure_chest_id = chest.id')
-        .orderBy('chest.eventDate','DESC')
-        .getMany();
+      .where("treasure_hunt.user_id = :user_id", { user_id: req.user.sub })
+      .andWhere("treasure_hunt.status = :status1 OR treasure_hunt.status = :status2",
+        { status1: UserTreasureHuntStatusEnum.PENDING, status2: UserTreasureHuntStatusEnum.PROCESSING })
+      .leftJoinAndMapMany('treasure_hunt.chest', TreasureChest, 'chest',
+        'treasure_hunt.treasure_chest_id = chest.id')
+      .orderBy('chest.eventDate', 'DESC')
+      .getMany();
     /*const isExist = await this.UserTreasureHuntService.findManyEntities({
       where: {
         user_id: req.user.sub,
@@ -49,23 +49,28 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
           UserTreasureHuntStatusEnum.PROCESSING,
       },
     });*/
-    console.log("isExists ____________________",isExist)
-    if (isExist.length !== 0) {
-      let EventDate = await this.treasureChestRepository.findOne({
-        where: {
-          id: isExist[0]?.treasure_chest_id,
-        },
-      });
-console.log(',,,,,,,,,,,,,,,,,,,,,,inside isExist')
-console.log('........EventDate Query.......', EventDate);
+    console.log("isExists ____________________", isExist)
+    if (isExist.length != 0) {
+      let chestId = isExist[0]?.treasure_chest_id;
+      console.log("%+++++++++++++++++++++++++++++########", chestId)
+      if (chestId) {
+        var EventDate = await this.treasureChestRepository.findOne({
+          where: {
+            id: chestId
+          },
+        });
+      }
+
+      console.log(',,,,,,,,,,,,,,,,,,,,,,inside isExist')
+      console.log('........EventDate Query.......', EventDate);
       const event = EventDate?.eventDate
       const currentDate = new Date(Date.now())
-      console.log("Event ____________________",event)
+      console.log("Event ____________________", event)
 
-      console.log("current____________________",currentDate)
+      console.log("current____________________", currentDate)
 
       if (event >= currentDate) {
-        return { errors: [ { message: "You're Already Register in a Hunt"} ] };
+        return { errors: [{ message: "You're Already Register in a Hunt" }] };
       }
     }
 
@@ -74,9 +79,9 @@ console.log('........EventDate Query.......', EventDate);
         id: dto.treasure_chest_id,
       },
     });
-console.log('newEventDate.,...............', newEventDate.eventDate, newEventDate )
-    if(newEventDate?.eventDate < new Date(Date.now())){
-      return { errors: [ { message: "Treasure Chest Expired!"} ] };
+    console.log('newEventDate.,...............', newEventDate.eventDate, newEventDate)
+    if (newEventDate?.eventDate < new Date(Date.now())) {
+      return { errors: [{ message: "Treasure Chest Expired!" }] };
     }
 
     const data = {
@@ -157,36 +162,36 @@ console.log('newEventDate.,...............', newEventDate.eventDate, newEventDat
       )
       .getOne();
 
-// return {data:data, currentUser: crrUser}; 
+    // return {data:data, currentUser: crrUser}; 
 
-const parrentArray = [];
-const customArray = [];
+    const parrentArray = [];
+    const customArray = [];
 
-for (let index = 0; index < data[0].length; index++) {
+    for (let index = 0; index < data[0].length; index++) {
 
-  const chest = data[0][index];
-  const userHunt = crrUser;
- 
-  if (userHunt !=null) {
-    const userHuntid = userHunt['treasureHunts'];
-    if (userHuntid.treasure_chest_id == chest.id) {
-      chest['current_user_hunt'] = userHunt['treasureHunts'];
-      customArray.push(chest);
-    } else {
-      chest['current_user_hunt'] = null;
-      customArray.push(chest);
+      const chest = data[0][index];
+      const userHunt = crrUser;
+
+      if (userHunt != null) {
+        const userHuntid = userHunt['treasureHunts'];
+        if (userHuntid.treasure_chest_id == chest.id) {
+          chest['current_user_hunt'] = userHunt['treasureHunts'];
+          customArray.push(chest);
+        } else {
+          chest['current_user_hunt'] = null;
+          customArray.push(chest);
+        }
+      } else {
+        chest['current_user_hunt'] = null;
+        customArray.push(chest);
+      }
     }
-  } else {
-    chest['current_user_hunt'] = null;
-    customArray.push(chest);
-  }
-}
 
-parrentArray.push(customArray);
-parrentArray.push(data[1]);
+    parrentArray.push(customArray);
+    parrentArray.push(data[1]);
 
 
-/*   */
+    /*   */
     // const parrentArray = [];
     // const customArray = [];
 
@@ -227,7 +232,7 @@ parrentArray.push(data[1]);
       if (hunt.code == dto.code) {
         hunt.status = UserTreasureHuntStatusEnum.APPROVED;
         const updated = await hunt.save();
-        return {message: 'Successfully Registered', data: updated };
+        return { message: 'Successfully Registered', data: updated };
       } else {
         return {
           errors: [
