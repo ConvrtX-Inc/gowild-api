@@ -160,11 +160,11 @@ export class RouteService extends TypeOrmCrudService<Route> {
       if (leaderStats) {
         leaderStats.forEach((state) => {
           const leaderboard = this.mapLeaderboard(
-            state.id,
-            state.user_id,
-            state['user'].firstName,
-            state['user'].picture,
-            state.rank,
+            state?.id,
+            state?.user_id,
+            state['user']?.firstName? state['user']?.firstName : '',
+            state['user']?.picture,
+            state?.rank,
           );
           user.push(leaderboard);
         });
@@ -350,7 +350,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
   }
 
   public async create(userId: string, role: RoleEnum, dto: CreateRouteDto, user?: SimpleUser) {
-    // @ts-ignore    
+    // @ts-ignore
     if (role === RoleEnum.ADMIN || role === RoleEnum.SUPER_ADMIN) {
       const newRoute = await this.routeRepository.save(
         this.routeRepository.create({
@@ -559,7 +559,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
   }
 
   /*
-   * Find One Admin Route 
+   * Find One Admin Route
    */
   async findOneRoute(id: string) {
     const route = await this.routeRepository.findOne({
@@ -575,8 +575,8 @@ export class RouteService extends TypeOrmCrudService<Route> {
     const user = await getRepository(UserEntity).findOne({ where: { id: route.user_id } });
     route['firstName'] = user.firstName
     route['lastName'] = user.lastName
-    route['userPicture'] = user.picture   
-    if (historical) {      
+    route['userPicture'] = user.picture
+    if (historical) {
       route['historical_event'] = historical
     } else {
       route['historical_event'] = []
@@ -591,7 +591,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
         id: routeId
       },
       relations: ['historicalEvents']
-      
+
 
     });
     return {data : route}
