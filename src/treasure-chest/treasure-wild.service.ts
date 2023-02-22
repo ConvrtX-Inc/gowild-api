@@ -14,6 +14,7 @@ import { UserEntity } from 'src/users/user.entity';
 import { NotificationService } from '../notification/notification.service';
 import { paginateResponse } from 'src/common/paginate.response';
 import { NotificationTypeEnum } from "../notification/notification-type.enum";
+import { statusEnumsNames } from 'src/auth/status.enum';
 
 @Injectable()
 export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
@@ -109,7 +110,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
         'treasureChest.treasureHunts',
         UserTreasureHuntEntity,
         'treasureHunts',
-        'treasureChest.id = treasure_chest_id',
+        'treasureChest.id = treasure_chest_id and treasureHunts.status != :status',{status: UserTreasureHuntStatusEnum.DISAPPROVE}
       )
       .leftJoinAndMapMany(
         'treasureChest.sponsors',
@@ -140,6 +141,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
         'treasureChest.id = treasure_chest_id AND user_id = :user ',
         { user: id },
       )
+      .andWhere('treasureHunts.status != :status',{status: UserTreasureHuntStatusEnum.DISAPPROVE})
       .leftJoinAndMapOne(
         'treasureHunts.user',
         UserEntity,
