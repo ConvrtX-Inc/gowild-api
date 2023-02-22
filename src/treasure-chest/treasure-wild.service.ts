@@ -57,6 +57,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
         },
       });
 console.log(',,,,,,,,,,,,,,,,,,,,,,inside isExist')
+console.log('........EventDate Query.......', EventDate);
       const event = EventDate?.eventDate
       const currentDate = new Date(Date.now())
       console.log("Event ____________________",event)
