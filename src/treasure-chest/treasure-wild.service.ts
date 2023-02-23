@@ -134,7 +134,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
 
     const crrUser = await this.treasureChestRepository
       .createQueryBuilder('treasureChest')
-      .where('treasureChest.eventDate > :currentDate', {
+      .where('treasureChest.eventDate >= :currentDate', {
         currentDate: currentDate,
       })
       .innerJoinAndMapOne(
