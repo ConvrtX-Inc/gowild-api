@@ -87,16 +87,32 @@ export class RouteService extends TypeOrmCrudService<Route> {
   }
 
   async updateOneRoute(id: string, dto: UpdateRouteDto) {
+
+    const { historical_route, ...rest } = dto
     await this.routeRepository
       .createQueryBuilder()
       .update()
-      .set(dto)
+      .set(rest)
       .where('id = :id', { id })
       .execute();
 
+
+if (dto.historical_route) {
+  
+  for (let i = 0; i < dto.historical_route.length; i++) {
+    let myhistorical = {};
+    myhistorical = dto.historical_route[i];
+    myhistorical['route_id'] = id;
+    await this.routeHistoricalEventRepository.upsert(myhistorical, ['id'])
+    
+  }
+}
+
     const route = await this.routeRepository.findOne({
       where: { id: id },
+      relations: ['historicalEvents']
     });
+    
     return {
       message: 'Route Updated Successfully',
       data: route,
@@ -121,7 +137,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
       relations: ['historicalEvents'],
       skip: (page - 1) * limit,
       take: limit,
-      order:{
+      order: {
         createdDate: 'DESC'
       }
     });
@@ -162,7 +178,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
           const leaderboard = this.mapLeaderboard(
             state?.id,
             state?.user_id,
-            state['user']?.firstName? state['user']?.firstName : '',
+            state['user']?.firstName ? state['user']?.firstName : '',
             state['user']?.picture,
             state?.rank,
           );
@@ -585,15 +601,15 @@ export class RouteService extends TypeOrmCrudService<Route> {
   }
 
 
-  async getOneRoute(routeId){
+  async getOneRoute(routeId) {
     const route = await this.routeRepository.findOne({
-      where:{
+      where: {
         id: routeId
       },
       relations: ['historicalEvents']
 
 
     });
-    return {data : route}
+    return { data: route }
   }
 }
