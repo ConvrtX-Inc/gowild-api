@@ -33,6 +33,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     Register User for Treaure Hunt 
     */
   async registerTreasureHunt(dto: RegisterTreasureHuntDto, req) {
+    
 
     const isExist = await this.UserTreasureHuntRepository.createQueryBuilder("treasure_hunt")
       .where("treasure_hunt.user_id = :user_id", { user_id: req.user.sub })
@@ -52,10 +53,12 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
           },
         });
       if(EventDate != null){
-        const event = EventDate?.eventDate
-        const currentDate = new Date(Date.now())
+        
+        const eventDay = EventDate?.eventDate.setUTCHours(0, 0, 0, 0);
+        const currentDay = new Date(Date.now()).setUTCHours(0, 0, 0, 0)
+        
   
-        if (event >= currentDate) {
+        if (eventDay >= currentDay) {
           return { errors: [{ message: "You're Already Register in a Hunt" }] };
         }
       }
@@ -131,8 +134,8 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
 
     const crrUser = await this.treasureChestRepository
       .createQueryBuilder('treasureChest')
-      .where('treasureChest.eventDate >= :currentDate', {
-        currentDate: currentDate,
+      .where('treasureChest.eventDate > :currentDate', {
+        currentDate: new Date(Date.now()),
       })
       .innerJoinAndMapOne(
         'treasureChest.treasureHunts',
