@@ -45,7 +45,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
       .getMany();
     
     
-    if (isExist.length != 0) {
+    if (isExist.length !== 0) {
       
         let EventDate = await this.treasureChestRepository.findOne({
           where: {
