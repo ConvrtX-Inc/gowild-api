@@ -85,6 +85,14 @@ export class TreasureChestController implements CrudController<TreasureChest> {
     return await this.service.getAllChests();
   }
 
+  @Override('deleteOneBase')
+  async deleteTreasureChest(@Param('id') id: string){
+    
+    return await this.service.deleteTreasureChest(id);
+    
+
+  }
+
   @ApiResponse({ type: TreasureChest })
   @ApiConsumes('multipart/form-data')
   @ApiBody({

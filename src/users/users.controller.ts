@@ -154,7 +154,7 @@ export class UsersController implements CrudController<UserEntity> {
       if (res == true) {
         const user = this.service.selfieVerificationStatus(res, req.user.sub);
         return {
-          image_verified: res,
+          selfie_verified: res,
           message: "Selfie verified successfully"
         };
       } else if (res == false) {

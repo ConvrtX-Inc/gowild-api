@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import { TreasureChest } from './entities/treasure-chest.entity';
 import {
   UserTreasureHuntEntity,
@@ -91,4 +91,26 @@ export class TreasureChestService extends TypeOrmCrudService<TreasureChest> {
       data: chests
     }
   }
+
+  /*
+  Delete one treasure Chest along Treasure Hunts 
+  */
+
+
+  async deleteTreasureChest(id: string) {
+    try {
+      await getConnection().transaction(async (transactionalEntityManager) => {
+        // delete the TreasureChest entity
+      await transactionalEntityManager.delete(TreasureChest, id);
+      // delete Treasure Hunts along Treasure Chest
+      await transactionalEntityManager.delete(UserTreasureHuntEntity, { treasure_chest_id: id });
+      
+      });
+      return { message: 'Treasure Chest deleted successfully' };
+    } catch (error) {
+      console.error(error);
+      return { message:'Error deleting TreasureChest'};
+    }
+  }
+  
 }
