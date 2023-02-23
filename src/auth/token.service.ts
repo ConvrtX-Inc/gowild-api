@@ -45,6 +45,7 @@ export class TokenService {
     const response = new TokenResponse();
     response.refreshToken = refreshTokenStr;
     response.accessToken = accessTokenStr;
+    response['user'] = user;
     return response;
   }
 
