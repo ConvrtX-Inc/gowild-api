@@ -39,7 +39,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
       .where("treasure_hunt.user_id = :user_id", { user_id: req.user.sub })
       .andWhere("treasure_hunt.status = :status1 OR treasure_hunt.status = :status2",
         { status1: UserTreasureHuntStatusEnum.PENDING, status2: UserTreasureHuntStatusEnum.PROCESSING })
-      .leftJoinAndMapMany('treasure_hunt.chest', TreasureChest, 'chest',
+      .innerJoinAndMapMany('treasure_hunt.chest', TreasureChest, 'chest',
         'treasure_hunt.treasure_chest_id = chest.id')
       .orderBy('chest.eventDate', 'DESC')
       .getMany();
