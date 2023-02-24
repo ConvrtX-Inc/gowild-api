@@ -79,7 +79,7 @@ export class TreasureWildController implements CrudController<TreasureChest> {
     @Body() dto: RegisterTreasureHuntDto,
     @Request() request,
   ) {
-    return await this.service.registerTreasureHunt(dto, request);
+    return await this.service.registerTreasureHunt(dto, request.user.sub);
   }
 
   @ApiResponse({ type: TreasureChest })

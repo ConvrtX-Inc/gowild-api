@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { Repository } from 'typeorm';
+import { In, MoreThan, Repository } from 'typeorm';
 import { TreasureChest } from './entities/treasure-chest.entity';
 import { RegisterTreasureHuntDto } from './dto/register-treasure-hunt.dto';
 import {
@@ -32,40 +32,33 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
   /*
     Register User for Treaure Hunt 
     */
-  async registerTreasureHunt(dto: RegisterTreasureHuntDto, req) {
-    
+  async registerTreasureHunt(dto: RegisterTreasureHuntDto, userId: string) {
 
-    const isExist = await this.UserTreasureHuntRepository.createQueryBuilder("treasure_hunt")
-      .where("treasure_hunt.user_id = :user_id", { user_id: req.user.sub })
-      .andWhere("treasure_hunt.status = :status1 OR treasure_hunt.status = :status2",
-        { status1: UserTreasureHuntStatusEnum.PENDING, status2: UserTreasureHuntStatusEnum.PROCESSING })
-      .innerJoinAndMapMany('treasure_hunt.chest', TreasureChest, 'chest',
-        'treasure_hunt.treasure_chest_id = chest.id')
-      .orderBy('chest.eventDate', 'DESC')
-      .getMany();
+    const [existingHunts, count] = await this.UserTreasureHuntRepository.findAndCount({
+      where: { user_id: userId, status: (UserTreasureHuntStatusEnum.PENDING || UserTreasureHuntStatusEnum.PROCESSING) }
+    })
     
-    console.log(';;;;;;;;;;;;;;;',isExist)
-    if (isExist.length !== 0) {
-      console.log('insideblock....', isExist[0])
-      
-        let EventDate = await this.treasureChestRepository.findOne({
-          where: {
-            id: isExist[0]?.treasure_chest_id
-          },
-        });
-        console.log('EventDate;;;;;;;;;;;;;;;',EventDate)
-        console.log('EventDate.eventDate;;;;;;;;;;;;;;;',EventDate.eventDate)
-      if(EventDate != null){
-        
-        const eventDay = EventDate?.eventDate.setUTCHours(0, 0, 0, 0);
-        const currentDay = new Date(Date.now()).setUTCHours(0, 0, 0, 0)
-        console.log(eventDay,'.........', currentDay)
-  
-        if (eventDay >= currentDay) {
-          return { errors: [{ message: "You're Already Register in a Hunt" }] };
-        }
+    if (count !== 0) {
+      let chestIds = []
+      for (let i = 0; i < count;) {
+        console.log(existingHunts[i].treasure_chest_id)
+        chestIds.push(existingHunts[i].treasure_chest_id);
+        i++;
       }
-     
+
+    
+      const currentDate = `${new Date().getUTCFullYear()}-${new Date().getUTCMonth() + 1}-${new Date().getUTCDate()}`;
+      const chests = await this.treasureChestRepository.count({
+        where: {
+          id: In(chestIds),
+          eventDate: MoreThan(currentDate),
+        },
+      });
+      
+      if (chests > 0) {
+        return { errors: [{ message: "You're Already Register in a Hunt" }] };
+      }
+
     }
 
     let newEventDate = await this.treasureChestRepository.findOne({
@@ -79,7 +72,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
 
     const data = {
       treasure_chest_id: dto.treasure_chest_id,
-      user_id: req.user.sub,
+      user_id: userId,
       status: UserTreasureHuntStatusEnum.PENDING,
     };
 
@@ -116,7 +109,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
         'treasureChest.treasureHunts',
         UserTreasureHuntEntity,
         'treasureHunts',
-        'treasureChest.id = treasure_chest_id and treasureHunts.status != :status',{status: UserTreasureHuntStatusEnum.DISAPPROVE}
+        'treasureChest.id = treasure_chest_id and treasureHunts.status != :status', { status: UserTreasureHuntStatusEnum.DISAPPROVE }
       )
       .leftJoinAndMapMany(
         'treasureChest.sponsors',
@@ -147,7 +140,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
         'treasureChest.id = treasure_chest_id AND user_id = :user ',
         { user: id },
       )
-      .andWhere('treasureHunts.status != :status',{status: UserTreasureHuntStatusEnum.DISAPPROVE})
+      .andWhere('treasureHunts.status != :status', { status: UserTreasureHuntStatusEnum.DISAPPROVE })
       .leftJoinAndMapOne(
         'treasureHunts.user',
         UserEntity,
