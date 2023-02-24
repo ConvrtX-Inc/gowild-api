@@ -44,19 +44,22 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
       .orderBy('chest.eventDate', 'DESC')
       .getMany();
     
-    
+    console.log(';;;;;;;;;;;;;;;',isExist)
     if (isExist.length !== 0) {
+      console.log('insideblock....', isExist[0])
       
         let EventDate = await this.treasureChestRepository.findOne({
           where: {
             id: isExist[0]?.treasure_chest_id
           },
         });
+        console.log('EventDate;;;;;;;;;;;;;;;',EventDate)
+        console.log('EventDate.eventDate;;;;;;;;;;;;;;;',EventDate.eventDate)
       if(EventDate != null){
         
         const eventDay = EventDate?.eventDate.setUTCHours(0, 0, 0, 0);
         const currentDay = new Date(Date.now()).setUTCHours(0, 0, 0, 0)
-        
+        console.log(eventDay,'.........', currentDay)
   
         if (eventDay >= currentDay) {
           return { errors: [{ message: "You're Already Register in a Hunt" }] };
