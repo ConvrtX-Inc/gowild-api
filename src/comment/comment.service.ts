@@ -4,8 +4,8 @@ import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
 import { Comment } from './entities/comment.entity';
 import { DeepPartial } from 'src/common/types/deep-partial.type';
-import { RoleEnum } from "../roles/roles.enum";
-import { UserEntity } from "../users/user.entity";
+import { RoleEnum } from '../roles/roles.enum';
+import { UserEntity } from '../users/user.entity';
 
 @Injectable()
 export class CommentService extends TypeOrmCrudService<Comment> {
@@ -21,14 +21,13 @@ export class CommentService extends TypeOrmCrudService<Comment> {
   }
 
   async createOneComment(dto: any, req: any) {
-
     const newComment = {
       user_id: req,
       postfeed_id: dto.postfeed_id,
       message: dto.message,
-    }
+    };
     const user = await UserEntity.findOne({
-      id: req
+      id: req,
     });
 
     const comment = await this.saveEntity(newComment);
@@ -36,19 +35,17 @@ export class CommentService extends TypeOrmCrudService<Comment> {
     return {
       status: HttpStatus.OK,
       data: comment,
-    }
-
+    };
   }
 
   async getPostFeedComments(id: string) {
+    const comments = await this.commentRepository
+      .createQueryBuilder('comments')
+      .where('comments.postfeed_id = :id', { id: id })
+      .innerJoinAndSelect('comments.user_id', 'comment')
+      .orderBy('comments.createdDate', 'ASC')
+      .getMany();
 
-    const comments = await this.commentRepository.createQueryBuilder('comments')
-    .where("comments.postfeed_id = :id", { id: id })
-    .innerJoinAndSelect('comments.user_id', 'comment')
-    .orderBy('comments.createdDate', 'ASC')
-    .getMany()
-    console.log(comments);
-
-    return { data : comments};
+    return { data: comments };
   }
 }

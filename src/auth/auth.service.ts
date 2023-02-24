@@ -1,9 +1,12 @@
-import { Injectable, UnprocessableEntityException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  UnprocessableEntityException,
+  HttpStatus,
+} from '@nestjs/common';
 import { UserEntity } from '../users/user.entity';
 import { AuthEmailLoginDto } from './dtos/auth-email-login.dto';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import * as crypto from 'crypto';
-import * as bcrypt from 'bcryptjs';
 import { SocialInterface } from 'src/social/interfaces/social.interface';
 import { AuthRegisterLoginDto } from './dtos/auth-register-login.dto';
 import { UsersService } from 'src/users/users.service';
@@ -20,11 +23,11 @@ import { TokenResponse } from './dtos/token';
 import { SmsService } from '../sms/sms.service';
 import { StatusEnum } from './status.enum';
 import { StatusService } from '../statuses/status.service';
-import { randomInt } from "crypto";
-import { RoleService } from "../roles/role.service";
-import { RoleEnum } from "../roles/roles.enum";
-import { AuthVerifyUserDto } from "./dtos/auth-verify-user.dto";
+import { RoleService } from '../roles/role.service';
+import { RoleEnum } from '../roles/roles.enum';
+import { AuthVerifyUserDto } from './dtos/auth-verify-user.dto';
 import appConfig from 'src/config/app.config';
+import { BadRequestException } from '@nestjs/common/exceptions';
 
 @Injectable()
 export class AuthService {
@@ -42,28 +45,50 @@ export class AuthService {
 
   public async validateLogin(
     loginDto: AuthEmailLoginDto,
-  ): Promise<TokenResponse> {
+  ) {
     const status = await this.statusService.findByEnum(StatusEnum.Active);
     const user = await this.usersService.findOneEntity({
       where: {
         email: loginDto.email,
-        status: status.id
-
+        status: status.id,
       },
     });
 
-    const isValidPassword = await this.passwordService.verifyPassword(
-      user,
-      loginDto.password,
-    );
-
-    if (isValidPassword) {
-      return await this.tokenService.generateToken(user);
-    } else {
+    if (!user){
       throw new UnprocessableEntityException({
         errors: [
           {
-            password: 'Email or Password is incorrect',
+            message: 'This email is blocked by Admin!',
+          },
+        ],
+      });
+    }
+    if (user.phoneVerified == true) {
+      const isValidPassword = await this.passwordService.verifyPassword(
+        user,
+        loginDto.password,
+      );
+      if (loginDto.fcm_token) {
+        user.fcm_token = loginDto.fcm_token;
+        user.last_seen = new Date();
+        await user.save();
+      }
+      if (isValidPassword) {
+        return await this.tokenService.generateToken(user);
+      } else {
+        throw new UnprocessableEntityException({
+          errors: [
+            {
+              password: 'Email or Password is incorrect',
+            },
+          ],
+        });
+      }
+    } else {
+      throw new BadRequestException ({
+        errors: [
+          {
+            messsage: 'Verify your Account to Proceed',
           },
         ],
       });
@@ -75,6 +100,11 @@ export class AuthService {
     socialData: SocialInterface,
   ): Promise<UserAuthResponse> {
     let user: UserEntity;
+    if (!socialData.email) {
+      throw new NotFoundException({
+        message: `Please use Facebook account with email`,
+      });
+    }
     const socialEmail = socialData.email?.toLowerCase();
 
     const userByEmail = await this.usersService.findOneEntity({
@@ -135,28 +165,88 @@ export class AuthService {
     return response;
   }
 
-  public async register(dto: AuthRegisterLoginDto): Promise<UserEntity> {
+  public async register(dto: AuthRegisterLoginDto) {
+    let isExist = await this.usersService.findOne({
+      where: {
+        phoneNo: dto.phoneNo,
+        phoneVerified: false,
+      },
+    });
+    console.log(isExist);
+    if (!isExist) {
+      isExist = await this.usersService.findOne({
+        where: { email: dto.email },
+      });
+    }
+
     const hash = this.genHash();
+    if (isExist) {
+      if (isExist.phoneVerified == false) {
+        isExist.firstName = dto.firstName;
+        isExist.lastName = dto.lastName;
+        isExist.gender = dto.gender;
+        isExist.email = dto.email;
+        isExist.username = null;
+        isExist.phoneNo = dto.phoneNo;
+        isExist.addressOne = dto.addressOne;
+        isExist.addressTwo = dto.addressTwo;
+        isExist.otp = '0000';
+        isExist.phoneVerified = false;
+        isExist.hash = hash;
 
-    let entity = new UserEntity();
-    entity.firstName = dto.firstName;
-    entity.lastName = dto.lastName;
-    entity.gender = dto.gender;
-    entity.email = dto.email;
-    entity.username = null;
-    entity.phoneNo = dto.phoneNo;
-    entity.addressOne = dto.addressOne;
-    entity.addressTwo = dto.addressTwo;
-    entity.otp = '0000';
-    entity.phoneVerified = false;
-    entity.hash = hash;
+        isExist.status = await this.statusService.findByEnum(StatusEnum.Active);
+        isExist.role = await this.roleService.findByEnum(RoleEnum.USER);
+        isExist = await this.usersService.saveEntity(isExist);
+        await this.passwordService.createPassword(isExist, dto.password);
+        return isExist;
+      } else if (isExist.email == dto.email && isExist.phoneVerified == true) {
+        return {
+          errors: [
+            {
+              message: 'Email Already Exist',
+            },
+          ],
+        };
+      } else {
+        let entity = new UserEntity();
+        entity.firstName = dto.firstName;
+        entity.lastName = dto.lastName;
+        entity.gender = dto.gender;
+        entity.email = dto.email;
+        entity.username = null;
+        entity.phoneNo = dto.phoneNo;
+        entity.addressOne = dto.addressOne;
+        entity.addressTwo = dto.addressTwo;
+        entity.otp = '0000';
+        entity.phoneVerified = false;
+        entity.hash = hash;
 
+        entity.status = await this.statusService.findByEnum(StatusEnum.Active);
+        entity.role = await this.roleService.findByEnum(RoleEnum.USER);
+        entity = await this.usersService.saveEntity(entity);
+        await this.passwordService.createPassword(entity, dto.password);
+        return entity;
+      }
+    } else {
+      let entity = new UserEntity();
+      entity.firstName = dto.firstName;
+      entity.lastName = dto.lastName;
+      entity.gender = dto.gender;
+      entity.email = dto.email;
+      entity.username = null;
+      entity.phoneNo = dto.phoneNo;
+      entity.addressOne = dto.addressOne;
+      entity.addressTwo = dto.addressTwo;
+      entity.otp = '0000';
+      entity.phoneVerified = false;
+      entity.hash = hash;
 
-    entity.status = await this.statusService.findByEnum(StatusEnum.Active);
-    entity.role = await this.roleService.findByEnum(RoleEnum.USER);
-    entity = await this.usersService.saveEntity(entity);
-    await this.passwordService.createPassword(entity, dto.password);
-    return entity;
+      entity.status = await this.statusService.findByEnum(StatusEnum.Active);
+      entity.role = await this.roleService.findByEnum(RoleEnum.USER);
+      entity = await this.usersService.saveEntity(entity);
+      await this.passwordService.createPassword(entity, dto.password);
+      return entity;
+    }
   }
 
   public async resetAdminPassword(
@@ -191,9 +281,16 @@ export class AuthService {
       emailPhone = dto.phone;
       user = await this.usersService.findOneEntity({
         where: {
+          email: dto.email,
           phoneNo: dto.phone,
         },
       });
+
+      if (!user) {
+        throw new NotFoundException({
+          message: 'Please Enter correct email address!',
+        });
+      }
     } else {
       emailPhone = dto.email;
       user = await this.usersService.findOneEntity({
@@ -217,12 +314,12 @@ export class AuthService {
       user,
     });
     if (dto.email) {
-      await this.mailService.forgotPassword({
+      /*await this.mailService.forgotPassword({
         to: dto.email,
         data: {
           hash,
         },
-      });
+      });*/
     } else {
       // await this.smsService.send({
       //   phone_number: user.phone_no.toString(),
@@ -234,16 +331,19 @@ export class AuthService {
     }
     return {
       status: HttpStatus.OK,
-      message: "Success"
-    }
+      message: 'Success',
+    };
   }
 
-  public async verifyMobile(emailPhone: string, hash: string): Promise<SuccessResponse> {
-    let user = null;
+  public async verifyMobile(
+    emailPhone: string,
+    hash: string,
+  ): Promise<SuccessResponse> {
+    const user = null;
     const forgot = await this.forgotService.findOneEntity({
       where: {
         emailPhone,
-        hash
+        hash,
       },
     });
     if (!forgot) {
@@ -252,11 +352,15 @@ export class AuthService {
       });
     }
     return {
-      message: "OTP Verified Successfully"
-    }
+      message: 'OTP Verified Successfully',
+    };
   }
 
-  public async resetPassword(hash: string, emailPhone: string, password: string): Promise<SuccessResponse> {
+  public async resetPassword(
+    hash: string,
+    emailPhone: string,
+    password: string,
+  ): Promise<SuccessResponse> {
     /*let user = null;
     const forgot = await this.forgotService.findOneEntity({
       where: {
@@ -270,21 +374,22 @@ export class AuthService {
       });
     }*/
     const user = await this.usersService.findOneEntity({
-      where:{
-        otp: hash,
-        phoneNo: emailPhone
-      }
+      where: {
+        phoneNo: emailPhone,
+      },
     });
-    if(!user){
+    /*if(!user){
       throw new NotFoundException({
         message: `Please enter a Valid Phone Number!`,
       });
-    }
+    }*/
 
-    //console.log(user);
-    const passwordCheck = await this.passwordService.verifyPassword(user, password)
+    const passwordCheck = await this.passwordService.verifyPassword(
+      user,
+      password,
+    );
 
-    if (passwordCheck){
+    if (passwordCheck) {
       throw new NotFoundException({
         message: `Cannot set your Previous Password`,
       });
@@ -292,10 +397,10 @@ export class AuthService {
 
     //await this.forgotService.softDelete(forgot.id);
     await this.passwordService.createPassword(user, password);
-    //await user.save();
+    // await data.save();
     return {
-      message: "Password Reset Successfully"
-    }
+      message: 'Password Reset Successfully',
+    };
   }
 
   public async verifyOTP(dto: AuthVerifyUserDto): Promise<TokenResponse> {
@@ -306,7 +411,7 @@ export class AuthService {
       where: {
         email,
         phoneNo,
-        otp
+        otp,
       },
     });
     if (!user) {
@@ -320,13 +425,13 @@ export class AuthService {
     return await this.tokenService.generateToken(user);
   }
   public async me(userId: string) {
-    const user =  await this.usersService.findOneEntity({
+    const user = await this.usersService.findOneEntity({
       where: {
         id: userId,
       },
     });
-   user['base_url'] = appConfig().backendDomain;
-   return user
+    user['base_url'] = appConfig().backendDomain;
+    return user;
   }
 
   public async generateAdmin() {

@@ -1,16 +1,18 @@
-import {IsEnum, IsNotEmpty} from "class-validator";
-import {ApiProperty} from "@nestjs/swagger";
-import { GuidelineTypesEnum } from "../guideline.enum";
+import {IsEnum, IsNotEmpty, IsOptional} from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { GuidelineTypesEnum } from '../guideline.enum';
 
+export class CreateGuidelineDto {
+  @ApiProperty({ example: ' termsAndConditions, faq , eWaiver , huntEWaiver ' })
+  @IsNotEmpty()
+  @IsEnum(GuidelineTypesEnum)
+  type: GuidelineTypesEnum;
 
-export class CreateGuidelineDto{
+  @ApiProperty({ example: 'string' })
+  @IsOptional()
+  question: string;
 
-    @ApiProperty({example : " termsAndConditions, faq , eWaiver , huntEWaiver "})
-    @IsNotEmpty()
-    @IsEnum(GuidelineTypesEnum)
-    type: GuidelineTypesEnum 
-
-    @ApiProperty({example:"string"})
-    @IsNotEmpty()
-    description: string;
+  @ApiProperty({ example: 'string' })
+  @IsNotEmpty()
+  description: string;
 }

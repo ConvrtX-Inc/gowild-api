@@ -45,6 +45,7 @@ export class TokenService {
     const response = new TokenResponse();
     response.refreshToken = refreshTokenStr;
     response.accessToken = accessTokenStr;
+    response['user'] = user;
     return response;
   }
 
@@ -129,7 +130,7 @@ export class TokenService {
       fullName: user.fullName,
       picture: user.picture,
       status: user.status.statusName,
-      role: user.role.name
+      role: user.role.name,
     };
   }
 

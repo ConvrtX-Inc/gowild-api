@@ -9,6 +9,7 @@ import mailConfig from './config/mail.config';
 import fileConfig from './config/file.config';
 import facebookConfig from './config/facebook.config';
 import googleConfig from './config/google.config';
+import firebaseConfig from './config/firebase.config';
 import twitterConfig from './config/twitter.config';
 import appleConfig from './config/apple.config';
 import * as path from 'path';
@@ -59,8 +60,14 @@ import {
 import { DashboardController } from './dashboard/dashboard.controller';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { SubAdminModule } from './sub-admin/sub-admin.module';
-import {UserTreasureHuntModule} from "./user-treasure-hunt/user-treasure-hunt.module";
+import { UserTreasureHuntModule } from './user-treasure-hunt/user-treasure-hunt.module';
 import { CardsModule } from './cards/cards.module';
+import { PostFeedAttachmentModule } from './post-feed-attchment/post-feed-attachment.module';
+import { SystemSupportModule } from './system-support/system-support.module';
+import { cronJobModule } from './jobs/cronjob.module';
+import { LeaderBoardModule } from './leader-board/leader-board.module';
+import awsConfig from './config/aws.config';
+
 
 
 @Module({
@@ -77,6 +84,8 @@ import { CardsModule } from './cards/cards.module';
         googleConfig,
         twitterConfig,
         appleConfig,
+        firebaseConfig,
+        awsConfig
       ],
       envFilePath: ['.env'],
       expandVariables: true,
@@ -154,7 +163,12 @@ import { CardsModule } from './cards/cards.module';
     DashboardModule,
     SubAdminModule,
     UserTreasureHuntModule,
-    CardsModule
+    CardsModule,
+    SystemSupportModule,
+    CardsModule,
+    PostFeedAttachmentModule,
+    cronJobModule,
+    LeaderBoardModule,
   ],
   providers: [
     {
@@ -164,4 +178,4 @@ import { CardsModule } from './cards/cards.module';
   ],
   controllers: [DashboardController],
 })
-export class AppModule {}
+export class AppModule { }

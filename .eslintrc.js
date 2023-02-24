@@ -1,4 +1,4 @@
-const prettierConfig = require('.prettierrc.js');
+//const prettierConfig = require('.prettierrc.js');
 
 module.exports = {
   parser: '@typescript-eslint/parser',
@@ -10,7 +10,6 @@ module.exports = {
   extends: [
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
-    'prettier',
     'plugin:prettier/recommended',
   ],
   root: true,
@@ -24,10 +23,10 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 2,
     'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': ['error'],
+    '@typescript-eslint/no-unused-vars': ['warn'],
     'require-await': 'off',
     '@typescript-eslint/require-await': 'error',
     '@typescript-eslint/no-floating-promises': 'error',
-    'prettier': ['error', prettierConfig]
+    //'prettier': ['error', prettierConfig]
   },
 };

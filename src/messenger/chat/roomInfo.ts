@@ -1,10 +1,10 @@
 export class RoomInfo {
-  public UserMessages = '';
+  public UserMessages = [];
   private _roomID: string;
 
   constructor(room) {
     this._roomID = room;
-    this.UserMessages = '';
+    this.UserMessages = [];
   }
 
   get RoomID(): string {

@@ -5,8 +5,8 @@ import { Status } from '../../statuses/status.entity';
 import { StatusEnum } from '../../auth/status.enum';
 import { Password } from '../../users/password.entity';
 import * as bcrypt from 'bcryptjs';
-import {Role} from "../../roles/role.entity";
-import {RoleEnum} from "../../roles/roles.enum";
+import { Role } from '../../roles/role.entity';
+import { RoleEnum } from '../../roles/roles.enum';
 
 function parseUserData(data: string): string[] {
   try {
@@ -49,13 +49,13 @@ export default class AdminSeed implements Seeder {
               })
               .getOne();
             user.role = await connection
-                .createQueryBuilder()
-                .select('r')
-                .from(Role, 'r')
-                .where('r.name = :name', {
-                    name: RoleEnum.SUPER_ADMIN,
-                })
-                .getOne();
+              .createQueryBuilder()
+              .select('r')
+              .from(Role, 'r')
+              .where('r.name = :name', {
+                name: RoleEnum.SUPER_ADMIN,
+              })
+              .getOne();
 
             user.firstName = userEmail;
             user.lastName = 'Admin Family';

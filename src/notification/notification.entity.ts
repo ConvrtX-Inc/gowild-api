@@ -11,11 +11,36 @@ export class Notification extends AbstractBaseEntity {
   @Validate(IsExist, ['UserEntity', 'id'], {
     message: 'User not Found',
   })
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'uuid' })
   user_id?: string | null;
+
+  @IsOptional()
+  @ApiProperty({ example: 'true/false ' })
+  @Column({ nullable: true, default: false })
+  is_seen?: boolean;
 
   @IsOptional()
   @ApiProperty({ example: 'notification_msg' })
   @Column({ length: 100, nullable: true })
   notification_msg?: string;
+
+  @IsOptional()
+  @ApiProperty({ example: 'home' })
+  @Column({ length: 100, nullable: true, default: 'home' })
+  type?: string;
+
+  @IsOptional()
+  @ApiProperty({ example: 'admin' })
+  @Column({ length: 100, nullable: false, default: 'user' })
+  role?: string;
+
+  @IsOptional()
+  @ApiProperty({ example: 'Message Title' })
+  @Column({ length: 100, nullable: true })
+  title?: string;
+
+  @IsOptional()
+  @ApiProperty({ example: 'link string' })
+  @Column({ length: 200, nullable: true })
+  msg_code?: string;
 }

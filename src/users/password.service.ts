@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { UserEntity } from './user.entity';
-import {FindOptions} from "../common/types/find-options.type";
+import { FindOptions } from '../common/types/find-options.type';
 
 @Injectable()
 export class PasswordService extends TypeOrmCrudService<Password> {
@@ -63,7 +63,6 @@ export class PasswordService extends TypeOrmCrudService<Password> {
     await this.repository.save(entity);
   }
 
-
   private async findPrevious(user: UserEntity): Promise<Password | null> {
     const found = await this.repository.findOne({
       where: { user, status: 'true' },
@@ -73,6 +72,4 @@ export class PasswordService extends TypeOrmCrudService<Password> {
     }
     return null;
   }
-
-
 }

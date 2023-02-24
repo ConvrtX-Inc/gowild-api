@@ -5,13 +5,19 @@ import { Repository } from 'typeorm';
 import { Like } from './entities/like.entity';
 import { DeepPartial } from 'src/common/types/deep-partial.type';
 import { PostFeed } from 'src/post-feed/entities/post-feed.entity';
-import { DataPipeline } from 'aws-sdk';
+import { UserEntity } from '../users/user.entity';
+import { PostFeedAttachment } from 'src/post-feed-attchment/post-feed-attachment.entity';
+import { ConstraintMetadata } from 'class-validator/types/metadata/ConstraintMetadata';
+import { Comment } from 'src/comment/entities/comment.entity';
 
 @Injectable()
 export class LikeService extends TypeOrmCrudService<Like> {
   constructor(
     @InjectRepository(Like)
     private likeRepository: Repository<Like>,
+    @InjectRepository(PostFeed)
+    private postFeedRepository: Repository<PostFeed>,
+   
   ) {
     super(likeRepository);
   }
@@ -21,55 +27,119 @@ export class LikeService extends TypeOrmCrudService<Like> {
   }
 
   async createOnelike(dto: any, req: any) {
+    const post = await this.postFeedRepository
+      .createQueryBuilder('postFeed')
+      .where('postFeed.id = :id', { id: dto.postfeed_id })
+      .leftJoinAndMapOne(
+        'postFeed.user',
+        UserEntity,
+        'user',
+        'user.id = postFeed.user_id',
+      )
+      .getOne();
 
-    const post = await PostFeed.findOne({
-      where: { id: dto.postfeed_id }
-    })
     if (!post) {
       return {
-        "errors": [
+        errors: [
           {
-            message: "Post-Feed Does not exist",
+            message: 'Post-Feed Does not exist',
             status: HttpStatus.BAD_REQUEST,
-          }
-        ]
-      }
+          },
+        ],
+      };
     }
+    // Getting Post Attachments
+    const attachments = await PostFeedAttachment.find({
+      where: { postfeed_id: post.id },
+    });
+const comments = await Comment.count({where: { postfeed_id: dto.postfeed_id }});
     const isExist = await this.likeRepository.findOne({
       where: {
         user_id: req,
-        postfeed_id: dto.postfeed_id
-      }
+        postfeed_id: dto.postfeed_id,
+      },
     });
     if (isExist) {
-      const unlike = await this.likeRepository.delete(isExist.id)
-      console.log(unlike);
-      
+      const unlike = await this.likeRepository.delete(isExist.id);
+
       const likes = await this.likeRepository.count({
-        where: { postfeed_id: dto.postfeed_id }
+        where: { postfeed_id: dto.postfeed_id },
       });
+
+      const like_images = [];
+      const likesPicture = await this.likeRepository
+        .createQueryBuilder('like')
+        .where('like.postfeed_id = :id', { id: dto.postfeed_id })
+        .leftJoinAndMapOne(
+          'like.user',
+          UserEntity,
+          'user',
+          'user.id = like.user_id',
+        )
+        .orderBy('RANDOM()')
+        .limit(3)
+        .getMany();
+
+      likesPicture.forEach((obj, index) => {
+        if (obj['user']) {
+          if (obj['user'].picture != null) {
+            like_images.push(obj['user'].picture);
+          } else {
+            like_images.push('');
+          }
+        }
+      });
+
       post['likes'] = likes;
+      post['likes_images'] = like_images;
+      post['attachment'] = attachments;
+      post['comments'] = comments;
       return {
-        message: "Post Un-Liked Successfully",
-        data: post
-      }
+        message: 'Post Un-Liked Successfully',
+        data: post,
+      };
     } else {
       const newlike = {
         user_id: req,
         postfeed_id: dto.postfeed_id,
-      }
+      };
       await this.saveEntity(newlike);
     }
 
     const likes = await this.likeRepository.count({
-      where: { postfeed_id: dto.postfeed_id }
+      where: { postfeed_id: dto.postfeed_id },
+    });
+    const like_images = [];
+    const likesPicture = await this.likeRepository
+      .createQueryBuilder('like')
+      .where('like.postfeed_id = :id', { id: dto.postfeed_id })
+      .leftJoinAndMapOne(
+        'like.user',
+        UserEntity,
+        'user',
+        'user.id = like.user_id',
+      )
+      .orderBy('RANDOM()')
+      .limit(3)
+      .getMany();
+
+    likesPicture.forEach((obj, index) => {
+      if (obj['user']) {
+        if (obj['user'].picture != null) {
+          like_images.push(obj['user'].picture);
+        } else {
+          like_images.push('');
+        }
+      }
     });
     post['likes'] = likes;
+    post['likes_images'] = like_images;
+    post['attachment'] = attachments;
+    post['comments'] = comments
 
     return {
-      message: "Post Liked Successfully",
-      data: post
-    }
-
+      message: 'Post Liked Successfully',
+      data: post,
+    };
   }
 }

@@ -20,8 +20,8 @@ export class VerifyController {
     return {
       phone_number: request.phone_number,
       code: '0000',
-      status: 'pending'
-    }
+      status: 'pending',
+    };
     return this.verifyService.sendPhoneVerificationToken(request);
   }
 
@@ -32,8 +32,8 @@ export class VerifyController {
     return {
       phone_number: request.phone_number,
       code: '0000',
-      status: 'verified'
-    }
+      status: 'verified',
+    };
     return this.verifyService.checkPhoneVerificationToken(request);
   }
 }

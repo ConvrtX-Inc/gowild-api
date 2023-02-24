@@ -1,14 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsOptional } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { FileEntity } from '../../files/file.entity';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { RouteHistoricalEvent } from '../../route-historical-events/entities/route-historical-event.entity';
-import { AppPoint } from '../../common/lat-lng.embedded';
-import { Geometry } from 'geojson';
-import { UserEntity } from '../../users/user.entity';
-import {RoleEnum} from "../../roles/roles.enum";
-import {Coordinates} from "../../common/coordinates";
+import { RoleEnum } from '../../roles/roles.enum';
+import { Coordinates } from '../../common/coordinates';
+import { float } from 'aws-sdk/clients/lightsail';
+
+export enum RouteStatusEnum {
+  Approved = 'approved',
+  Pending = 'pending',
+  Reject = 'reject',
+}
 
 @Entity('gw_routes')
 export class Route extends AbstractBaseEntity {
@@ -26,6 +29,11 @@ export class Route extends AbstractBaseEntity {
     nullable: true,
   })
   title: string;
+
+  @IsOptional()
+  @ApiProperty({ nullable: true })
+  @Column({ nullable: true })
+  picture: string;
 
   @Allow()
   @ApiProperty({ type: () => Coordinates, nullable: false })
@@ -45,17 +53,11 @@ export class Route extends AbstractBaseEntity {
 
   @Allow()
   @ApiProperty({ type: () => [RouteHistoricalEvent], nullable: true })
-  @OneToMany(() => RouteHistoricalEvent, (obj) => obj.route, {
+  @OneToMany(() => RouteHistoricalEvent, (obj) => obj.route_id, {
     cascade: true,
     orphanedRowAction: 'delete',
   })
   historicalEvents?: RouteHistoricalEvent[];
-
-  @Allow()
-  @ApiProperty({ nullable: true, type: () => FileEntity })
-  @ManyToOne(() => FileEntity, { nullable: true, cascade: false, eager: true })
-  @JoinColumn({ name: 'picture_id' })
-  picture: FileEntity;
 
   @IsOptional()
   @ApiProperty({ example: 'description', nullable: true })
@@ -63,15 +65,50 @@ export class Route extends AbstractBaseEntity {
   description?: string;
 
   @Column({
-    type: "enum",
+    type: 'enum',
     enum: RoleEnum,
-    default: RoleEnum.USER
+    default: RoleEnum.USER,
   })
   role: RoleEnum;
 
-  @Column({
-    type: 'boolean',
-    default: false
+  @ApiProperty({ example: '01:04:00' })
+  @Column({ nullable: false, name: 'estimate_time' })
+  estimate_time: string;
+
+  @ApiProperty({
+    format: 'double',
+    type: 'float',
+    nullable: true,
   })
-  saved: boolean;
+  @Column({ nullable : true,type: 'float' })
+  distance_miles: number;
+
+  @ApiProperty({ example: '500m' })
+  @Column({ nullable: true, name: 'distance_meters' })
+  distance_meters: number;
+
+  @ApiProperty({ example: '' })
+  @Column({ nullable: true, name: 'route_path' })
+  route_path: string;
+
+  @IsOptional()
+  @ApiProperty({
+    example: 'pending/completed',
+    nullable: true,
+    enum: RouteStatusEnum,
+    enumName: 'RouteStatusEnum',
+  })
+  @Column({
+    nullable: true,
+    enum: RouteStatusEnum,
+    enumName: 'RouteStatusEnum',
+    default: RouteStatusEnum.Pending,
+  })
+  status: RouteStatusEnum;
+
+  @Column({ nullable: true, name: 'start_location' })
+  startLocation: string;
+
+  @Column({ nullable: true, name: 'end_location' })
+  endLocation: string;
 }

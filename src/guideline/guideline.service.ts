@@ -20,26 +20,45 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
     super(guidelinesRepository);
   }
 
-  async createOneGuideline(dto:CreateGuidelineDto, req: any){
+  async createOneGuideline(dto: CreateGuidelineDto, req: any) {
+    const entity = new Guideline();
+    entity.type = dto.type;
+    entity.description = dto.description;
+    entity.last_updated_user = req;
 
-    let entity = new Guideline()
-    entity.type = dto.type
-        entity.description = dto.description
-        entity.last_updated_user = req
+    const searchData = await this.guidelinesRepository.findOne({where:{ type: dto.type}})
 
-    if( dto.type === GuidelineTypesEnum.FAQ ||
-        GuidelineTypesEnum.HUNT_E_WAIVER ||
-        GuidelineTypesEnum.E_WAIVER ||
-        GuidelineTypesEnum.TERMS_CONDITIONS ) {
+    if(dto.type === GuidelineTypesEnum.FAQ) {
+      entity.question = dto.question;
+      if (!dto.question){
+        throw new NotFoundException({message: "Question is Missing, Please enter a Question!"})
+      }
+    }
+    else if (
+      dto.type === GuidelineTypesEnum.HUNT_E_WAIVER ||
+      GuidelineTypesEnum.E_WAIVER ||
+      GuidelineTypesEnum.TERMS_CONDITIONS
+    ) {
+      if (searchData){
+        await this.guidelinesRepository.update(searchData.id,entity)
+        const logData = new GuidelineLog();
+        logData.guideline_type = entity.type;
+        logData.userId = entity.last_updated_user;
+        const saveLog = await this.guidelineLogsService.saveOne(logData);
 
-    }else{
+        return {
+          status: HttpStatus.OK,
+          message: 'Admin Guideline Updated successfully!',
+          data: saveLog,
+        };
+      }
+    } else {
       throw new NotFoundException({
         message: `Admin Guideline cannot be added!`,
       });
-
     }
 
-    await this.guidelinesRepository.upsert([entity], ['type']);
+    await entity.save();
     const logData = new GuidelineLog();
     logData.guideline_type = entity.type;
     logData.userId = entity.last_updated_user;
@@ -48,10 +67,8 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
     return {
       status: HttpStatus.OK,
       message: 'Admin Guideline added successfully!',
-      data: saveLog
-    }
-
-
+      data: saveLog,
+    };
   }
   async findOneEntity(options: FindOptions<Guideline>) {
     return this.guidelinesRepository.findOne({
@@ -76,7 +93,7 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
 
   async saveEntity(data: DeepPartial<Guideline>) {
     return this.guidelinesRepository.save(
-      this.guidelinesRepository.create(data)
+      this.guidelinesRepository.create(data),
     );
   }
 
@@ -88,18 +105,30 @@ export class GuidelineService extends TypeOrmCrudService<Guideline> {
     await this.guidelinesRepository.delete(id);
   }
 
-
   async getTermsByType(type: string) {
-    /*const result = */
-    return {
-      data: await this.guidelinesRepository.findOne({
+
+    if(type === GuidelineTypesEnum.FAQ){
+
+      const getFaqTerms = await this.guidelinesRepository.find({
         where: {
           type: type,
         },
       })
+      return{ data: null, faq: getFaqTerms }
+    }else{
+      const getTerms = await this.guidelinesRepository.findOne({
+        where: {
+          type: type,
+        },
+      })
+      return{data: getTerms, faq: []}
     }
+
+
   }
   public async findByEnum(guidelineEnum: GuidelineTypesEnum) {
-    return this.guidelinesRepository.findOne({ where: { type: guidelineEnum } });
+    return this.guidelinesRepository.findOne({
+      where: { type: guidelineEnum },
+    });
   }
 }

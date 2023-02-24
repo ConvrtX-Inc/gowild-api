@@ -1,48 +1,32 @@
-import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsOptional, Validate } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { IsExist } from 'src/common/validators/is-exists.validator';
-import { Transform } from 'class-transformer';
-import * as base64_arraybuffer from 'base64-arraybuffer-converter';
+import { TicketMessage } from 'src/ticket-messages/entities/ticket-message.entity';
 
 @Entity('gw_system_support_attachments')
 export class SystemSupportAttachment extends AbstractBaseEntity {
   @IsOptional()
   @ApiProperty({ example: 'cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae' })
-  @Validate(IsExist, ['SystemSupport', 'id'], {
-    message: 'sys_support_id not Found',
+  @Validate(IsExist, ['Ticket', 'id'], {
+    message: 'ticket_id not Found',
   })
-  @Column({ nullable: true })
-  sys_support_id?: string | null;
+  @Column({
+    type: 'uuid',
+    nullable: false,
+  })
+  ticket_id?: string;
 
   @Allow()
   @IsOptional()
-  @ApiProperty({ example: 'byte64image' })
-  @Transform((value: Buffer | null | string) => (value == null ? '' : value))
+  @ApiProperty({ example: 'Picture' })
+  @Column({ nullable: true })
+  attachment?: string | null;
+
   @Column({
-    name: 'attachment',
-    type: 'bytea',
+    type: 'uuid',
     nullable: true,
   })
-  attachment?: Buffer | null | string;
-
-  @BeforeUpdate()
-  @BeforeInsert()
-  public encodeImage() {
-    this.attachment = this.attachment
-      ? base64_arraybuffer.base64_2_ab(this.attachment)
-      : '';
-  }
-
-  @AfterLoad()
-  public async decodeImage() {
-    try {
-      if (typeof this.attachment !== null && this.attachment != undefined) {
-        this.attachment = await base64_arraybuffer.ab_2_base64(
-          new Uint8Array(base64_arraybuffer.base64_2_ab(this.attachment)),
-        );
-      }
-    } catch (e) {}
-  }
+  message_id?: string;
 }

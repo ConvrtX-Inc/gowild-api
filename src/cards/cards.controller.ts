@@ -7,45 +7,42 @@ import {
   HttpStatus,
   Param,
   Patch,
-  Post, UploadedFile,
+  Post,
+  Query,
+  UploadedFile,
   UseGuards,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
-import {CardsService} from './cards.service';
-import {CreateCardDto} from './dto/create-card.dto';
-import {UpdateCardDto} from './dto/update-card.dto';
-import {ApiBearerAuth, ApiBody, ApiConsumes, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {RolesGuard} from "../roles/roles.guard";
-import {Roles} from "../roles/roles.decorator";
-import {RoleEnum} from "../roles/roles.enum";
+import { CardsService } from './cards.service';
+import { CreateCardDto } from './dto/create-card.dto';
+import { UpdateCardDto } from './dto/update-card.dto';
 import {
-  CreateManyDto,
-  Crud,
-  CrudController,
-  CrudRequest,
-  CrudService,
-  GetManyDefaultResponse, Override
-} from "@nestjsx/crud";
-import {Card} from "./entities/card.entity";
-import {CreateSubAdminDto} from "../sub-admin/dto/create-sub-admin.dto";
-import {StatusService} from "../statuses/status.service";
-import {JwtAuthGuard} from "../auth/jwt-auth.guard";
-import {AdminRolesGuard} from "../roles/admin.roles.guard";
-import {Route} from "../route/entities/route.entity";
-import {FileInterceptor} from "@nestjs/platform-express";
-import {ConfigService} from "@nestjs/config";
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { Roles } from '../roles/roles.decorator';
+import { RoleEnum } from '../roles/roles.enum';
+import { Crud, CrudController, CrudService, Override } from '@nestjsx/crud';
+import { Card } from './entities/card.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AdminRolesGuard } from '../roles/admin.roles.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ConfigService } from '@nestjs/config';
+import { FilesService } from '../files/files.service';
 
-
-//@ApiBearerAuth()
-//@UseGuards(JwtAuthGuard/*,AdminRolesGuard*/)
-//@Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, AdminRolesGuard)
+@Roles(RoleEnum.SUPER_ADMIN, RoleEnum.ADMIN)
 @ApiTags('Cards')
 @Crud({
   model: {
     type: Card,
   },
   routes: {
-    exclude: ['replaceOneBase', 'createManyBase'],
+    exclude: ['replaceOneBase', 'createManyBase', 'getOneBase'],
   },
   query: {
     maxLimit: 50,
@@ -61,18 +58,20 @@ import {ConfigService} from "@nestjs/config";
 })
 @Controller({
   path: 'cards',
-  version: '1'
+  version: '1',
 })
-
 export class CardsController implements CrudController<Card> {
-  constructor(private readonly cardsService: CardsService,
-              private readonly configService: ConfigService) {}
+  constructor(
+    private readonly cardsService: CardsService,
+    private readonly filesService: FilesService,
+    private readonly configService: ConfigService,
+  ) {}
 
   service: CrudService<Card>;
 
   @Override('createOneBase')
-  async createOneCard(@Body() dto:CreateCardDto){
-    return this.cardsService.createCard(dto)
+  public async createOneCard(@Body() dto: CreateCardDto) {
+    return this.cardsService.createCard(dto);
   }
 
   @ApiResponse({ type: Card })
@@ -92,42 +91,38 @@ export class CardsController implements CrudController<Card> {
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(FileInterceptor('file'))
   public async updateImage(
-      @Param('id') id: string,
-      @UploadedFile() file: Express.Multer.File,
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
   ) {
-
-    const path: Record<files.FileType, string> = {
+    const driver = this.configService.get('file.driver');
+    const picture = {
       local: `/${this.configService.get('app.apiPrefix')}/v1/${file.path}`,
       s3: file.location,
       firebase: file.publicUrl,
     };
-
-
-    return this.cardsService.updateImage(id, path.local);
+    return this.cardsService.updatePicture(id, picture[driver]);
   }
 
-
-  @Override('getOneBase')
-  async getOneCard(@Body() dto:CreateCardDto){
-    return this.cardsService.createCard(dto)
+  //@Override('getOneBase')
+  @Get('/:id')
+  public async getOneCard(@Param('id') id: string) {
+    return this.cardsService.findOneCard(id);
   }
   @Get()
-  findAll() {
-    return this.cardsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cardsService.findOne(+id);
+  public async findAllCards(@Query() query,) {
+    return this.cardsService.findAllCards(query.limit, query.page);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCardDto: UpdateCardDto) {
-    return this.cardsService.update(+id, updateCardDto);
+  public async updateOneCard(
+    @Param('id') id: string,
+    @Body() updateCardDto: UpdateCardDto,
+  ) {
+    return this.cardsService.updateCard(id, updateCardDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cardsService.remove(+id);
+  public async removeOneCard(@Param('id') id: string) {
+    return this.cardsService.removeCard(id);
   }
 }

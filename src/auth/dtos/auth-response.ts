@@ -23,7 +23,7 @@ export class UserAuthResponse extends AuthResponse<UserEntity> {
   }
 }
 
-export class SuccessResponse  {
+export class SuccessResponse {
   message?: string;
-  data?: {[key: string]: unknown}[];
+  data?: { [key: string]: unknown }[];
 }

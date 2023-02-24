@@ -12,9 +12,8 @@ import { Server, Socket } from 'socket.io';
 import { RoomService } from '../room/room.service';
 import { ClientSocketInfo } from './clientSocketInfo';
 import { RoomInfo } from './roomInfo';
-import { MessageDetail, MessageStatus } from '../message/messageDetail';
 
-@WebSocketGateway({cors: true})
+@WebSocketGateway({ namespace: '/chat', cors: true })
 export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -36,32 +35,36 @@ export class ChatGateway
   handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnected: ${client.id}`);
 
-    let room = this.getRoomOfClient(client);
+    const room = this.getRoomOfClient(client);
     if (room != '') {
       this.leaveRoom(client, room);
     }
   }
 
   @SubscribeMessage('connect_users')
-  public async conect(client: Socket, payload: any): Promise<void> {
-    await this._roomService.insertRoom(payload.sender_id, payload.receiver_id);
-    this.logger.log(`ConnectConversation` + this._roomService.newRoomID);
-    this.addClient(client, payload.sender_id, this._roomService.newRoomID);
-    this.joinRoom(client, this._roomService.newRoomID);
+  async connect(client: Socket, payload: any): Promise<void> {
+    const roomId = await this._roomService.ConnectConversation(
+      payload.sender_id,
+      payload.receiver_id,
+    );
+    this.logger.log(`Connect Conversation ` + roomId);
+    this.addClient(client, payload.sender_id, roomId);
+    this.joinRoom(client, roomId);
   }
 
   @SubscribeMessage('msgToServer')
-  public handleMessage(client: Socket, payload: any): void {
-    var curDate = new Date();
-    let _message = new MessageDetail(
-      payload.sender_id,
-      payload.text,
-      MessageStatus.msSent,
-      curDate,
-    );
-    let room = this.getRoomOfClient(client);
-    this.addMessage(_message, room);
-    this.wss.to(room).emit('msgToClient', payload);
+  async handleMessage(client: Socket, payload: any) {
+    const curDate = new Date();
+    const _message = {
+      user_id: payload.user_id,
+      message: payload.message,
+      msSent: 1,
+      date: curDate,
+      attachment: payload.attachment,
+    };
+    const room = this.getRoomOfClient(client);
+    const message = await this.addMessage(_message, room);
+    this.wss.to(room).emit('msgToClient', message);
   }
 
   @SubscribeMessage('joinRoom')
@@ -82,19 +85,19 @@ export class ChatGateway
   }
 
   addClient(client: Socket, sender_id: string, room: string) {
-    var c = new ClientSocketInfo(client.id, room, sender_id);
+    const c = new ClientSocketInfo(client.id, room, sender_id);
     this.lstClients.push(c);
 
-    let objRoom = this.lstRooms.find((o) => o.RoomID === room);
+    const objRoom = this.lstRooms.find((o) => o.RoomID === room);
     if (objRoom === undefined) {
-      var rm = new RoomInfo(room);
-      rm.UserMessages = '';
+      const rm = new RoomInfo(room);
+      rm.UserMessages = [];
       this.lstRooms.push(rm);
     }
   }
 
   deleteClient(client: Socket) {
-    for (var i = 0; i < this.lstClients.length; i++) {
+    for (let i = 0; i < this.lstClients.length; i++) {
       if (this.lstClients[i]['ClientID'] === client.id) {
         this.lstClients.splice(i, 1);
         break;
@@ -103,8 +106,8 @@ export class ChatGateway
   }
 
   getRoomOfClient(client: Socket): string {
-    var res = '';
-    let objClient = this.lstClients.find((o) => o.ClientID === client.id);
+    let res = '';
+    const objClient = this.lstClients.find((o) => o.ClientID === client.id);
     if (objClient != undefined) {
       res = objClient.RoomID;
     }
@@ -113,36 +116,26 @@ export class ChatGateway
 
   async saveMessage(roomID: string) {
     this.logger.log('saveMessage:' + roomID);
-    let objRoom = this.lstRooms.find((o) => o.RoomID === roomID);
+    const objRoom = this.lstRooms.find((o) => o.RoomID === roomID);
     if (objRoom != undefined) {
-      //this.logger.log('saveMessage:'+objRoom.UserMessages);
-      if (objRoom.UserMessages != '') {
-        await this._roomService.saveMessagesofRoom(
-          roomID,
-          objRoom.UserMessages,
-        );
-        objRoom.UserMessages = '';
+      if (objRoom.UserMessages.length > 0) {
+        const message = objRoom.UserMessages[0];
+        objRoom.UserMessages = [];
+        return await this._roomService.saveMessagesofRoom(roomID, message);
       }
     }
   }
 
-  addMessage(UserMessage: MessageDetail, clientRoom: string) {
-    let objRoom = this.lstRooms.find((o) => o.RoomID === clientRoom);
+  async addMessage(UserMessage: any, clientRoom: string) {
+    const objRoom = this.lstRooms.find((o) => o.RoomID === clientRoom);
     if (objRoom === undefined) {
-      let myJSON = JSON.stringify(UserMessage);
-      let msg = myJSON + ',\r\n';
-      var rm = new RoomInfo(clientRoom);
-      rm.UserMessages = msg;
+      const rm = new RoomInfo(clientRoom);
+      rm.UserMessages.push(UserMessage);
       this.lstRooms.push(rm);
+      return await this.saveMessage(clientRoom);
     } else {
-      this.logger.log('addMessage:' + objRoom.UserMessages);
-      let myJSON = JSON.stringify(UserMessage);
-      objRoom.UserMessages = objRoom.UserMessages + myJSON + ',\r\n';
-
-      this.logger.log('addMessage:' + objRoom.UserMessages.length);
-      if (objRoom.UserMessages.length > 500) {
-        this.saveMessage(clientRoom);
-      }
+      objRoom.UserMessages.push(UserMessage);
+      return await this.saveMessage(clientRoom);
     }
   }
 }

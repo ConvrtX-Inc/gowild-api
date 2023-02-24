@@ -13,60 +13,55 @@ export class SponsorService extends TypeOrmCrudService<Sponsor> {
   constructor(
     @InjectRepository(Sponsor)
     private sponsorRepository: Repository<Sponsor>,
-
   ) {
     super(sponsorRepository);
   }
 
   async saveOne(data) {
-    return await this.sponsorRepository.save(this.sponsorRepository.create(data))
+    return await this.sponsorRepository.save(
+      this.sponsorRepository.create(data),
+    );
   }
 
-  async createSponsor(dto: CreateSponsorDto){
+  async createSponsor(dto: CreateSponsorDto) {
     return await this.saveOne(dto);
-
   }
 
   public async updateImage(id: string, image: string) {
     const sponser = await this.sponsorRepository.findOne({
-        where: { id: id },
+      where: { id: id },
     });
 
-
     if (!sponser) {
-        throw new NotFoundException({
-            errors: [
-                {
-                    user: 'Sponser does not exist',
-                },
-            ],
-        });
+      throw new NotFoundException({
+        errors: [
+          {
+            user: 'Sponser does not exist',
+          },
+        ],
+      });
     }
 
-    sponser.img= image;
-    return{ message: "Sponser Image Updated Successfully!", data: await sponser.save()};
-}
-
-
-async getmanySponsors(treasure_chest_id: string){
-  const allSponsors = await this.sponsorRepository.find({
-    where: {
-      treasure_chest : treasure_chest_id
-    }
-  });
-  return allSponsors;
-}
-
-
-async softDelete(id: string){
-  await this.sponsorRepository.softDelete(id)
-  return {
-    message: "Sponsor deleted"
+    sponser.img = image;
+    return {
+      message: 'Sponser Image Updated Successfully!',
+      data: await sponser.save(),
+    };
   }
-}
 
- 
+  async getmanySponsors(treasure_chest_id: string) {
+    const allSponsors = await this.sponsorRepository.find({
+      where: {
+        treasure_chest: treasure_chest_id,
+      },
+    });
+    return allSponsors;
+  }
 
- 
-
+  async softDelete(id: string) {
+    await this.sponsorRepository.softDelete(id);
+    return {
+      message: 'Sponsor deleted',
+    };
+  }
 }

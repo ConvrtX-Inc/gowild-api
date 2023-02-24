@@ -1,15 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { time } from 'aws-sdk/clients/frauddetector';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
-import {AfterLoad, AfterUpdate, Column, Entity} from 'typeorm';
+import { AfterLoad, AfterUpdate, Column, Entity } from 'typeorm';
 import { Allow, IsOptional } from 'class-validator';
-import appConfig from "../../config/app.config";
-import {Coordinates} from "../../common/coordinates";
+import appConfig from '../../config/app.config';
+import { Coordinates } from '../../common/coordinates';
 
 export enum TreasureChestStatusEnum {
-  CANCELLED= 'cancelled',
+  CANCELLED = 'cancelled',
   PENDING = 'pending',
-  COMPLETED= 'completed'
+  COMPLETED = 'completed',
 }
 @Entity('gw_treasure_chests')
 export class TreasureChest extends AbstractBaseEntity {
@@ -46,7 +46,11 @@ export class TreasureChest extends AbstractBaseEntity {
 
   @IsOptional()
   @ApiProperty({ example: 'pending' })
-  @Column({ type : "enum", enum: TreasureChestStatusEnum, default: TreasureChestStatusEnum.PENDING })
+  @Column({
+    type: 'enum',
+    enum: TreasureChestStatusEnum,
+    default: TreasureChestStatusEnum.PENDING,
+  })
   status: TreasureChestStatusEnum;
 
   @IsOptional()
@@ -59,7 +63,7 @@ export class TreasureChest extends AbstractBaseEntity {
 
   @IsOptional()
   @ApiProperty({ example: 'uuid' })
-  @Column({ nullable: true ,type: 'uuid',name: 'winner_id' })
+  @Column({ nullable: true, type: 'uuid', name: 'winner_id' })
   winnerId?: string;
 
   @Allow()

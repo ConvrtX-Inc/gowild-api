@@ -30,4 +30,20 @@ export class TicketMessage extends AbstractBaseEntity {
   @ApiProperty({ example: 'Description' })
   @Column({ type: 'text' })
   message?: string;
+
+  @IsOptional()
+  @ApiProperty({example: 'true/false'})
+  @Column({name: 'user_seen', type: 'boolean', default: true})
+  userSeen: boolean;
+
+  @IsOptional()
+  @ApiProperty({example: 'true/false'})
+  @Column({name: 'admin_seen', type: 'boolean', default: false})
+  adminSeen: boolean;
+
+  @IsOptional()
+  @ApiProperty({ example: 'Description' })
+  @Column({ type: 'varchar', default: 'user' })
+  role?: string;
+
 }

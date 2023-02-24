@@ -1,4 +1,4 @@
-import {AfterInsert, AfterLoad, AfterUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Exclude, Transform } from 'class-transformer';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import {
@@ -13,10 +13,8 @@ import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
 import { CrudValidationGroups } from '@nestjsx/crud';
 import { Status } from 'src/statuses/status.entity';
 import { Password } from './password.entity';
-import { FileEntity } from '../files/file.entity';
 import { GenderEnum } from './gender.enum';
-import {Role} from "../roles/role.entity";
-import appConfig from "../config/app.config";
+import { Role } from '../roles/role.entity';
 
 @Entity('gw_users')
 export class UserEntity extends AbstractBaseEntity {
@@ -32,7 +30,7 @@ export class UserEntity extends AbstractBaseEntity {
 
   @IsOptional()
   @ApiProperty({ example: '1999-12-12 11:11:11', nullable: true })
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'date', nullable: true })
   birthDate?: Date;
 
   @ApiProperty({
@@ -47,9 +45,6 @@ export class UserEntity extends AbstractBaseEntity {
 
   @Allow()
   @ApiProperty({ example: 'username', nullable: true })
-  @Transform((value: string | null) => value?.toLowerCase().trim())
-  @IsOptional({ groups: [CrudValidationGroups.UPDATE] })
-  @IsNotEmpty({ groups: [CrudValidationGroups.CREATE] })
   @Validate(IsNotExist, ['UserEntity'], {
     message: 'username already exists',
     groups: [CrudValidationGroups.CREATE],
@@ -71,8 +66,6 @@ export class UserEntity extends AbstractBaseEntity {
 
   @Allow()
   @ApiProperty({ example: '+639506703401', nullable: true })
-  @IsOptional({ groups: [CrudValidationGroups.UPDATE] })
-  @IsNotEmpty({ groups: [CrudValidationGroups.CREATE] })
   @Column({ nullable: true })
   phoneNo: string | null;
 
@@ -101,13 +94,13 @@ export class UserEntity extends AbstractBaseEntity {
   @IsOptional()
   @ApiProperty({ nullable: true })
   @Column({ nullable: true })
-  frontImage: string| null;
+  frontImage: string | null;
 
   @Allow()
   @IsOptional()
   @ApiProperty({ nullable: true })
   @Column({ nullable: true })
-  backImage: string| null;
+  backImage: string | null;
 
   @ApiProperty({ nullable: true })
   @ManyToOne(() => Status, { nullable: false, cascade: false, eager: true })
@@ -121,7 +114,7 @@ export class UserEntity extends AbstractBaseEntity {
 
   @ApiHideProperty()
   @Exclude()
-  @Column('jsonb',{nullable: true, default : [] })
+  @Column('jsonb', { nullable: true, default: [] })
   removed_suggested_friends?: string[];
 
   @ApiHideProperty()
@@ -131,6 +124,10 @@ export class UserEntity extends AbstractBaseEntity {
   })
   hash: string;
 
+
+  @Column({ default : false})
+  selfie_verified: boolean;
+
   @ApiHideProperty()
   @Exclude()
   @Column({
@@ -138,12 +135,25 @@ export class UserEntity extends AbstractBaseEntity {
   })
   otp: string;
 
+  @ApiHideProperty()
+  @Exclude()
+  @Column({
+    nullable: true,
+  })
+  fcm_token: string;
+
+  @ApiHideProperty()
+  @Exclude()
+  @Column({
+    nullable: true,
+  })
+  last_seen: Date;
 
   @ApiProperty()
   @Column({
     nullable: true,
     name: 'phone_verified',
-    default: false
+    default: false,
   })
   phoneVerified: boolean;
 
@@ -151,7 +161,6 @@ export class UserEntity extends AbstractBaseEntity {
   @OneToMany(() => Password, (p) => p.user, { cascade: ['remove'] })
   @Exclude()
   passwords: Password[];
-
 
   @Exclude()
   get fullName(): string {
@@ -162,30 +171,6 @@ export class UserEntity extends AbstractBaseEntity {
 
   @Exclude()
   get getTemporaryPassword(): string {
-    return (
-      `gowild@${Math.floor(1000 + Math.random() * 9000)}`
-    );
+    return `gowild@${Math.floor(1000 + Math.random() * 9000)}`;
   }
-
-  // @AfterLoad()
-  // @AfterUpdate()
-  // updatePicture() {
-  //   if (this.picture && this.picture.indexOf('/') === 0) {
-  //     this.picture = appConfig().backendDomain + this.picture;
-  //   }
-  // }
-  // @AfterLoad()
-  // @AfterUpdate()
-  // updateFrontImage() {
-  //   if (this.frontImage && this.frontImage.indexOf('/') === 0) {
-  //     this.frontImage = appConfig().backendDomain + this.frontImage;
-  //   }
-  // }
-  // @AfterLoad()
-  // @AfterUpdate()
-  // updateBackImage() {
-  //   if (this.backImage && this.backImage.indexOf('/') === 0) {
-  //     this.backImage = appConfig().backendDomain + this.backImage;
-  //   }
-  // }
 }

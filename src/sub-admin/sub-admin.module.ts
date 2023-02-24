@@ -10,8 +10,13 @@ import { UserEntity } from 'src/users/user.entity';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports:[UsersModule,StatusModule,RoleModule,TypeOrmModule.forFeature([UserEntity]) ],
+  imports: [
+    UsersModule,
+    StatusModule,
+    RoleModule,
+    TypeOrmModule.forFeature([UserEntity]),
+  ],
   controllers: [SubAdminController],
-  providers: [SubAdminService]
+  providers: [SubAdminService],
 })
 export class SubAdminModule {}

@@ -2,15 +2,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { UserEntity } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { FindOptions } from 'src/common/types/find-options.type';
 import { DeepPartial } from 'src/common/types/deep-partial.type';
 import { StatusEnum } from 'src/auth/status.enum';
 import { MailService } from 'src/mail/mail.service';
 import { StatusService } from '../statuses/status.service';
-import { FilesService } from '../files/files.service';
-import { FileEntity } from "../files/file.entity";
-import { UpdateUserDto } from "./dtos/update-user.dto";
+import { UpdateUserDto } from './dtos/update-user.dto';
 import { RoleEnum } from 'src/roles/roles.enum';
 
 @Injectable()
@@ -20,7 +18,6 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
     @InjectRepository(UserEntity)
     private readonly usersRepository: Repository<UserEntity>,
     private readonly statusService: StatusService,
-
   ) {
     super(usersRepository);
   }
@@ -71,19 +68,24 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
     user.status = status;
     await user.save();
 
-    await this.mailService.userUpdateStatus(
+    /*await this.mailService.userUpdateStatus(
       {
         to: user.email,
         name: user.fullName,
         data: {},
       },
       status,
-    );
+    );*/
 
     return user;
   }
 
-  public async updatePictures(id: string, picture: string, frontImage: string, backImage: string) {
+  public async updatePictures(
+    id: string,
+    picture: string,
+    frontImage: string,
+    backImage: string,
+  ) {
     const user = await this.usersRepository.findOne({
       where: { id: id },
     });
@@ -105,80 +107,85 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
       user.frontImage = frontImage;
     }
     if (backImage) {
-      user.backImage = picture;
+      user.backImage = backImage;
     }
 
-    return { message: "User Updated Successfully!", user : await user.save() };
-
+    return { message: 'User Updated Successfully!', user: await user.save() };
   }
 
   public async updateProfile(id: string, dto: UpdateUserDto) {
-    await this.usersRepository.createQueryBuilder()
+    await this.usersRepository
+      .createQueryBuilder()
       .update()
       .set(dto)
       .where('id = :id', { id })
-      .execute()
+      .execute();
 
-   const user = await this.usersRepository.findOne({
+    const user = await this.usersRepository.findOne({
       where: { id: id },
     });
 
     return {
-      message : "User Updated Successfully",
-      user : user
-    }
+      message: 'User Updated Successfully',
+      user: user,
+    };
   }
-
 
   // get one user for admin panel
   async findOneUser(id: string) {
     const user = await this.usersRepository.findOne({
-      where: {id: id}
+      where: { id: id },
     });
-    let tenMinutesBefore = new Date();
+    const tenMinutesBefore = new Date();
     tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
-    let container : {
+    const container: {
       id: string;
-      firstName : string;
+      firstName: string;
       lastName: string;
+      username:string;
       email: string;
       onlineStatus: boolean;
       location: string;
+      locationTwo: string;
       accountStatus: string;
-    }={
+      frontImage: string;
+      backImage: string
+    } = {
       id: user.id,
       firstName: user.firstName,
       lastName: user.lastName,
+      username: user.username,
       email: user.email,
-      onlineStatus: user.updatedDate>tenMinutesBefore ? true : false,
-      location: `${user.addressOne}, ${user.addressTwo}`,
-      accountStatus: user.status.statusName
+      onlineStatus: user.updatedDate > tenMinutesBefore ? true : false,
+      location: `${user.addressOne}`,
+      locationTwo: `${user.addressTwo}`,
+      accountStatus: user.status.statusName,
+      frontImage: user.frontImage,
+      backImage: user.backImage
     };
 
     return container;
-
-
   }
 
   // get all users
-  async findAllUsers(){
+  async findAllUsers() {
     const users = await this.usersRepository.find({
       relations: ['role'],
       where: {
         role: {
           name: RoleEnum.USER,
         },
-
-      }
+      },
     });
-    let tenMinutesBefore = new Date();
+    const tenMinutesBefore = new Date();
     tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
 
-    const data = users.map((obj)=>{
-      let container : {
-        id: string
-        firstName : string;
-        lastName : string;
+    const data = users.map((obj) => {
+      const container: {
+        id: string;
+        firstName: string;
+        lastName: string;
+        username:string;
         gender: string;
         phoneNo: string;
         picture: string;
@@ -186,9 +193,141 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         dateOfBirth: Date;
         onlineStatus: boolean;
         location: string;
+        locationTwo: string;
         accountStatus: string;
-      }={
+        frontImage: string;
+        backImage: string
+      } = {
         id: obj.id,
+        firstName: obj.firstName,
+        lastName: obj.lastName,
+        username:obj.username,
+        gender: obj.gender,
+        phoneNo: obj.phoneNo,
+        picture: obj.picture,
+        email: obj.email,
+        dateOfBirth: obj.birthDate,
+        onlineStatus: obj.updatedDate > tenMinutesBefore ? true : false,
+        location: `${obj.addressOne}`,
+        locationTwo: `${obj.addressTwo}`,
+        accountStatus: obj.status.statusName,
+        frontImage: obj.frontImage,
+        backImage: obj.backImage
+      };
+      return container;
+    });
+    return data;
+  }
+
+
+
+
+  async getGraphUsers() {
+    const currentDate = new Date();
+    const sixteenDaysAgo = new Date(currentDate.getTime() - 16 * 24 * 60 * 60 * 1000);
+    sixteenDaysAgo.setHours(0, 0, 0, 0);
+
+
+    const onlineUsers = await this.usersRepository
+      .createQueryBuilder("user")
+      .select("DATE(user.createdDate) as date")
+      .addSelect("COUNT(*) as count")
+      .innerJoin("user.role", "role", "role.name = :roleName", { roleName: RoleEnum.USER })
+      .innerJoin("user.status", "status", "status.statusName = :statusName", { statusName: StatusEnum.Active })
+      .where("user.createdDate >= :sixteenDaysAgo", { sixteenDaysAgo: sixteenDaysAgo })
+      .groupBy("date")
+      .getRawMany();
+
+    const newUsers = await this.usersRepository
+      .createQueryBuilder("user")
+      .select("DATE(user.createdDate) as date")
+      .addSelect("COUNT(*) as count")
+      .innerJoin("user.role", "role", "role.name = :roleName", { roleName: RoleEnum.USER })
+      .where("user.createdDate >= :sixteenDaysAgo", { sixteenDaysAgo: sixteenDaysAgo })
+      .groupBy("date")
+      .getRawMany();
+
+    const bannedUsers = await this.usersRepository
+      .createQueryBuilder("user")
+      .select("DATE(user.createdDate) as date")
+      .addSelect("COUNT(*) as count")
+      .innerJoin("user.role", "role", "role.name = :roleName", { roleName: RoleEnum.USER })
+      .innerJoin("user.status", "status", "status.statusName = :statusName", { statusName: StatusEnum.Inactive })
+      .where("user.createdDate >= :sixteenDaysAgo", { sixteenDaysAgo: sixteenDaysAgo })
+      .groupBy("date")
+      .getRawMany();
+
+    return { newUsers: newUsers, onlineUsers: onlineUsers, bannedUsers: bannedUsers };
+  }
+
+  async getUserCount() {
+    const allUsers = await this.usersRepository.find({});
+    return {
+      signup_users: await this.usersRepository.count({
+        relations: ['role'],
+        where: { role: { name: RoleEnum.USER } }
+      }),
+      active_users: await this.usersRepository.count({
+        relations: ['status', 'role'],
+        where: {
+          role: {
+            name: RoleEnum.USER
+          },
+          status: {
+            statusName: StatusEnum.Active,
+          },
+        },
+      }),
+      inactive_users: await this.usersRepository.count({
+        relations: ['status', 'role'],
+        where: {
+          role: {
+            name: RoleEnum.USER
+          },
+          status: {
+            statusName: StatusEnum.Inactive,
+          },
+        },
+      }),
+    };
+  }
+
+
+  async getDataByCreatedDate(createdDate: string) {
+    const startOfDay = new Date(createdDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const users = await this.usersRepository.find({
+      relations: ['role'],
+
+      where: {
+        role: { name: RoleEnum.USER },
+        createdDate: Between(startOfDay, endOfDay)
+      }
+    });
+    if (!users) {
+      throw new NotFoundException({ message: "Users Not Found" })
+    }
+    const tenMinutesBefore = new Date();
+    tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
+    const data = users.map((obj) => {
+      const container: {
+        firstName: string;
+        lastName: string;
+        gender: string;
+        phoneNo: string;
+        picture: string;
+        email: string;
+        dateOfBirth: Date;
+        onlineStatus: boolean;
+        location: string;
+        locationTwo: string;
+        accountStatus: string;
+        frontImage: string;
+        backImage: string
+      } = {
         firstName: obj.firstName,
         lastName: obj.lastName,
         gender: obj.gender,
@@ -196,37 +335,76 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
         picture: obj.picture,
         email: obj.email,
         dateOfBirth: obj.birthDate,
-        onlineStatus: obj.updatedDate>tenMinutesBefore ? true : false,
-        location: `${obj.addressOne}, ${obj.addressTwo}`,
-        accountStatus: obj.status.statusName
+        onlineStatus: obj.updatedDate > tenMinutesBefore,
+        location: obj.addressOne,
+        locationTwo: obj.addressTwo,
+        accountStatus: obj.status.statusName,
+        frontImage: obj.frontImage,
+        backImage: obj.backImage
+
       };
       return container;
     });
     return data;
   }
 
-  async getUserCount(){
-    const allUsers = await this.usersRepository.find({});
-    return{
-      'signup_users': await this.usersRepository.count({}),
-      'active_users': await this.usersRepository.count({
-        relations:['status'],
-        where:{
-          status:{
-            statusName:StatusEnum.Active
-          }
-        }
-      }),
-      'inactive_users': await this.usersRepository.count({
-        relations:['status'],
-        where:{
-          status:{
-            statusName:StatusEnum.Inactive
-          }
-        }
-      })
+  async downloadDashboardEntities() {
+
+    const users = await this.usersRepository.find({
+      relations: ['role'],
+      where: {
+        role: {
+          name: RoleEnum.USER,
+        },
+      },
+    });
+    const tenMinutesBefore = new Date();
+    tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
+    const data = users.map((obj) => {
+      const container: {
+        firstName: string;
+        lastName: string;
+        gender: string;
+        phoneNo: string;
+        picture: string;
+        email: string;
+        dateOfBirth: Date;
+        onlineStatus: boolean;
+        addressOne: string;
+        addressTwo: string;
+        accountStatus: string;
+        frontImage: string;
+        backImage: string
+      } = {
+        firstName: obj.firstName,
+        lastName: obj.lastName,
+        gender: obj.gender,
+        phoneNo: obj.phoneNo,
+        picture: obj.picture,
+        email: obj.email,
+        dateOfBirth: obj.birthDate,
+        onlineStatus: obj.updatedDate > tenMinutesBefore,
+        addressOne: obj.addressOne,
+        addressTwo: obj.addressTwo,
+        accountStatus: obj.status.statusName,
+        frontImage: obj.frontImage,
+        backImage: obj.backImage
+      };
+      return container;
+    });
+    return data;
+  }
+
+  async selfieVerificationStatus(res: boolean, user_id: string) {
+    const user = await this.usersRepository.findOne({
+      where: {
+        id: user_id
+      }
+    })
+    if (user) {
+      user.selfie_verified = true;
+      return await user.save();
+
     }
   }
 }
-
-

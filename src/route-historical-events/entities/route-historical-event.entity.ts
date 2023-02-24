@@ -1,18 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsOptional } from 'class-validator';
 import { AbstractBaseEntity } from 'src/common/abstract-base-entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Route } from '../../route/entities/route.entity';
-import { AppPoint } from '../../common/lat-lng.embedded';
-import { Geometry } from 'geojson';
 import { FileEntity } from '../../files/file.entity';
+import { RouteHistoricalEventMedias } from './route-historical-event-medias.entity';
+import { Coordinates } from '../../common/coordinates';
 
 @Entity('gw_route_historical_events')
 export class RouteHistoricalEvent extends AbstractBaseEntity {
@@ -26,24 +19,32 @@ export class RouteHistoricalEvent extends AbstractBaseEntity {
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'route_id' })
-  route: Route;
+  route_id: Route;
 
-  @IsOptional()
+  @Allow()
+  @ApiProperty({ type: () => Coordinates, nullable: false })
+  @Column({
+    type: 'jsonb',
+    nullable: false,
+  })
+  historical_event: Coordinates;
+
+  /*  @IsOptional()
   @ApiProperty({ example: '830759078-477', nullable: true })
   @Column({
     length: 50,
     nullable: true,
   })
-  closureUid?: string;
+  closureUid?: string;*/
 
-  @IsOptional()
+  /*@IsOptional()
   @Allow()
   @ApiProperty({ type: () => AppPoint, nullable: true })
   @Column({
     type: 'geometry',
     nullable: true,
   })
-  point?: Geometry;
+  point?: Geometry;*/
 
   @IsOptional()
   @ApiProperty({ example: 'First On the List', nullable: true })
@@ -68,13 +69,13 @@ export class RouteHistoricalEvent extends AbstractBaseEntity {
 
   @Allow()
   @ApiProperty({ nullable: true, type: () => FileEntity })
-  @ManyToOne(() => FileEntity, { nullable: true, cascade: false, eager: true })
-  @JoinColumn({ name: 'picture_id' })
-  image: FileEntity;
+  @Column({ nullable: true })
+  image: string;
 
-  @Allow()
-  @ApiProperty({ nullable: true, type: [FileEntity] })
-  @ManyToMany(() => FileEntity)
-  @JoinTable({ name: 'gw_route_historical_event_medias' })
-  medias: FileEntity[];
+  @OneToMany(
+    () => RouteHistoricalEventMedias,
+    (medias) => medias.routeHistoricalEvent,
+    { cascade: ['remove'] },
+  )
+  medias: RouteHistoricalEventMedias[];
 }

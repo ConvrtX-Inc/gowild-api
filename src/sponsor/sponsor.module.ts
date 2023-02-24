@@ -1,13 +1,13 @@
-import {Module, UnprocessableEntityException} from '@nestjs/common';
+import { Module, UnprocessableEntityException } from '@nestjs/common';
 import { SponsorService } from './sponsor.service';
 import { SponsorController } from './sponsor.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Sponsor } from './entities/sponsor.entity';
 import { FilesModule } from 'src/files/files.module';
 import { MulterModule } from '@nestjs/platform-express';
-import {ConfigModule, ConfigService} from "@nestjs/config";
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { diskStorage } from 'multer';
-import * as AWS from "aws-sdk";
+import * as AWS from 'aws-sdk';
 import * as multerS3 from 'multer-s3';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import path from 'path';
@@ -15,26 +15,28 @@ import path from 'path';
 @Module({
   controllers: [SponsorController],
   providers: [SponsorService],
-  imports: [TypeOrmModule.forFeature([Sponsor]), FilesModule
-  ,MulterModule.registerAsync({
-    imports: [ConfigModule],
-    inject: [ConfigService],
-    useFactory: (configService: ConfigService) => {
-      const storages: Record<files.FileType, files.VoidStorageEngineConfig> =
+  imports: [
+    TypeOrmModule.forFeature([Sponsor]),
+    FilesModule,
+    MulterModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const storages: Record<files.FileType, files.VoidStorageEngineConfig> =
           {
             local: () =>
-                diskStorage({
-                  destination: './files',
-                  filename: (request, file, callback) => {
-                    callback(
-                        null,
-                        `${randomStringGenerator()}.${file.originalname
-                            .split('.')
-                            .pop()
-                            .toLowerCase()}`,
-                    );
-                  },
-                }),
+              diskStorage({
+                destination: './files',
+                filename: (request, file, callback) => {
+                  callback(
+                    null,
+                    `${randomStringGenerator()}.${file.originalname
+                      .split('.')
+                      .pop()
+                      .toLowerCase()}`,
+                  );
+                },
+              }),
             s3: () => {
               const s3 = new AWS.S3();
               AWS.config.update({
@@ -50,11 +52,11 @@ import path from 'path';
                 contentType: multerS3.AUTO_CONTENT_TYPE,
                 key: (request, file, callback) => {
                   callback(
-                      null,
-                      `${randomStringGenerator()}.${file.originalname
-                          .split('.')
-                          .pop()
-                          .toLowerCase()}`,
+                    null,
+                    `${randomStringGenerator()}.${file.originalname
+                      .split('.')
+                      .pop()
+                      .toLowerCase()}`,
                   );
                 },
               });
@@ -62,8 +64,8 @@ import path from 'path';
             firebase: () => {
               const FirebaseStorage = require('multer-firebase-storage');
               const googleFileConfig = path.join(
-                  process.cwd(),
-                  configService.get('file.firebaseConfigFilePath'),
+                process.cwd(),
+                configService.get('file.firebaseConfigFilePath'),
               );
               const googleConfigFile = require(googleFileConfig);
 
@@ -83,10 +85,10 @@ import path from 'path';
             },
           };
 
-      return {
-        fileFilter: (request, file, callback) => {
-          if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
-            return callback(
+        return {
+          fileFilter: (request, file, callback) => {
+            if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
+              return callback(
                 new UnprocessableEntityException({
                   errors: [
                     {
@@ -95,17 +97,18 @@ import path from 'path';
                   ],
                 }),
                 false,
-            );
-          }
+              );
+            }
 
-          callback(null, true);
-        },
-        storage: storages[configService.get('file.driver')](),
-        limits: {
-          fileSize: configService.get('file.maxFileSize'),
-        },
-      };
-    },
-  })],
+            callback(null, true);
+          },
+          storage: storages[configService.get('file.driver')](),
+          limits: {
+            fileSize: configService.get('file.maxFileSize'),
+          },
+        };
+      },
+    }),
+  ],
 })
 export class SponsorModule {}
