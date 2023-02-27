@@ -97,22 +97,22 @@ export class RouteService extends TypeOrmCrudService<Route> {
       .execute();
 
 
-if (dto.historical_route) {
-  
-  for (let i = 0; i < dto.historical_route.length; i++) {
-    let myhistorical = {};
-    myhistorical = dto.historical_route[i];
-    myhistorical['route_id'] = id;
-    await this.routeHistoricalEventRepository.upsert(myhistorical, ['id'])
-    
-  }
-}
+    if (dto.historical_route) {
+
+      for (let i = 0; i < dto.historical_route.length; i++) {
+        let myhistorical = {};
+        myhistorical = dto.historical_route[i];
+        myhistorical['route_id'] = id;
+        await this.routeHistoricalEventRepository.upsert(myhistorical, ['id'])
+
+      }
+    }
 
     const route = await this.routeRepository.findOne({
       where: { id: id },
       relations: ['historicalEvents']
     });
-    
+
     return {
       message: 'Route Updated Successfully',
       data: route,
@@ -220,6 +220,16 @@ if (dto.historical_route) {
           'K',
         ) >= 0
       ) {
+        console.log("IN LOOP");
+        console.log(this.closestLocation(
+          parseFloat(lat),
+          parseFloat(long),
+          routes[i].start.latitude,
+          routes[i].start.longitude,
+          'K',
+        ))
+        console.log(routes[i].title);
+        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         results.push(routes[i]);
       }
     }
@@ -310,7 +320,8 @@ if (dto.historical_route) {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const d = R * c; // in metres
     const km = Math.round(d / 1000);
-    console.log(km);
+    console.log("KILOMETERS");
+    console.log(km)
     return km;
   }
 
