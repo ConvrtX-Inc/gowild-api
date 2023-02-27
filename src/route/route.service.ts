@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { DeepPartial } from 'src/common/types/deep-partial.type';
 import { FindOptions } from 'src/common/types/find-options.type';
-import { getRepository, Not, Repository, SimpleConsoleLogger } from 'typeorm';
+import { getRepository, Not, Repository, getConnection,SimpleConsoleLogger } from 'typeorm';
 import { Route, RouteStatusEnum } from './entities/route.entity';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { RoleEnum } from '../roles/roles.enum';
@@ -538,9 +538,22 @@ export class RouteService extends TypeOrmCrudService<Route> {
   }
 
   async deleteOneRoute(id: string) {
-    await this.routeRepository.delete(id);
-    return { message: 'Route Deleted Successfully' };
+    try {
+      await getConnection().transaction(async (transactionalEntityManager) => {
+        // delete the Route entity
+      await transactionalEntityManager.softDelete(Route, id);
+      // delete Route along Saved Routes
+      await transactionalEntityManager.softDelete(SavedRoute, { route_id: id });
+      // delete Route along LeaderBoard
+      await transactionalEntityManager.softDelete(LeaderBoard,{route_id: id});
+      });
+      return { message: 'Route deleted successfully' };
+    } catch (error) {
+      console.error(error);
+      return { message:'Error deleting Route'};
+    }
   }
+  
 
   async updateApprovedStatus(id) {
     const status = await this.routeRepository.findOne({
