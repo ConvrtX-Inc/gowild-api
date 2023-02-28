@@ -278,7 +278,7 @@ export class AuthService {
     let user = null;
     let emailPhone = null;
     if (dto.phone) {
-      emailPhone = dto.phone;
+      emailPhone = dto.email;
       user = await this.usersService.findOneEntity({
         where: {
           email: dto.email,
