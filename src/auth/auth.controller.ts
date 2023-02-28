@@ -89,7 +89,8 @@ export class AuthController {
   ): Promise<SuccessResponse> {
     return await this.service.resetPassword(
       resetPasswordDto.hash,
-      resetPasswordDto.emailPhone,
+      resetPasswordDto.email,
+      resetPasswordDto.phone,
       resetPasswordDto.password,
     );
   }

@@ -358,7 +358,8 @@ export class AuthService {
 
   public async resetPassword(
     hash: string,
-    emailPhone: string,
+    email: string,
+    phone: string,
     password: string,
   ): Promise<SuccessResponse> {
     /*let user = null;
@@ -374,10 +375,7 @@ export class AuthService {
       });
     }*/
     const user = await this.usersService.findOne({
-      where: [
-        { phoneNo: emailPhone},
-        { email: emailPhone},
-      ],
+      where: { phoneNo: phone , email: email},
     });
     /*if(!user){
       throw new NotFoundException({
