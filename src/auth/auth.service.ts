@@ -373,10 +373,11 @@ export class AuthService {
         hash: `notFound`,
       });
     }*/
-    const user = await this.usersService.findOneEntity({
-      where: {
-        phoneNo: emailPhone,
-      },
+    const user = await this.usersService.findOne({
+      where: [
+        { phoneNo: emailPhone},
+        { email: emailPhone},
+      ],
     });
     /*if(!user){
       throw new NotFoundException({
@@ -388,13 +389,11 @@ export class AuthService {
       user,
       password,
     );
-
     if (passwordCheck) {
       throw new NotFoundException({
         message: `Cannot set your Previous Password`,
       });
     }
-
     //await this.forgotService.softDelete(forgot.id);
     await this.passwordService.createPassword(user, password);
     // await data.save();
