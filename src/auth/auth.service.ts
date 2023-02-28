@@ -313,22 +313,19 @@ export class AuthService {
       emailPhone,
       user,
     });
-    if (dto.email) {
-      /*await this.mailService.forgotPassword({
-        to: dto.email,
+    // Send Email & SMS based on User
+    /*await this.mailService.forgotPassword({
+        to: user.email,
         data: {
           hash,
         },
       });*/
-    } else {
-      // await this.smsService.send({
-      //   phone_number: user.phone_no.toString(),
-      //   message:
-      //     'You have requested reset password on Go Wild App. Please use this code to reset password:' +
-      //     hash,
-      // });
-      // Will uncomment when twilio account provided
-    }
+    // await this.smsService.send({
+    //   phone_number: user.phone_no.toString(),
+    //   message:
+    //     'You have requested reset password on Go Wild App. Please use this code to reset password:' +
+    //     hash,
+    // });
     return {
       status: HttpStatus.OK,
       message: 'Success',
