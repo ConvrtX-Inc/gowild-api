@@ -84,6 +84,7 @@ export class TreasureChestService extends TypeOrmCrudService<TreasureChest> {
     const chests = await this.treasureChestRepository.createQueryBuilder('chest')
         .leftJoinAndMapMany('chest.sponsor', Sponsor,'sponsor', 'sponsor.treasure_chest = chest.id')
         .select(['chest','sponsor.link', 'sponsor.img'])
+        .orderBy('chest.createdDate', 'DESC')
         .getMany();
 
     return{

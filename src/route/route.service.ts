@@ -500,29 +500,29 @@ export class RouteService extends TypeOrmCrudService<Route> {
       if (leaderStats) {
         leaderStats.forEach((state) => {
           const leaderboard = this.mapLeaderboard(
-            state.id,
-            state.user_id,
-            state['user'].firstName,
-            state['user'].picture,
-            state.rank,
+            state?.id,
+            state?.user_id,
+            state['user']?.firstName,
+            state['user']?.picture,
+            state?.rank,
           );
           user.push(leaderboard);
         });
       }
       if (currentUser) {
         const currentUserData = this.mapLeaderboard(
-          currentUser.id,
-          currentUser.user_id,
-          currentUser['user'].firstName,
-          currentUser['user'].picture,
-          currentUser.rank,
+          currentUser?.id,
+          currentUser?.user_id,
+          currentUser['user']?.firstName,
+          currentUser['user']?.picture,
+          currentUser?.rank,
         );
         savedRoutes[i]['currentUser'] = currentUserData;
       } else {
         savedRoutes[i]['currentUser'] = null;
       }
       savedRoutes[i]['leaderboard'] = user;
-      results.push(savedRoutes[i]);
+      results?.push(savedRoutes[i]);
     }
     const totalPage = Math.ceil(total / limit);
     const currentPage = parseInt(String(page));
