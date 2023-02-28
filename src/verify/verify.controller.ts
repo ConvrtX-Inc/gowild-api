@@ -18,7 +18,7 @@ export class VerifyController {
     @Body() request: SendVerificationTokenDto,
   ): Promise<Verify> {
     return {
-      phone_number: request.phone_number,
+      phone_number: request.emailPhone,
       code: '0000',
       status: 'pending',
     };
