@@ -39,6 +39,7 @@ export class UpdateSubAdminDto{
   birthDate: Date;
 
   @ApiProperty()
+  @IsOptional()
   @MinLength(6)
   password: string;
 }
