@@ -246,7 +246,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
     
     
     // query to get the counts of user logs for the current month
-    const onlineUsers = await UserLoginLogs.createQueryBuilder('logs')
+    const activeUsers = await UserLoginLogs.createQueryBuilder('logs')
       .select("to_char(logs.loginDate, 'YYYY-MM-DDT00:00:00.000Z') as date")
       .addSelect('COUNT(*)', 'count')
       .where('Logs.login_date >= :startOfMonth', { startOfMonth })
@@ -272,7 +272,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
       .groupBy("date")
       .getRawMany();
 
-    return { online: onlineUsers, newUsers: newUsers, bannedUsers: bannedUsers };
+    return { activeUsers: activeUsers, newUsers: newUsers, bannedUsers: bannedUsers };
   }
 
   async getUserCount() {
