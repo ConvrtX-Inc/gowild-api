@@ -17,6 +17,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RefreshTokenEntity } from './refresh-token.entity';
 import { StatusModule } from '../statuses/status.module';
 import { RoleModule } from '../roles/roles.module';
+import { DashboardService } from 'src/dashboard/dashboard.service';
 
 @Module({
   imports: [
@@ -41,7 +42,7 @@ import { RoleModule } from '../roles/roles.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, AnonymousStrategy, TokenService],
+  providers: [AuthService, JwtStrategy, AnonymousStrategy, TokenService, DashboardService],
   exports: [AuthService],
 })
 export class AuthModule {}
