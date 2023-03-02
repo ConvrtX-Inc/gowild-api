@@ -189,6 +189,7 @@ export class SubAdminService {
           name: RoleEnum.ADMIN,
         },
       },
+      order:{createdDate:'DESC'}
     });
     return await this.mapListingsData(admins);
   }
