@@ -25,6 +25,7 @@ export class AuthGoogleService {
   ): Promise<SocialInterface> {
     let ticket = undefined;
     const googleConfig = new AuthGoogleConfig(new ConfigService(),loginDto.device_type)
+    console.log(loginDto)
     if (loginDto.device_type == deviceTypeEnum.IOS) {
       ticket = await googleConfig.google.verifyIdToken({
         idToken: loginDto.id_token,
