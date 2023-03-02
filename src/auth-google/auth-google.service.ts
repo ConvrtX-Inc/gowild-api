@@ -13,11 +13,11 @@ export class AuthGoogleService {
   private google: OAuth2Client;
 
   constructor(private configService: ConfigService) {
-    this.google = new OAuth2Client(
-      configService.get('google.clientIdIos'),
-      configService.get('google.clientSecret'),
-      configService.get('google.clientIdAndroid'),
-    );
+    // this.google = new OAuth2Client(
+    //   configService.get('google.clientIdIos'),
+    //   configService.get('google.clientSecret'),
+    //   configService.get('google.clientIdAndroid'),
+    // );
   }
 
   async getProfileByToken(
