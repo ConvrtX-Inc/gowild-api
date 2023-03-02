@@ -224,55 +224,41 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
 
 
   async getGraphUsers() {
-    const todayDate = new Date(Date.now());
-    const startOfMonth = new Date(todayDate.getFullYear(), todayDate.getMonth(), 2);
-    startOfMonth.setUTCHours(0, 0, 0, 0);
-
-    // const currentDate = new Date();
-    // const sixteenDaysAgo = new Date(currentDate.getTime() - 16 * 24 * 60 * 60 * 1000);
-    // sixteenDaysAgo.setHours(0, 0, 0, 0);
+    const currentDate = new Date();
+    const sixteenDaysAgo = new Date(currentDate.getTime() - 16 * 24 * 60 * 60 * 1000);
+    sixteenDaysAgo.setHours(0, 0, 0, 0);
 
 
-    // const activeUsers = await this.usersRepository
-    //   .createQueryBuilder("user")
-    //   .select("DATE(user.createdDate) as date")
-    //   .addSelect("COUNT(*) as count")
-    //   .innerJoin("user.role", "role", "role.name = :roleName", { roleName: RoleEnum.USER })
-    //   .innerJoin("user.status", "status", "status.statusName = :statusName", { statusName: StatusEnum.Active })
-    //   .where("user.createdDate >= :sixteenDaysAgo", { sixteenDaysAgo: sixteenDaysAgo })
-    //   .groupBy("date")
-    //   .getRawMany();
-
-    
-    
-    // query to get the counts of user logs for the current month
-    const activeUsers = await UserLoginLogs.createQueryBuilder('logs')
-      .select("to_char(logs.loginDate, 'YYYY-MM-DDT00:00:00.000Z') as date")
-      .addSelect('COUNT(*)', 'count')
-      .where('Logs.login_date >= :startOfMonth', { startOfMonth })
-      .groupBy('date')
+    const onlineUsers = await this.usersRepository
+      .createQueryBuilder("user")
+      .select("DATE(user.createdDate) as date")
+      .addSelect("COUNT(*) as count")
+      .innerJoin("user.role", "role", "role.name = :roleName", { roleName: RoleEnum.USER })
+      .innerJoin("user.status", "status", "status.statusName = :statusName", { statusName: StatusEnum.Active })
+      .where("user.createdDate >= :sixteenDaysAgo", { sixteenDaysAgo: sixteenDaysAgo })
+      .groupBy("date")
       .getRawMany();
 
     const newUsers = await this.usersRepository
       .createQueryBuilder("user")
-      .select("to_char(user.createdDate, 'YYYY-MM-DDT00:00:00.000Z') as date")
+      .select("DATE(user.createdDate) as date")
       .addSelect("COUNT(*) as count")
       .innerJoin("user.role", "role", "role.name = :roleName", { roleName: RoleEnum.USER })
-      .where("user.createdDate >= :startOfMonth", { startOfMonth })
+      .where("user.createdDate >= :sixteenDaysAgo", { sixteenDaysAgo: sixteenDaysAgo })
       .groupBy("date")
       .getRawMany();
 
     const bannedUsers = await this.usersRepository
       .createQueryBuilder("user")
-      .select("to_char(user.createdDate, 'YYYY-MM-DDT00:00:00.000Z') as date")
+      .select("DATE(user.createdDate) as date")
       .addSelect("COUNT(*) as count")
       .innerJoin("user.role", "role", "role.name = :roleName", { roleName: RoleEnum.USER })
       .innerJoin("user.status", "status", "status.statusName = :statusName", { statusName: StatusEnum.Inactive })
-      .where("user.createdDate >= :startOfMonth", { startOfMonth })
+      .where("user.createdDate >= :sixteenDaysAgo", { sixteenDaysAgo: sixteenDaysAgo })
       .groupBy("date")
       .getRawMany();
 
-    return { activeUsers: activeUsers, newUsers: newUsers, bannedUsers: bannedUsers };
+    return { newUsers: newUsers, onlineUsers: onlineUsers, bannedUsers: bannedUsers };
   }
 
   async getUserCount() {
