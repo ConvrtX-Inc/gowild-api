@@ -6,6 +6,7 @@ import {
   AuthGoogleLoginDto,
   deviceTypeEnum,
 } from './dtos/auth-google-login.dto';
+import {AuthGoogleConfig} from "./google.config";
 
 @Injectable()
 export class AuthGoogleService {
@@ -23,13 +24,14 @@ export class AuthGoogleService {
     loginDto: AuthGoogleLoginDto,
   ): Promise<SocialInterface> {
     let ticket = undefined;
+    const googleConfig = new AuthGoogleConfig(new ConfigService(),loginDto.device_type)
     if (loginDto.device_type == deviceTypeEnum.IOS) {
-      ticket = await this.google.verifyIdToken({
+      ticket = await googleConfig.google.verifyIdToken({
         idToken: loginDto.id_token,
         audience: [this.configService.get('google.clientIdIos')],
       });
     } else if (loginDto.device_type == deviceTypeEnum.ANDROID) {
-      ticket = await this.google.verifyIdToken({
+      ticket = await googleConfig.google.verifyIdToken({
         idToken: loginDto.id_token,
         audience: [this.configService.get('google.clientIdAndroid')],
       });
