@@ -28,6 +28,8 @@ import { RoleEnum, roleEnumsNames } from '../roles/roles.enum';
 import { AuthVerifyUserDto } from './dtos/auth-verify-user.dto';
 import appConfig from 'src/config/app.config';
 import { BadRequestException } from '@nestjs/common/exceptions';
+import { DashboardService } from 'src/dashboard/dashboard.service';
+
 
 @Injectable()
 export class AuthService {
@@ -41,6 +43,7 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly statusService: StatusService,
     private readonly roleService: RoleService,
+    private readonly logsService: DashboardService,
   ) { }
 
   public async validateLogin(
@@ -74,6 +77,12 @@ export class AuthService {
         await user.save();
       }
       if (isValidPassword) {
+        // create User Login logs
+        if (user?.role?.name == RoleEnum?.USER) {
+          await this.logsService.createUserLoginLogs(user.id)
+        }
+
+        // return token
         return await this.tokenService.generateToken(user);
       } else {
         throw new UnprocessableEntityException({
