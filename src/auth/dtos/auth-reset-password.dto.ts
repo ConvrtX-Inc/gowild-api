@@ -14,7 +14,11 @@ export class AuthVerifyOTPDto {
 export class AuthResetPasswordDto {
   @ApiProperty()
   @IsNotEmpty()
-  emailPhone: string;
+  email: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  phone: string;
 
   @ApiProperty()
   @IsNotEmpty()

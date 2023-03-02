@@ -287,7 +287,7 @@ export class AuthService {
     let user = null;
     let emailPhone = null;
     if (dto.phone) {
-      emailPhone = dto.phone;
+      emailPhone = dto.email;
       user = await this.usersService.findOneEntity({
         where: {
           email: dto.email,
@@ -322,22 +322,19 @@ export class AuthService {
       emailPhone,
       user,
     });
-    if (dto.email) {
-      /*await this.mailService.forgotPassword({
-        to: dto.email,
+    // Send Email & SMS based on User
+    /*await this.mailService.forgotPassword({
+        to: user.email,
         data: {
           hash,
         },
       });*/
-    } else {
-      // await this.smsService.send({
-      //   phone_number: user.phone_no.toString(),
-      //   message:
-      //     'You have requested reset password on Go Wild App. Please use this code to reset password:' +
-      //     hash,
-      // });
-      // Will uncomment when twilio account provided
-    }
+    // await this.smsService.send({
+    //   phone_number: user.phone_no.toString(),
+    //   message:
+    //     'You have requested reset password on Go Wild App. Please use this code to reset password:' +
+    //     hash,
+    // });
     return {
       status: HttpStatus.OK,
       message: 'Success',
@@ -367,7 +364,8 @@ export class AuthService {
 
   public async resetPassword(
     hash: string,
-    emailPhone: string,
+    email: string,
+    phone: string,
     password: string,
   ): Promise<SuccessResponse> {
     /*let user = null;
@@ -382,10 +380,8 @@ export class AuthService {
         hash: `notFound`,
       });
     }*/
-    const user = await this.usersService.findOneEntity({
-      where: {
-        phoneNo: emailPhone,
-      },
+    const user = await this.usersService.findOne({
+      where: { phoneNo: phone , email: email},
     });
     /*if(!user){
       throw new NotFoundException({
@@ -397,13 +393,11 @@ export class AuthService {
       user,
       password,
     );
-
     if (passwordCheck) {
       throw new NotFoundException({
         message: `Cannot set your Previous Password`,
       });
     }
-
     //await this.forgotService.softDelete(forgot.id);
     await this.passwordService.createPassword(user, password);
     // await data.save();
