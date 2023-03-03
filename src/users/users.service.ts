@@ -177,6 +177,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
           name: RoleEnum.USER,
         },
       },
+      order: {createdDate: 'DESC'}
     });
     const tenMinutesBefore = new Date();
     tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);

@@ -88,7 +88,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     Find Many Register Users
     */
   async getManyUserTreasureHunt() {
-    const all = await UserTreasureHuntEntity.find({});
+    const all = await UserTreasureHuntEntity.find({order:{createdDate:'DESC'}});
     return { data: all };
   }
 
@@ -125,6 +125,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
       )
       .skip(skip)
       .take(take)
+      .orderBy('treasureHunts.createdDate', 'DESC')
       .getManyAndCount();
 
 
