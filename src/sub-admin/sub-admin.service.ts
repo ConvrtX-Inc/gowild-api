@@ -75,9 +75,9 @@ export class SubAdminService {
     entity.role = await this.roleService.findByEnum(RoleEnum.ADMIN);
     entity = await this.usersService.saveEntity(entity);
 
-  
+
     await this.passwordService.createPassword(entity, dto.password);
-    
+
 
     return {
 
@@ -136,10 +136,11 @@ export class SubAdminService {
 
 // update password
 
-     
+
     await admin.save();
-    await this.passwordService.createPassword(admin, dto.password)
-    
+    if (dto.password) {
+      await this.passwordService.createPassword(admin, dto.password)
+    }
     return admin;
   }
 
@@ -147,7 +148,7 @@ export class SubAdminService {
     const admin = await this.usersRepository.findOne({
       where: { id: id },
     });
-    
+
     const tenMinutesBefore = new Date();
     tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
     const container: {
@@ -161,7 +162,7 @@ export class SubAdminService {
       location: string;
       locationTwO: string;
       accountStatus: string;
-      
+
     } = {
       id: id,
       firstName: admin.firstName,
@@ -173,7 +174,7 @@ export class SubAdminService {
       location: `${admin.addressOne}`,
       locationTwO:`${admin.addressTwo}`,
       accountStatus: admin.status.statusName,
-      
+
     };
     return container;
   }

@@ -64,6 +64,7 @@ export class PasswordService extends TypeOrmCrudService<Password> {
   }
 
   private async findPrevious(user: UserEntity): Promise<Password | null> {
+
     const found = await this.repository.findOne({
       where: { user, status: 'true' },
     });
