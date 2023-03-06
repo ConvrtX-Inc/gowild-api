@@ -268,4 +268,11 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
         'A fresh registereation number has been sent to your registered mobile number',
     };
   }
+
+  async createWinner(winner_id: string, chest_id: string){
+    await this.treasureChestRepository.createQueryBuilder()
+    .update(TreasureChest)
+    .set({winnerId: winner_id}).where('id = :chest_id',{chest_id}).execute()
+    return {message: 'Winner Created Successfully'}
+  }
 }

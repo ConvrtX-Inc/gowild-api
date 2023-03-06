@@ -8,6 +8,7 @@ import {
   Request,
   Get,
   Query,
+  Param,
 } from '@nestjs/common';
 import { Crud, CrudController, Override } from '@nestjsx/crud';
 import { TreasureChest } from './entities/treasure-chest.entity';
@@ -99,5 +100,11 @@ export class TreasureWildController implements CrudController<TreasureChest> {
   @HttpCode(HttpStatus.OK)
   async resendCode(@Body() dto: RegisterTreasureHuntDto, @Request() req) {
     return await this.service.resendCode(dto, req.user.sub);
+  }
+
+  @ApiOperation({ summary: 'Create Winner' })
+  @Post(':chest_id')
+  async createWinner(@Request() req,@Param('chest_id') chest_id: string){
+    return await this.service.createWinner(req.user.sub, chest_id);
   }
 }
