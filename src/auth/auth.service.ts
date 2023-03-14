@@ -27,7 +27,7 @@ import { RoleService } from '../roles/role.service';
 import { RoleEnum, roleEnumsNames } from '../roles/roles.enum';
 import { AuthVerifyUserDto } from './dtos/auth-verify-user.dto';
 import appConfig from 'src/config/app.config';
-import { BadRequestException } from '@nestjs/common/exceptions';
+import { BadRequestException, ConflictException } from '@nestjs/common/exceptions';
 import { DashboardService } from 'src/dashboard/dashboard.service';
 
 
@@ -215,13 +215,13 @@ export class AuthService {
         await this.passwordService.createPassword(isExist, dto.password);
         return isExist;
       } else if (isExist.email == dto.email && isExist.phoneVerified == true) {
-        return {
+        throw new ConflictException({
           errors: [
             {
               message: 'Email Already Exist',
             },
           ],
-        };
+        });
       } else {
         let entity = new UserEntity();
         entity.firstName = dto.firstName;
