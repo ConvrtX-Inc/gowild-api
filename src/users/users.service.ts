@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { UserEntity } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository } from 'typeorm';
+import { Between, Not, Repository } from 'typeorm';
 import { FindOptions } from 'src/common/types/find-options.type';
 import { DeepPartial } from 'src/common/types/deep-partial.type';
 import { StatusEnum } from 'src/auth/status.enum';
@@ -115,6 +115,36 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
   }
 
   public async updateProfile(id: string, dto: UpdateUserDto) {
+
+    const usernameExist = await this.usersRepository.findOne({
+      where: {
+        id: id,
+        username: dto.username
+      }
+    });
+
+    const userExist = await this.usersRepository.findOne({
+      where: {
+        id: Not(id),
+        username: dto.username
+      }
+    });
+
+
+    if (userExist) {
+      throw new BadRequestException({
+        errors: [
+          {
+            messsage: 'Username Already Exist',
+          },
+        ],
+      });
+    }
+
+    if (usernameExist) {
+      delete dto.username;
+    }
+
     await this.usersRepository
       .createQueryBuilder()
       .update()
@@ -177,7 +207,7 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
           name: RoleEnum.USER,
         },
       },
-      order: {createdDate: 'DESC'}
+      order: { createdDate: 'DESC' }
     });
     const tenMinutesBefore = new Date();
     tenMinutesBefore.setMinutes(tenMinutesBefore.getMinutes() - 10);
@@ -244,8 +274,8 @@ export class UsersService extends TypeOrmCrudService<UserEntity> {
     //   .groupBy("date")
     //   .getRawMany();
 
-    
-    
+
+
     // query to get the counts of user logs for the current month
     const onlineUsers = await UserLoginLogs.createQueryBuilder('logs')
       .select("to_char(logs.loginDate, 'YYYY-MM-DDT00:00:00.000Z') as date")
