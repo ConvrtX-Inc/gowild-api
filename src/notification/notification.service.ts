@@ -172,7 +172,8 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
         payload: {
           aps: {
             badge: 1,
-            type: type
+            type: type,
+            sound: 'default'
           }
         }
       }
