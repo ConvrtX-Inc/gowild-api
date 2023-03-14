@@ -53,7 +53,7 @@ export class NotificationController implements CrudController<Notification> {
 
   @Override('createOneBase')
   public async createNotification(@Request() request) {
-    return this.service.createNotification(request.user?.sub, 'user created!', NotificationTypeEnum.GO_WILD);
+    return this.service.createNotification(request.user?.sub, 'user created!', NotificationTypeEnum.GO_WILD, '');
   }
 
   //@Get()

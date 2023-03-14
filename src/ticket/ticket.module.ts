@@ -17,6 +17,7 @@ import { NotificationService } from '../notification/notification.service';
 import { Notification } from '../notification/notification.entity';
 import { TicketMessagesService } from '../ticket-messages/ticket-messages.service';
 import { TicketMessage } from '../ticket-messages/entities/ticket-message.entity';
+import {UsersModule} from "../users/users.module";
 
 @Module({
   controllers: [TicketController],
@@ -34,6 +35,7 @@ import { TicketMessage } from '../ticket-messages/entities/ticket-message.entity
       TicketMessage,
     ]),
     FilesModule,
+    UsersModule,
     MulterModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

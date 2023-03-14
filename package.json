@@ -103,7 +103,6 @@
     "@types/facebook-js-sdk": "3.3.5",
     "@types/fb": "^0.0.28",
     "@types/geojson": "^7946.0.10",
-    "@types/jest": "27.0.3",
     "@types/multer": "1.4.7",
     "@types/passport-anonymous": "1.0.3",
     "@types/passport-jwt": "3.0.6",

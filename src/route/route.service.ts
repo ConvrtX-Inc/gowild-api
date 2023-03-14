@@ -412,7 +412,7 @@ export class RouteService extends TypeOrmCrudService<Route> {
           ...dto,
         }),
       );
-      await this.NotificationService.createNotificationAdmin(`${user.firstName} ${user.lastName} created a route "${data.title}"`, NotificationTypeEnum.ROUTES);
+      await this.NotificationService.createNotificationAdmin(`${user.firstName} ${user.lastName} created a route "${data.title}"`, NotificationTypeEnum.ROUTES, data.title);
       return { message: 'Route Created Successfully!', data: data }
     }
   }
@@ -553,25 +553,26 @@ export class RouteService extends TypeOrmCrudService<Route> {
       return { message:'Error deleting Route'};
     }
   }
-  
+
 
   async updateApprovedStatus(id) {
-    const status = await this.routeRepository.findOne({
+    const route = await this.routeRepository.findOne({
       where: {
         id: id,
       },
     });
 
-    if (!status) {
+    if (!route) {
       throw new NotFoundException({
         errors: [{ message: 'Route not Found!' }],
       });
     }
-    status.status = RouteStatusEnum.Approved;
-    await status.save();
+    route.status = RouteStatusEnum.Approved;
+    await route.save();
     await this.NotificationService.createNotification(
-      status.user_id,
-      `${status.title} Route approved Successfully!`, NotificationTypeEnum.APPROVE
+        route.user_id,
+      `${route.title} Route approved Successfully!`, NotificationTypeEnum.ROUTES,
+        route.title
     );
 
     return {

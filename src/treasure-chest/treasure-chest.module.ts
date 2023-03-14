@@ -18,6 +18,7 @@ import { NotificationService } from '../notification/notification.service';
 import { Notification } from '../notification/notification.entity';
 import { UserTreasureHuntService } from '../user-treasure-hunt/user-treasure-hunt.service';
 import { UserTreasureHuntEntity } from '../user-treasure-hunt/user-treasure-hunt.entity';
+import {UsersModule} from "../users/users.module";
 
 @Module({
   controllers: [TreasureChestController, TreasureWildController],
@@ -35,6 +36,7 @@ import { UserTreasureHuntEntity } from '../user-treasure-hunt/user-treasure-hunt
       UserTreasureHuntEntity,
     ]),
     FilesModule,
+    UsersModule,
     MulterModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

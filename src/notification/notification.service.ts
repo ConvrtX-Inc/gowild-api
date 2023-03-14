@@ -10,32 +10,42 @@ import { UserEntity } from 'src/users/user.entity';
 import { pushNotificationDto } from './dtos/push-notification.dto';
 import { BadGatewayException } from '@nestjs/common/exceptions';
 import {NotificationTypeEnum} from "./notification-type.enum";
+import {UsersService} from "../users/users.service";
 
 @Injectable()
 export class NotificationService extends TypeOrmCrudService<Notification> {
   constructor(
     @InjectRepository(Notification)
     private destinationsRepository: Repository<Notification>,
+    private usersService: UsersService
   ) {
     super(destinationsRepository);
   }
-  public async createNotification(UserId: string, message: string, type: string) {
+  public async createNotification(UserId: string, message: string, type: string, title: string) {
     let addNotification = new Notification();
     addNotification.user_id = UserId;
     addNotification.notification_msg = message;
     addNotification.type = type;
+    addNotification.title = title;
     addNotification.role = RoleEnum.USER;
     addNotification = await this.saveEntity(addNotification);
+    const user = await this.usersService.findOneEntity({
+      where: {
+        id: UserId,
+      },
+    });
+    await this.customPush(user.fcm_token, title, message, type)
     return {
       data: addNotification,
     };
   }
 
   // create notification for admin
-  public async createNotificationAdmin(message: string, type) {
+  public async createNotificationAdmin(message: string, type: string, title: string) {
     let addAdminNotification = new Notification();
     addAdminNotification.notification_msg = message;
     addAdminNotification.type = type;
+    addAdminNotification.title = title;
     addAdminNotification.role = RoleEnum.ADMIN;
     addAdminNotification = await this.saveEntity(addAdminNotification);
     return {
@@ -140,5 +150,22 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
       }
     }
     return { message: 'Token Not Found' };
+  }
+
+  public async customPush(token: string, title: string, body: string, type: string) {
+    const message = {
+      notification: {
+        title: title,
+        body: body,
+      },
+      data: {
+        type: type
+      },
+      token: token,
+    };
+    const sent = await admin.messaging().send(message);
+    if (sent) {
+      console.log('Push Sent Successfully')
+    }
   }
 }
