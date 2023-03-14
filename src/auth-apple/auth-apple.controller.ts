@@ -35,6 +35,7 @@ export class AuthAppleController {
     const token = await this.authService.validateSocialLogin(
       'apple',
       socialData,
+        loginDto.fcm_token
     );
     session[userTokenCookieKey] = token;
     return token;

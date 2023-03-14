@@ -107,6 +107,7 @@ export class AuthService {
   public async validateSocialLogin(
     authProvider: string,
     socialData: SocialInterface,
+    fcmToken?: string,
   ): Promise<UserAuthResponse> {
     let user: UserEntity;
     if (!socialData.email) {
@@ -141,9 +142,12 @@ export class AuthService {
     if (user) {
       if (!userByEmail) {
         user.email = socialEmail;
+        user.fcm_token = fcmToken;
       }
       await this.usersService.saveEntity(user);
     } else if (userByEmail) {
+      user.fcm_token = fcmToken;
+      await this.usersService.saveEntity(user);
       user = userByEmail;
     } else {
       let entity = new UserEntity();
@@ -151,6 +155,7 @@ export class AuthService {
       entity.lastName = socialData.lastName;
       entity.email = socialEmail;
       entity.username = socialEmail;
+      entity.fcm_token = fcmToken;
       entity.status = await this.statusService.findByEnum(StatusEnum.Active);
       entity.role = await this.roleService.findByEnum(RoleEnum.USER);
 
@@ -195,6 +200,7 @@ export class AuthService {
         isExist.lastName = dto.lastName;
         isExist.gender = dto.gender;
         isExist.email = dto.email;
+        isExist.fcm_token = dto.fcm_token;
         isExist.username = null;
         isExist.phoneNo = dto.phoneNo;
         isExist.addressOne = dto.addressOne;
@@ -223,6 +229,7 @@ export class AuthService {
         entity.gender = dto.gender;
         entity.email = dto.email;
         entity.username = null;
+        entity.fcm_token = dto.fcm_token;
         entity.phoneNo = dto.phoneNo;
         entity.addressOne = dto.addressOne;
         entity.addressTwo = dto.addressTwo;
@@ -243,6 +250,7 @@ export class AuthService {
       entity.gender = dto.gender;
       entity.email = dto.email;
       entity.username = null;
+      entity.fcm_token = dto.fcm_token;
       entity.phoneNo = dto.phoneNo;
       entity.addressOne = dto.addressOne;
       entity.addressTwo = dto.addressTwo;

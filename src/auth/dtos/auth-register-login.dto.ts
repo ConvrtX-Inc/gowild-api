@@ -56,4 +56,8 @@ export class AuthRegisterLoginDto {
   })
   @Allow()
   addressTwo: string;
+
+  @ApiProperty({ example: 'fcm_token' })
+  @IsOptional()
+  fcm_token: string;
 }

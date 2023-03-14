@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, IsNotEmpty } from 'class-validator';
+import {Allow, IsNotEmpty, IsOptional} from 'class-validator';
 
 export class AuthAppleLoginDto {
   @ApiProperty({ example: 'abc' })
@@ -13,4 +13,7 @@ export class AuthAppleLoginDto {
   @Allow()
   @ApiProperty({ required: false })
   lastName?: string;
+  @ApiProperty({ example: 'fcm_token' })
+  @IsOptional()
+  fcm_token: string;
 }
