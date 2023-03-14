@@ -11,10 +11,10 @@ export class pushNotificationDto {
   @IsNotEmpty()
   message: string;
 
-  @ApiProperty({ nullable: false, example: 'test@example.com' })
-  @IsEmail()
-  @Validate(IsExist, ['UserEntity', 'email'], {
-    message: 'Email Not Found',
-  })
-  email: string;
+  // @ApiProperty({ nullable: false, example: 'test@example.com' })
+  // @IsEmail()
+  // @Validate(IsExist, ['UserEntity', 'email'], {
+  //   message: 'Email Not Found',
+  // })
+  // email: string;
 }
