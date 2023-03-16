@@ -8,12 +8,15 @@ import {
   UserTreasureHuntStatusEnum,
 } from 'src/user-treasure-hunt/user-treasure-hunt.entity';
 import {Sponsor} from "../sponsor/entities/sponsor.entity";
+import {NotificationTypeEnum} from "../notification/notification-type.enum";
+import {NotificationService} from "../notification/notification.service";
 
 @Injectable()
 export class TreasureChestService extends TypeOrmCrudService<TreasureChest> {
   constructor(
     @InjectRepository(TreasureChest)
     private treasureChestRepository: Repository<TreasureChest>,
+    private readonly NotificationService: NotificationService,
   ) {
     super(treasureChestRepository);
   }
@@ -61,6 +64,10 @@ export class TreasureChestService extends TypeOrmCrudService<TreasureChest> {
     if (dto.status == UserTreasureHuntStatusEnum.PROCESSING) {
       hunt.status = UserTreasureHuntStatusEnum.PROCESSING;
       hunt.code = '000000';
+      await this.NotificationService.createNotification(
+          hunt.user_id,
+          'TreasureHunt approved', NotificationTypeEnum.TREASURE_CHEST, 'Treasure Hunt'
+      );
       const updated = await hunt.save();
       return { data: updated };
     } else if (dto.status == UserTreasureHuntStatusEnum.DISAPPROVE) {
@@ -94,7 +101,7 @@ export class TreasureChestService extends TypeOrmCrudService<TreasureChest> {
   }
 
   /*
-  Delete one treasure Chest along Treasure Hunts 
+  Delete one treasure Chest along Treasure Hunts
   */
 
 
@@ -105,7 +112,7 @@ export class TreasureChestService extends TypeOrmCrudService<TreasureChest> {
       await transactionalEntityManager.delete(TreasureChest, id);
       // delete Treasure Hunts along Treasure Chest
       await transactionalEntityManager.delete(UserTreasureHuntEntity, { treasure_chest_id: id });
-      
+
       });
       return { message: 'Treasure Chest deleted successfully' };
     } catch (error) {
@@ -113,5 +120,5 @@ export class TreasureChestService extends TypeOrmCrudService<TreasureChest> {
       return { message:'Error deleting TreasureChest'};
     }
   }
-  
+
 }

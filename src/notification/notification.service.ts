@@ -109,7 +109,10 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
 
   // get all notification
   public async getAllNotifications() {
-    const allNotifications = await this.destinationsRepository.find({});
+    const allNotifications = await this.destinationsRepository.find({
+      take: 100,
+      order: {createdDate: 'DESC'}
+    });
     return {
       data: allNotifications,
     };
