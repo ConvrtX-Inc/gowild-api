@@ -149,9 +149,9 @@ export class AuthService {
       }
       await this.usersService.saveEntity(user);
     } else if (userByEmail) {
-      user.fcm_token = fcmToken;
-      user.device_type = deviceType;
-      await this.usersService.saveEntity(user);
+      userByEmail.fcm_token = fcmToken;
+      userByEmail.device_type = deviceType;
+      await this.usersService.saveEntity(userByEmail);
       user = userByEmail;
     } else {
       let entity = new UserEntity();
