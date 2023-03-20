@@ -73,6 +73,7 @@ export class AuthService {
       );
       if (loginDto.fcm_token) {
         user.fcm_token = loginDto.fcm_token;
+        user.device_type = loginDto.device_type;
         user.last_seen = new Date();
         await user.save();
       }
@@ -108,6 +109,7 @@ export class AuthService {
     authProvider: string,
     socialData: SocialInterface,
     fcmToken?: string,
+    deviceType?: string,
   ): Promise<UserAuthResponse> {
     let user: UserEntity;
     if (!socialData.email) {
@@ -143,10 +145,12 @@ export class AuthService {
       if (!userByEmail) {
         user.email = socialEmail;
         user.fcm_token = fcmToken;
+        user.device_type = deviceType;
       }
       await this.usersService.saveEntity(user);
     } else if (userByEmail) {
       user.fcm_token = fcmToken;
+      user.device_type = deviceType;
       await this.usersService.saveEntity(user);
       user = userByEmail;
     } else {
@@ -156,6 +160,7 @@ export class AuthService {
       entity.email = socialEmail;
       entity.username = socialEmail;
       entity.fcm_token = fcmToken;
+      entity.device_type = deviceType;
       entity.status = await this.statusService.findByEnum(StatusEnum.Active);
       entity.role = await this.roleService.findByEnum(RoleEnum.USER);
 
@@ -201,6 +206,7 @@ export class AuthService {
         isExist.gender = dto.gender;
         isExist.email = dto.email;
         isExist.fcm_token = dto.fcm_token;
+        isExist.device_type = dto.device_type;
         isExist.username = null;
         isExist.phoneNo = dto.phoneNo;
         isExist.addressOne = dto.addressOne;
@@ -230,6 +236,7 @@ export class AuthService {
         entity.email = dto.email;
         entity.username = null;
         entity.fcm_token = dto.fcm_token;
+        entity.device_type = dto.device_type;
         entity.phoneNo = dto.phoneNo;
         entity.addressOne = dto.addressOne;
         entity.addressTwo = dto.addressTwo;
@@ -251,6 +258,7 @@ export class AuthService {
       entity.email = dto.email;
       entity.username = null;
       entity.fcm_token = dto.fcm_token;
+      entity.device_type = dto.device_type;
       entity.phoneNo = dto.phoneNo;
       entity.addressOne = dto.addressOne;
       entity.addressTwo = dto.addressTwo;

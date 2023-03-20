@@ -38,7 +38,8 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
     if (user) {
       console.log('In Notification')
       console.log('FCM Token', user.fcm_token)
-      await this.customPush(user.fcm_token, title, message, type)
+      console.log('FCM Token', user.device_type)
+      await this.customPush(user.fcm_token, title, message, type, user.device_type)
     }
 
     return {
@@ -161,29 +162,46 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
   //   return { message: 'Token Not Found' };
   // }
 
-  public async customPush(token: string, title: string, body: string, type: string) {
-    const message = {
-      notification: {
-        title: title,
-        body: body,
-      },
-      data: {
-        type: type
-      },
-      token: token,
-      apns: {
-        payload: {
-          aps: {
-            badge: 1,
-            type: type,
-            sound: 'default'
+  public async customPush(token: string, title: string, body: string, type: string, deviceType: string) {
+    if (deviceType === 'ios') {
+      const message = {
+        notification: {
+          title: title,
+          body: body,
+        },
+        data: {
+          type: type
+        },
+        token: token,
+        apns: {
+          payload: {
+            aps: {
+              badge: 1,
+              type: type,
+              sound: 'default'
+            }
           }
         }
+      };
+      const sent = await admin.messaging().send(message);
+      if (sent) {
+        console.log('Push Sent Successfully')
       }
-    };
-    const sent = await admin.messaging().send(message);
-    if (sent) {
-      console.log('Push Sent Successfully')
+    } else {
+      const message = {
+        data: {
+          type: type,
+          title: title,
+          body: body,
+        },
+        token: token
+      };
+      const sent = await admin.messaging().send(message);
+      if (sent) {
+        console.log('Push Sent Successfully')
+      }
     }
+
+
   }
 }

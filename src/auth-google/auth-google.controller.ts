@@ -36,7 +36,8 @@ export class AuthGoogleController {
     const token = await this.authService.validateSocialLogin(
       'google',
       socialData,
-        loginDto.fcm_token
+        loginDto.fcm_token,
+        loginDto.device_type
     );
     session[userTokenCookieKey] = token;
     return token;
