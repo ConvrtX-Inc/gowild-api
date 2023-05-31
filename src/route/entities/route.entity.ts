@@ -91,6 +91,10 @@ export class Route extends AbstractBaseEntity {
   @Column({ nullable: true, name: 'route_path' })
   route_path: string;
 
+  @ApiProperty({ example: '' })
+  @Column({ nullable: true, name: 'polyline' })
+  polyline: string;
+
   @IsOptional()
   @ApiProperty({
     example: 'pending/completed',
