@@ -35,6 +35,10 @@ export class CreateRouteDto {
   @IsOptional()
   route_path: string;
 
+  @ApiProperty({ example: 'abc' })
+  @IsOptional()
+  polyline: string;
+
   @ApiProperty({ example: 'School District 82 ( Coast Mountains )' })
   @IsNotEmpty()
   startLocation: string;
