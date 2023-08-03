@@ -35,12 +35,12 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
       },
     });
     console.log('user',user)
-    if (user) {
-      console.log('In Notification')
-      console.log('FCM Token', user.fcm_token)
-      console.log('FCM Token', user.device_type)
-      await this.customPush(user.fcm_token, title, message, type, user.device_type)
-    }
+    // if (user) {
+    //   console.log('In Notification')
+    //   console.log('FCM Token', user.fcm_token)
+    //   console.log('FCM Token', user.device_type)
+    //   await this.customPush(user.fcm_token, title, message, type, user.device_type)
+    // }
 
     return {
       data: addNotification,
