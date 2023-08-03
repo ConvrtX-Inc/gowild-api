@@ -64,10 +64,10 @@ export class TreasureChestService extends TypeOrmCrudService<TreasureChest> {
     if (dto.status == UserTreasureHuntStatusEnum.PROCESSING) {
       hunt.status = UserTreasureHuntStatusEnum.PROCESSING;
       hunt.code = '000000';
-      await this.NotificationService.createNotification(
-          hunt.user_id,
-          'TreasureHunt approved', NotificationTypeEnum.TREASURE_CHEST, 'Treasure Hunt'
-      );
+      // await this.NotificationService.createNotification(
+      //     hunt.user_id,
+      //     'TreasureHunt approved', NotificationTypeEnum.TREASURE_CHEST, 'Treasure Hunt'
+      // );
       const updated = await hunt.save();
       return { data: updated };
     } else if (dto.status == UserTreasureHuntStatusEnum.DISAPPROVE) {
