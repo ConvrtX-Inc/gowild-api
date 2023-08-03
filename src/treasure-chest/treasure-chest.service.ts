@@ -56,7 +56,7 @@ export class TreasureChestService extends TypeOrmCrudService<TreasureChest> {
         errors: [
           {
             message: 'No User Treasure Hunt Found',
-            status: HttpStatus.BAD_GATEWAY,
+            status: HttpStatus.CONFLICT,
           },
         ],
       };
@@ -79,7 +79,7 @@ export class TreasureChestService extends TypeOrmCrudService<TreasureChest> {
         errors: [
           {
             message: 'Invalid Status',
-            status: HttpStatus.BAD_GATEWAY,
+            status: HttpStatus.BAD_REQUEST,
           },
         ],
       };
