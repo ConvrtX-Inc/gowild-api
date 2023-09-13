@@ -39,6 +39,8 @@ export class AuthFacebookController {
     const token = await this.authService.validateSocialLogin(
       'facebook',
       socialData,
+      loginDto.fcm_token,
+      loginDto.device_type
     );
     session[userTokenCookieKey] = token;
     return token;

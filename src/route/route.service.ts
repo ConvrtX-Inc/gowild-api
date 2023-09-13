@@ -97,22 +97,22 @@ export class RouteService extends TypeOrmCrudService<Route> {
       .execute();
 
 
-if (dto.historical_route) {
-  
-  for (let i = 0; i < dto.historical_route.length; i++) {
-    let myhistorical = {};
-    myhistorical = dto.historical_route[i];
-    myhistorical['route_id'] = id;
-    await this.routeHistoricalEventRepository.upsert(myhistorical, ['id'])
-    
-  }
-}
+    if (dto.historical_route) {
+
+      for (let i = 0; i < dto.historical_route.length; i++) {
+        let myhistorical = {};
+        myhistorical = dto.historical_route[i];
+        myhistorical['route_id'] = id;
+        await this.routeHistoricalEventRepository.upsert(myhistorical, ['id'])
+
+      }
+    }
 
     const route = await this.routeRepository.findOne({
       where: { id: id },
       relations: ['historicalEvents']
     });
-    
+
     return {
       message: 'Route Updated Successfully',
       data: route,
@@ -220,6 +220,16 @@ if (dto.historical_route) {
           'K',
         ) >= 0
       ) {
+        console.log("IN LOOP");
+        console.log(this.closestLocation(
+          parseFloat(lat),
+          parseFloat(long),
+          routes[i].start.latitude,
+          routes[i].start.longitude,
+          'K',
+        ))
+        console.log(routes[i].title);
+        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         results.push(routes[i]);
       }
     }
@@ -310,7 +320,8 @@ if (dto.historical_route) {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const d = R * c; // in metres
     const km = Math.round(d / 1000);
-    console.log(km);
+    console.log("KILOMETERS");
+    console.log(km)
     return km;
   }
 
@@ -401,7 +412,7 @@ if (dto.historical_route) {
           ...dto,
         }),
       );
-      await this.NotificationService.createNotificationAdmin(`${user.firstName} ${user.lastName} created a route "${data.title}"`, NotificationTypeEnum.ROUTES);
+      await this.NotificationService.createNotificationAdmin(`${user.firstName} ${user.lastName} created a route "${data.title}"`, NotificationTypeEnum.ROUTES, data.title);
       return { message: 'Route Created Successfully!', data: data }
     }
   }
@@ -489,29 +500,29 @@ if (dto.historical_route) {
       if (leaderStats) {
         leaderStats.forEach((state) => {
           const leaderboard = this.mapLeaderboard(
-            state.id,
-            state.user_id,
-            state['user'].firstName,
-            state['user'].picture,
-            state.rank,
+            state?.id,
+            state?.user_id,
+            state['user']?.firstName,
+            state['user']?.picture,
+            state?.rank,
           );
           user.push(leaderboard);
         });
       }
       if (currentUser) {
         const currentUserData = this.mapLeaderboard(
-          currentUser.id,
-          currentUser.user_id,
-          currentUser['user'].firstName,
-          currentUser['user'].picture,
-          currentUser.rank,
+          currentUser?.id,
+          currentUser?.user_id,
+          currentUser['user']?.firstName,
+          currentUser['user']?.picture,
+          currentUser?.rank,
         );
         savedRoutes[i]['currentUser'] = currentUserData;
       } else {
         savedRoutes[i]['currentUser'] = null;
       }
       savedRoutes[i]['leaderboard'] = user;
-      results.push(savedRoutes[i]);
+      results?.push(savedRoutes[i]);
     }
     const totalPage = Math.ceil(total / limit);
     const currentPage = parseInt(String(page));
@@ -542,25 +553,26 @@ if (dto.historical_route) {
       return { message:'Error deleting Route'};
     }
   }
-  
+
 
   async updateApprovedStatus(id) {
-    const status = await this.routeRepository.findOne({
+    const route = await this.routeRepository.findOne({
       where: {
         id: id,
       },
     });
 
-    if (!status) {
+    if (!route) {
       throw new NotFoundException({
         errors: [{ message: 'Route not Found!' }],
       });
     }
-    status.status = RouteStatusEnum.Approved;
-    await status.save();
+    route.status = RouteStatusEnum.Approved;
+    await route.save();
     await this.NotificationService.createNotification(
-      status.user_id,
-      `${status.title} Route approved Successfully!`, NotificationTypeEnum.APPROVE
+        route.user_id,
+      `${route.title} Route approved Successfully!`, NotificationTypeEnum.ROUTES,
+        route.title
     );
 
     return {

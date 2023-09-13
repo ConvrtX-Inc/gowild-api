@@ -121,8 +121,8 @@ export class LeaderBoardService extends TypeOrmCrudService<LeaderBoard> {
 
     const data = await this.Repository.createQueryBuilder('leaderBoard')
     
-      .leftJoinAndMapOne('leaderBoard.user', UserEntity, 'user','user.id = user_id and leaderBoard.route_id = :routeId', { routeId: routeId })
-      .leftJoinAndMapOne('leaderBoard.route',Route, 'route', 'route.id = leaderBoard.route_id')
+      .innerJoinAndMapOne('leaderBoard.user', UserEntity, 'user','user.id = user_id and leaderBoard.route_id = :routeId', { routeId: routeId })
+      .innerJoinAndMapOne('leaderBoard.route',Route, 'route', 'route.id = leaderBoard.route_id')
       .orderBy('leaderBoard.rank', 'ASC')
       .skip(skip)
       .take(take)

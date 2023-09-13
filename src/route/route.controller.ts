@@ -152,6 +152,7 @@ export class RouteController implements CrudController<Route> {
       query.lat,
       query.long,
       query.page,
+      query.limit??100,
     );
   }
 

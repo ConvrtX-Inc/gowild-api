@@ -98,9 +98,10 @@ export class PostFeedService extends TypeOrmCrudService<PostFeed> {
     Get One Post-feed and incrementing its view
     */
   async getOnePost(id: string) {
-    const post = await this.postFeedRepository.findOne({
-      id: id,
-    });
+    const post = await this.postFeedRepository.createQueryBuilder('post')
+    .where('post.id = :id', { id })
+    .innerJoinAndMapOne('post.user', UserEntity, 'user', 'user.id = post.user_id' )
+    .getOne();
     if (!post) {
       return {
         errors: [

@@ -53,6 +53,7 @@ export class TicketService extends TypeOrmCrudService<Ticket> {
     await this.notificationService.createNotificationAdmin(
       `${user.firstName} ${user.lastName} created a new ticket!`,
         NotificationTypeEnum.SUPPORT,
+        ticket.subject
     );
 
     return {

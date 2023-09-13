@@ -30,14 +30,14 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
   }
 
   /*
-    Register User for Treaure Hunt 
+    Register User for Treaure Hunt
     */
   async registerTreasureHunt(dto: RegisterTreasureHuntDto, userId: string) {
 
     const [existingHunts, count] = await this.UserTreasureHuntRepository.findAndCount({
       where: { user_id: userId, status: (UserTreasureHuntStatusEnum.PENDING || UserTreasureHuntStatusEnum.PROCESSING) }
     })
-    
+
     if (count !== 0) {
       let chestIds = []
       for (let i = 0; i < count;) {
@@ -46,7 +46,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
         i++;
       }
 
-    
+
       const currentDate = `${new Date().getUTCFullYear()}-${new Date().getUTCMonth() + 1}-${new Date().getUTCDate()}`;
       const chests = await this.treasureChestRepository.count({
         where: {
@@ -54,7 +54,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
           eventDate: MoreThan(currentDate),
         },
       });
-      
+
       if (chests > 0) {
         return { errors: [{ message: "You're Already Register in a Hunt" }] };
       }
@@ -79,7 +79,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     const newRegister = await this.UserTreasureHuntService.saveOne(data);
     await this.NotificationService.createNotification(
       data.user_id,
-      'TreasureHunt created successfully!', NotificationTypeEnum.TREASURE_CHEST
+      'TreasureHunt registered waiting for approval', NotificationTypeEnum.TREASURE_CHEST, 'Treasure Hunt'
     );
     return { message: 'Successfully Registered', data: newRegister };
   }
@@ -88,7 +88,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
     Find Many Register Users
     */
   async getManyUserTreasureHunt() {
-    const all = await UserTreasureHuntEntity.find({});
+    const all = await UserTreasureHuntEntity.find({order:{createdDate:'DESC'}});
     return { data: all };
   }
 
@@ -125,6 +125,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
       )
       .skip(skip)
       .take(take)
+      .orderBy('treasureHunts.createdDate', 'DESC')
       .getManyAndCount();
 
 
@@ -149,7 +150,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
       )
       .getOne();
 
-    // return {data:data, currentUser: crrUser}; 
+    // return {data:data, currentUser: crrUser};
 
     const parrentArray = [];
     const customArray = [];
@@ -205,7 +206,7 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
   }
 
   /*
-   Verify OTP code for User Treasure Hunt 
+   Verify OTP code for User Treasure Hunt
    */
   async verifyHunt(dto, user) {
     const hunt = await this.UserTreasureHuntService.findOne({
@@ -266,5 +267,12 @@ export class TreasureWildService extends TypeOrmCrudService<TreasureChest> {
       message:
         'A fresh registereation number has been sent to your registered mobile number',
     };
+  }
+
+  async createWinner(winner_id: string, chest_id: string){
+    await this.treasureChestRepository.createQueryBuilder()
+    .update(TreasureChest)
+    .set({winnerId: winner_id}).where('id = :chest_id',{chest_id}).execute()
+    return {message: 'Winner Created Successfully'}
   }
 }

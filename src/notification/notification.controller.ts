@@ -53,7 +53,7 @@ export class NotificationController implements CrudController<Notification> {
 
   @Override('createOneBase')
   public async createNotification(@Request() request) {
-    return this.service.createNotification(request.user?.sub, 'user created!', NotificationTypeEnum.GO_WILD);
+    return this.service.createNotification(request.user?.sub, 'user created!', NotificationTypeEnum.GO_WILD, '');
   }
 
   //@Get()
@@ -71,7 +71,8 @@ export class NotificationController implements CrudController<Notification> {
 
   @Post('push')
   async pushNotification(@Body() dto: pushNotificationDto, @Request() req) {
-    return await this.service.pushNotification(req.user.sub, dto);
+    return await this.service.customPush('dtkSj2BvuUKIoqA-NZXG_8:APA91bFPdWPhIfWCshKy-Nu3OkGgiVzPYJH_jD10LVuzbyGwsXitoZ4nldV9bdR-FcZ4fNtXuanwdJ_iyVvc1fimXsMB8dj0S1QZdX5qHDezKb2X7poUk5LF1PxWyuwl9k_YLeMm9SbB'
+        , dto.title, dto.message, 'test', 'android');
   }
 
   @Get('role/:role')

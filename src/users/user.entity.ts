@@ -102,6 +102,12 @@ export class UserEntity extends AbstractBaseEntity {
   @Column({ nullable: true })
   backImage: string | null;
 
+  @Allow()
+  @IsOptional()
+  @ApiProperty({ nullable: true })
+  @Column({ nullable: true })
+  device_type: string | null;
+
   @ApiProperty({ nullable: true })
   @ManyToOne(() => Status, { nullable: false, cascade: false, eager: true })
   @JoinColumn({ name: 'status_id' })

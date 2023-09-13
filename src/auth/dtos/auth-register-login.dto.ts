@@ -10,6 +10,7 @@ import {
 import { IsNotExist } from 'src/common/validators/is-not-exists.validator';
 import { Transform } from 'class-transformer';
 import { GenderEnum } from 'src/users/gender.enum';
+import {deviceTypeEnum} from "../../auth-google/dtos/auth-google-login.dto";
 
 export class AuthRegisterLoginDto {
   @ApiProperty({ example: 'test1@example.com' })
@@ -56,4 +57,12 @@ export class AuthRegisterLoginDto {
   })
   @Allow()
   addressTwo: string;
+
+  @ApiProperty({ example: 'fcm_token' })
+  @IsOptional()
+  fcm_token: string;
+
+  @ApiProperty({ example: 'android , ios' })
+  @IsOptional()
+  device_type: deviceTypeEnum;
 }

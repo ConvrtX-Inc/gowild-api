@@ -10,32 +10,54 @@ import { UserEntity } from 'src/users/user.entity';
 import { pushNotificationDto } from './dtos/push-notification.dto';
 import { BadGatewayException } from '@nestjs/common/exceptions';
 import {NotificationTypeEnum} from "./notification-type.enum";
+import {UsersService} from "../users/users.service";
 
 @Injectable()
 export class NotificationService extends TypeOrmCrudService<Notification> {
   constructor(
     @InjectRepository(Notification)
     private destinationsRepository: Repository<Notification>,
+    private usersService: UsersService
   ) {
     super(destinationsRepository);
   }
-  public async createNotification(UserId: string, message: string, type: string) {
+  public async createNotification(UserId: string, message: string, type: string, title: string) {
     let addNotification = new Notification();
     addNotification.user_id = UserId;
     addNotification.notification_msg = message;
     addNotification.type = type;
+    addNotification.title = title;
     addNotification.role = RoleEnum.USER;
     addNotification = await this.saveEntity(addNotification);
+    const user = await this.usersService.findOneEntity({
+      where: {
+        id: UserId,
+      },
+    });
+    console.log('user',user)
+    if (user) {
+      console.log('In Notification')
+      console.log('FCM Token', user.fcm_token)
+      console.log('FCM Token', user.device_type)
+      try {
+        await this.customPush(user.fcm_token, title, message, type, user.device_type)
+      } catch (e) {
+
+      }
+
+    }
+
     return {
       data: addNotification,
     };
   }
 
   // create notification for admin
-  public async createNotificationAdmin(message: string, type) {
+  public async createNotificationAdmin(message: string, type: string, title: string) {
     let addAdminNotification = new Notification();
     addAdminNotification.notification_msg = message;
     addAdminNotification.type = type;
+    addAdminNotification.title = title;
     addAdminNotification.role = RoleEnum.ADMIN;
     addAdminNotification = await this.saveEntity(addAdminNotification);
     return {
@@ -93,7 +115,10 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
 
   // get all notification
   public async getAllNotifications() {
-    const allNotifications = await this.destinationsRepository.find({});
+    const allNotifications = await this.destinationsRepository.find({
+      take: 100,
+      order: {createdDate: 'DESC'}
+    });
     return {
       data: allNotifications,
     };
@@ -105,40 +130,83 @@ export class NotificationService extends TypeOrmCrudService<Notification> {
     );
   }
 
-  async pushNotification(id: string, dto: pushNotificationDto) {
-    const user = await UserEntity.findOne({
-      where: {
-        email: dto.email,
-      },
-    });
-    if (user.fcm_token) {
-      var message = {
+  // async pushNotification(id: string, dto: pushNotificationDto) {
+  //   const user = await UserEntity.findOne({
+  //     where: {
+  //       email: dto.email,
+  //     },
+  //   });
+  //   if (user.fcm_token) {
+  //     var message = {
+  //       notification: {
+  //         title: dto.title,
+  //         body: dto.message,
+  //       },
+  //       token: user.fcm_token,
+  //     };
+  //     const sent = await admin.messaging().send(message);
+  //     if (sent) {
+  //       let addAdminNotification = new Notification();
+  //       addAdminNotification.title = dto.title;
+  //       addAdminNotification.notification_msg = dto.message;
+  //       addAdminNotification.msg_code = sent;
+  //       addAdminNotification.user_id = user.id;
+  //       addAdminNotification.type = NotificationTypeEnum.PUSH;
+  //       addAdminNotification.role = RoleEnum.ADMIN;
+  //       await this.saveEntity(addAdminNotification);
+  //       return {
+  //         message: 'Notification Pushed Successfully',
+  //         message_code: sent,
+  //       };
+  //     } else {
+  //       new BadGatewayException({
+  //         message: 'Something Went Wrong',
+  //       });
+  //     }
+  //   }
+  //   return { message: 'Token Not Found' };
+  // }
+
+  public async customPush(token: string, title: string, body: string, type: string, deviceType: string) {
+    if (deviceType === 'ios') {
+      const message = {
         notification: {
-          title: dto.title,
-          body: dto.message,
+          title: title,
+          body: body,
         },
-        token: user.fcm_token,
+        data: {
+          type: type
+        },
+        token: token,
+        apns: {
+          payload: {
+            aps: {
+              badge: 1,
+              type: type,
+              sound: 'default'
+            }
+          }
+        }
       };
       const sent = await admin.messaging().send(message);
       if (sent) {
-        let addAdminNotification = new Notification();
-        addAdminNotification.title = dto.title;
-        addAdminNotification.notification_msg = dto.message;
-        addAdminNotification.msg_code = sent;
-        addAdminNotification.user_id = user.id;
-        addAdminNotification.type = NotificationTypeEnum.PUSH;
-        addAdminNotification.role = RoleEnum.ADMIN;
-        await this.saveEntity(addAdminNotification);
-        return {
-          message: 'Notification Pushed Successfully',
-          message_code: sent,
-        };
-      } else {
-        new BadGatewayException({
-          message: 'Something Went Wrong',
-        });
+        console.log('Push Sent Successfully')
+      }
+    } else {
+      const message = {
+        data: {
+          type: type,
+          title: title,
+          body: body,
+        },
+        token: token
+      };
+      const sent = await admin.messaging().send(message);
+      if (sent) {
+        console.log('Push Sent Successfully')
       }
     }
-    return { message: 'Token Not Found' };
+
+
   }
 }

@@ -24,10 +24,12 @@ import { SmsService } from '../sms/sms.service';
 import { StatusEnum } from './status.enum';
 import { StatusService } from '../statuses/status.service';
 import { RoleService } from '../roles/role.service';
-import { RoleEnum } from '../roles/roles.enum';
+import { RoleEnum, roleEnumsNames } from '../roles/roles.enum';
 import { AuthVerifyUserDto } from './dtos/auth-verify-user.dto';
 import appConfig from 'src/config/app.config';
-import { BadRequestException } from '@nestjs/common/exceptions';
+import { BadRequestException, ConflictException } from '@nestjs/common/exceptions';
+import { DashboardService } from 'src/dashboard/dashboard.service';
+
 
 @Injectable()
 export class AuthService {
@@ -41,6 +43,7 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly statusService: StatusService,
     private readonly roleService: RoleService,
+    private readonly logsService: DashboardService,
   ) { }
 
   public async validateLogin(
@@ -54,7 +57,7 @@ export class AuthService {
       },
     });
 
-    if (!user){
+    if (!user) {
       throw new UnprocessableEntityException({
         errors: [
           {
@@ -70,10 +73,17 @@ export class AuthService {
       );
       if (loginDto.fcm_token) {
         user.fcm_token = loginDto.fcm_token;
+        user.device_type = loginDto.device_type;
         user.last_seen = new Date();
         await user.save();
       }
       if (isValidPassword) {
+        // create User Login logs
+        if (user?.role?.name == RoleEnum?.USER) {
+          await this.logsService.createUserLoginLogs(user.id)
+        }
+
+        // return token
         return await this.tokenService.generateToken(user);
       } else {
         throw new UnprocessableEntityException({
@@ -85,7 +95,7 @@ export class AuthService {
         });
       }
     } else {
-      throw new BadRequestException ({
+      throw new BadRequestException({
         errors: [
           {
             messsage: 'Verify your Account to Proceed',
@@ -98,6 +108,8 @@ export class AuthService {
   public async validateSocialLogin(
     authProvider: string,
     socialData: SocialInterface,
+    fcmToken?: string,
+    deviceType?: string,
   ): Promise<UserAuthResponse> {
     let user: UserEntity;
     if (!socialData.email) {
@@ -132,9 +144,14 @@ export class AuthService {
     if (user) {
       if (!userByEmail) {
         user.email = socialEmail;
+        user.fcm_token = fcmToken;
+        user.device_type = deviceType;
       }
       await this.usersService.saveEntity(user);
     } else if (userByEmail) {
+      userByEmail.fcm_token = fcmToken;
+      userByEmail.device_type = deviceType;
+      await this.usersService.saveEntity(userByEmail);
       user = userByEmail;
     } else {
       let entity = new UserEntity();
@@ -142,6 +159,8 @@ export class AuthService {
       entity.lastName = socialData.lastName;
       entity.email = socialEmail;
       entity.username = socialEmail;
+      entity.fcm_token = fcmToken;
+      entity.device_type = deviceType;
       entity.status = await this.statusService.findByEnum(StatusEnum.Active);
       entity.role = await this.roleService.findByEnum(RoleEnum.USER);
 
@@ -186,6 +205,8 @@ export class AuthService {
         isExist.lastName = dto.lastName;
         isExist.gender = dto.gender;
         isExist.email = dto.email;
+        isExist.fcm_token = dto.fcm_token;
+        isExist.device_type = dto.device_type;
         isExist.username = null;
         isExist.phoneNo = dto.phoneNo;
         isExist.addressOne = dto.addressOne;
@@ -200,13 +221,13 @@ export class AuthService {
         await this.passwordService.createPassword(isExist, dto.password);
         return isExist;
       } else if (isExist.email == dto.email && isExist.phoneVerified == true) {
-        return {
+        throw new ConflictException({
           errors: [
             {
               message: 'Email Already Exist',
             },
           ],
-        };
+        });
       } else {
         let entity = new UserEntity();
         entity.firstName = dto.firstName;
@@ -214,6 +235,8 @@ export class AuthService {
         entity.gender = dto.gender;
         entity.email = dto.email;
         entity.username = null;
+        entity.fcm_token = dto.fcm_token;
+        entity.device_type = dto.device_type;
         entity.phoneNo = dto.phoneNo;
         entity.addressOne = dto.addressOne;
         entity.addressTwo = dto.addressTwo;
@@ -234,6 +257,8 @@ export class AuthService {
       entity.gender = dto.gender;
       entity.email = dto.email;
       entity.username = null;
+      entity.fcm_token = dto.fcm_token;
+      entity.device_type = dto.device_type;
       entity.phoneNo = dto.phoneNo;
       entity.addressOne = dto.addressOne;
       entity.addressTwo = dto.addressTwo;
@@ -278,7 +303,7 @@ export class AuthService {
     let user = null;
     let emailPhone = null;
     if (dto.phone) {
-      emailPhone = dto.phone;
+      emailPhone = dto.email;
       user = await this.usersService.findOneEntity({
         where: {
           email: dto.email,
@@ -313,22 +338,19 @@ export class AuthService {
       emailPhone,
       user,
     });
-    if (dto.email) {
-      /*await this.mailService.forgotPassword({
-        to: dto.email,
+    // Send Email & SMS based on User
+    /*await this.mailService.forgotPassword({
+        to: user.email,
         data: {
           hash,
         },
       });*/
-    } else {
-      // await this.smsService.send({
-      //   phone_number: user.phone_no.toString(),
-      //   message:
-      //     'You have requested reset password on Go Wild App. Please use this code to reset password:' +
-      //     hash,
-      // });
-      // Will uncomment when twilio account provided
-    }
+    // await this.smsService.send({
+    //   phone_number: user.phone_no.toString(),
+    //   message:
+    //     'You have requested reset password on Go Wild App. Please use this code to reset password:' +
+    //     hash,
+    // });
     return {
       status: HttpStatus.OK,
       message: 'Success',
@@ -358,7 +380,8 @@ export class AuthService {
 
   public async resetPassword(
     hash: string,
-    emailPhone: string,
+    email: string,
+    phone: string,
     password: string,
   ): Promise<SuccessResponse> {
     /*let user = null;
@@ -373,10 +396,8 @@ export class AuthService {
         hash: `notFound`,
       });
     }*/
-    const user = await this.usersService.findOneEntity({
-      where: {
-        phoneNo: emailPhone,
-      },
+    const user = await this.usersService.findOne({
+      where: { phoneNo: phone , email: email},
     });
     /*if(!user){
       throw new NotFoundException({
@@ -388,13 +409,11 @@ export class AuthService {
       user,
       password,
     );
-
     if (passwordCheck) {
       throw new NotFoundException({
         message: `Cannot set your Previous Password`,
       });
     }
-
     //await this.forgotService.softDelete(forgot.id);
     await this.passwordService.createPassword(user, password);
     // await data.save();

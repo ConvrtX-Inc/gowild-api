@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import {IsNotEmpty, IsOptional} from 'class-validator';
 
 export enum deviceTypeEnum {
   ANDROID = 'android',
@@ -14,4 +14,7 @@ export class AuthGoogleLoginDto {
   @ApiProperty({ example: 'abc' })
   @IsNotEmpty()
   id_token: string;
+  @ApiProperty({ example: 'fcm_token' })
+  @IsOptional()
+  fcm_token: string;
 }
